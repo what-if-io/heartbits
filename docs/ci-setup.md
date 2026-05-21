@@ -218,27 +218,35 @@ cd forgejo-runner-src
 go build -o ~/bin/forgejo-runner .
 ```
 
-### Registration
+### Registration — config file approach (v12+)
 
-The `register` subcommand didn't work reliably. Instead, use the `daemon` command directly
-with `--uuid` and `--token-url`:
+`register` is deprecated in v12+. Use a config file instead.
 
-1. Create a runner in Forgejo UI: **Admin panel → Actions → Runners → Create new runner**
-2. Save the token to a file: `echo "TOKEN" > ~/Projects/ci-token`
-3. Run once to test:
-```bash
-~/bin/forgejo-runner daemon \
-  --url http://192.168.1.12:3000/ \
-  --uuid $(uuidgen | tr '[:upper:]' '[:lower:]') \
-  --token-url file:///Users/laztoum/Projects/ci-token \
-  --label macos,macos-latest,self-hosted
+1. Create a runner token in Forgejo: **Admin panel → Actions → Runners → Create new runner**
+2. Save the token: `echo "PASTE_TOKEN" > ~/Projects/ci-token`
+3. Generate config: `~/bin/forgejo-runner generate-config > ~/.forgejo-runner.yaml`
+4. Edit `~/.forgejo-runner.yaml` — find the `connections:` line at the bottom and add:
+
+```yaml
+  connections:
+    heartbits-ci:
+      url: http://192.168.1.12:3000
+      token_url: file:///Users/laztoum/Projects/ci-token
+      labels:
+        - macos
+        - macos-latest
+        - self-hosted
 ```
+
+Labels must be a YAML list — a comma-separated string registers as one label and breaks matching.
+
+On first start the runner auto-registers and stores its UUID in the config. Do not add a `uuid`
+field manually — let it be generated.
 
 ### LaunchAgent
 
 **Important**: use the direct IP (`192.168.1.12`), not `ci.local` — mDNS does not resolve
-reliably in LaunchAgent context at login. The UUID below is the one registered with this
-Forgejo instance; replace if re-registering.
+reliably in LaunchAgent context at login.
 
 `~/Library/LaunchAgents/io.forgejo.runner.plist`:
 
@@ -253,14 +261,8 @@ Forgejo instance; replace if re-registering.
     <array>
         <string>/Users/laztoum/bin/forgejo-runner</string>
         <string>daemon</string>
-        <string>--url</string>
-        <string>http://192.168.1.12:3000/</string>
-        <string>--uuid</string>
-        <string>c44fc06d-4ccd-4788-8017-d23b57cea2c3</string>
-        <string>--token-url</string>
-        <string>file:///Users/laztoum/Projects/ci-token</string>
-        <string>--label</string>
-        <string>macos,macos-latest,self-hosted</string>
+        <string>--config</string>
+        <string>/Users/laztoum/.forgejo-runner.yaml</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -276,11 +278,11 @@ Forgejo instance; replace if re-registering.
 
 ```bash
 launchctl load ~/Library/LaunchAgents/io.forgejo.runner.plist
-# logs: tail -f /tmp/forgejo-runner-err.log
+tail -f /tmp/forgejo-runner-err.log
 ```
 
-Note: the runner may fail on the first few attempts at login before the network settles.
-KeepAlive restarts it automatically.
+Note: runner may fail the first few attempts at login before the network settles — KeepAlive
+handles restarts automatically.
 
 ---
 
