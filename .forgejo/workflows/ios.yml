@@ -12,7 +12,6 @@ on:
 jobs:
   build:
     runs-on: self-hosted
-    container: host
     steps:
       - name: Check runner
         run: echo "Runner is alive on $(uname -a)"
