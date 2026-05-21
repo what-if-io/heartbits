@@ -297,10 +297,46 @@ reliably in LaunchAgent context at login.
 </plist>
 ```
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>io.forgejo.runner</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Users/laztoum/bin/forgejo-runner</string>
+        <string>daemon</string>
+        <string>--config</string>
+        <string>/Users/laztoum/.forgejo-runner.yaml</string>
+    </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Users/laztoum/.nvm/versions/node/v22.15.1/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin</string>
+        <key>HOME</key>
+        <string>/Users/laztoum</string>
+    </dict>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/tmp/forgejo-runner.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/forgejo-runner-err.log</string>
+</dict>
+</plist>
+```
+
 ```bash
 launchctl load ~/Library/LaunchAgents/io.forgejo.runner.plist
 tail -f /tmp/forgejo-runner-err.log
 ```
+
+**PATH is critical** — LaunchAgents run with a stripped environment. Without it, `actions/checkout`
+fails with "Cannot find node in PATH". Set it explicitly to include nvm's node bin and Homebrew.
 
 Note: runner may fail the first few attempts at login before the network settles — KeepAlive
 handles restarts automatically.
