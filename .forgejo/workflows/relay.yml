@@ -1,0 +1,26 @@
+name: Relay Server
+
+on:
+  push:
+    paths:
+      - 'relay-server/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: relay-server/package-lock.json
+
+      - name: Install
+        working-directory: relay-server
+        run: npm ci
+
+      - name: Test
+        working-directory: relay-server
+        run: npm test

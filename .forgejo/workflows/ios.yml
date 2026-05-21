@@ -1,0 +1,37 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Heartbits/**'
+      - 'Heartbits Watch App/**'
+      - 'Heartbits.xcodeproj/**'
+
+jobs:
+  build:
+    runs-on: macos
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build iOS (no signing)
+        run: |
+          xcodebuild \
+            -project Heartbits.xcodeproj \
+            -scheme Heartbits \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Build watchOS (no signing)
+        run: |
+          xcodebuild \
+            -project Heartbits.xcodeproj \
+            -scheme "Heartbits Watch App" \
+            -destination 'generic/platform=watchOS Simulator' \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            build
