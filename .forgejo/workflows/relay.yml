@@ -1,6 +1,7 @@
 name: Relay Server
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'relay-server/**'
