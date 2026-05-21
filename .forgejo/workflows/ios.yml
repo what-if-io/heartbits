@@ -11,8 +11,11 @@ on:
 
 jobs:
   build:
-    runs-on: macos
+    runs-on: self-hosted
     steps:
+      - name: Check runner
+        run: echo "Runner is alive on $(uname -a)"
+
       - uses: actions/checkout@v4
 
       - name: Build iOS (no signing)
