@@ -74,3 +74,18 @@ server:
     #     - linux:host
     #     - ubuntu-latest:host
     #     - fedora:host
+
+    # ── Windows runner (desktop app builds) ───────────────────────────────────
+    # Pre-built binary available — no need to build from source:
+    #   https://code.forgejo.org/forgejo/runner/releases → forgejo-runner-x.x.x-windows-amd64.exe
+    # Run as a Windows Service via NSSM: https://nssm.cc
+    # Add `shell: bash` to workflow steps or use PowerShell syntax.
+    #
+    # heartbits-ci-windows:
+    #   url: http://192.168.1.12:3000
+    #   uuid: PASTE-UUID-FROM-FORGEJO-UI
+    #   token_url: file://C:/Users/YOU/ci-token.txt
+    #   labels:
+    #     - windows:host
+    #     - windows-latest:host
+    #     - self-hosted:host

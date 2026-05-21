@@ -1,0 +1,26 @@
+name: Desktop Build
+
+# Placeholder — uncomment when desktop targets are added to the project
+
+on:
+  workflow_dispatch:
+#  push:
+#    branches: [main]
+#    paths:
+#      - 'Heartbits Desktop/**'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        shell: bash
+        run: echo "TODO: Windows desktop build"
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: echo "TODO: Linux desktop build"
