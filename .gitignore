@@ -1,0 +1,7 @@
+.local/
+relay-server/node_modules/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+DerivedData/
+.claude/

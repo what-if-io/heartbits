@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HeartBits — relay test</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0 }
+  body {
+    background: #070711;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    padding: 24px;
+  }
+
+  h1 { font-size: 22px; font-weight: 300; letter-spacing: 0.04em }
+
+  /* ── BPM ring ── */
+  .ring-wrap { position: relative; width: 200px; height: 200px }
+  svg.ring { width: 100%; height: 100%; transform: rotate(-90deg) }
+  .ring-track { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 4 }
+  .ring-progress {
+    fill: none; stroke-width: 4; stroke-linecap: round;
+    stroke: url(#grad);
+    stroke-dasharray: 565;
+    stroke-dashoffset: 565;
+    transition: stroke-dashoffset 0.6s ease;
+  }
+  .bpm-label {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+  }
+  .bpm-num { font-size: 52px; font-weight: 100; line-height: 1 }
+  .bpm-unit { font-size: 12px; color: rgba(255,255,255,.4) }
+
+  /* ── Connect form ── */
+  .form { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 340px }
+  input {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+  input::placeholder { color: rgba(255,255,255,.28) }
+  input:focus { border-color: rgba(255,107,107,.6) }
+
+  button {
+    background: linear-gradient(135deg, #ff6b6b, #7b35de);
+    border: none; border-radius: 12px;
+    color: #fff; cursor: pointer;
+    font-size: 16px; font-weight: 500;
+    padding: 14px;
+    width: 100%;
+    transition: opacity .2s;
+  }
+  button:hover { opacity: .85 }
+  button:disabled { opacity: .35; cursor: default }
+
+  .send-row { display: flex; gap: 10px; width: 100%; max-width: 340px }
+  .send-row button { flex: 1 }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(255,107,107,.5);
+    color: #ff6b6b;
+  }
+  .btn-outline:hover { background: rgba(255,107,107,.1) }
+  .btn-outline.pulsing { animation: pulse-btn 0.6s ease }
+
+  /* ── Status / log ── */
+  .status {
+    font-size: 12px;
+    color: rgba(255,255,255,.35);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(255,255,255,.2);
+    transition: background .3s;
+  }
+  .dot.connected { background: #4ade80 }
+  .dot.connecting { background: #facc15; animation: blink 1s infinite }
+  .dot.error { background: #f87171 }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+  @keyframes pulse-btn { 0%,100%{transform:scale(1)} 50%{transform:scale(0.95)} }
+
+  .log {
+    width: 100%; max-width: 340px;
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
+    font-family: monospace;
+    padding: 12px;
+    height: 90px;
+    overflow-y: auto;
+    display: flex; flex-direction: column-reverse;
+  }
+</style>
+</head>
+<body>
+
+<h1>💓 HeartBits relay test</h1>
+
+<!-- BPM ring — shows last received beat -->
+<div class="ring-wrap">
+  <svg class="ring" viewBox="0 0 200 200">
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#ff6b6b"/>
+        <stop offset="100%" stop-color="#7b35de"/>
+      </linearGradient>
+    </defs>
+    <circle class="ring-track"    cx="100" cy="100" r="90"/>
+    <circle class="ring-progress" cx="100" cy="100" r="90" id="ringArc"/>
+  </svg>
+  <div class="bpm-label">
+    <span class="bpm-num" id="bpmNum">–</span>
+    <span class="bpm-unit">bpm received</span>
+  </div>
+</div>
+
+<!-- Connection form -->
+<div class="form">
+  <input id="roomInput"  placeholder="Room code  e.g. ABCD·EFGH" autocomplete="off" spellcheck="false"/>
+  <input id="tokenInput" placeholder="Token (leave blank if open mode)" type="password"/>
+  <button id="connectBtn" onclick="toggle()">Connect</button>
+</div>
+
+<div class="send-row">
+  <button class="btn-outline" id="sendOnce" onclick="sendBeat()" disabled>Send one beat</button>
+  <button class="btn-outline" id="sendAuto" onclick="toggleAuto()" disabled>Auto-send</button>
+</div>
+
+<div class="status">
+  <div class="dot" id="dot"></div>
+  <span id="statusText">disconnected</span>
+</div>
+
+<div class="log" id="log"></div>
+
+<script>
+const RELAY = 'wss://hb.what-if.io/'
+
+let ws = null
+let autoTimer = null
+let bpmSim = 72
+
+function log(msg) {
+  const el = document.getElementById('log')
+  const line = document.createElement('div')
+  line.textContent = new Date().toLocaleTimeString() + '  ' + msg
+  el.prepend(line)
+}
+
+function setStatus(state, text) {
+  document.getElementById('dot').className = 'dot ' + state
+  document.getElementById('statusText').textContent = text
+}
+
+function setBpm(bpm) {
+  document.getElementById('bpmNum').textContent = Math.round(bpm)
+  // map 40–180 bpm → ring fill
+  const pct = Math.min(Math.max((bpm - 40) / 140, 0), 1)
+  const circ = 2 * Math.PI * 90  // 565.48
+  document.getElementById('ringArc').style.strokeDashoffset = circ * (1 - pct)
+}
+
+function toggle() {
+  if (ws) { disconnect(); return }
+
+  let room = document.getElementById('roomInput').value.trim()
+  room = room.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
+  if (!room) { alert('Enter a room code'); return }
+
+  const token = document.getElementById('tokenInput').value.trim()
+  let url = RELAY + room
+  if (token) url += '?token=' + encodeURIComponent(token)
+
+  setStatus('connecting', 'connecting…')
+  document.getElementById('connectBtn').textContent = 'Disconnect'
+  log('connecting to ' + room)
+
+  ws = new WebSocket(url)
+
+  ws.onopen = () => {
+    setStatus('connected', 'connected — ' + room)
+    log('✓ connected')
+    document.getElementById('sendOnce').disabled = false
+    document.getElementById('sendAuto').disabled = false
+  }
+
+  ws.onmessage = async (e) => {
+    const text = e.data instanceof Blob ? await e.data.text() : e.data
+    try {
+      const hb = JSON.parse(text)
+      log(`♥ ${Math.round(hb.bpm)} bpm  rr=${Math.round(hb.rrIntervalMs)}ms  from ${hb.senderAddress}`)
+      setBpm(hb.bpm)
+    } catch {
+      log('raw: ' + text)
+    }
+  }
+
+  ws.onerror = () => {
+    setStatus('error', 'error')
+    log('✗ connection error')
+  }
+
+  ws.onclose = (e) => {
+    ws = null
+    stopAuto()
+    setStatus('', 'disconnected')
+    document.getElementById('connectBtn').textContent = 'Connect'
+    document.getElementById('sendOnce').disabled = true
+    document.getElementById('sendAuto').disabled = true
+    log('disconnected ' + (e.reason || ''))
+  }
+}
+
+function disconnect() {
+  stopAuto()
+  ws?.close()
+}
+
+function sendBeat() {
+  if (!ws || ws.readyState !== 1) return
+  // drift bpm naturally between 60-90
+  bpmSim += (Math.random() - 0.48) * 2
+  bpmSim = Math.min(90, Math.max(60, bpmSim))
+  const bpm = Math.round(bpmSim)
+  const rr  = Math.round((60000 / bpm) * (0.95 + Math.random() * 0.1))
+  const hb = {
+    id: crypto.randomUUID(),
+    senderAddress: '0xANDR',
+    recipientAddress: '0xAPPL',
+    bpm, rrIntervalMs: rr,
+    timestamp: new Date().toISOString()
+  }
+  ws.send(JSON.stringify(hb))
+  const btn = document.getElementById('sendOnce')
+  btn.classList.add('pulsing')
+  setTimeout(() => btn.classList.remove('pulsing'), 600)
+  log(`♥ sent ${bpm} bpm`)
+}
+
+function toggleAuto() {
+  if (autoTimer) { stopAuto(); return }
+  const btn = document.getElementById('sendAuto')
+  btn.textContent = 'Stop auto'
+  sendBeat()
+  autoTimer = setInterval(() => sendBeat(), 850)
+}
+
+function stopAuto() {
+  if (!autoTimer) return
+  clearInterval(autoTimer)
+  autoTimer = null
+  document.getElementById('sendAuto').textContent = 'Auto-send'
+}
+</script>
+</body>
+</html>
