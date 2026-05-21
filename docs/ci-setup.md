@@ -174,14 +174,24 @@ sudo curl -Lo /usr/local/bin/forgejo-runner \
   https://code.forgejo.org/forgejo/runner/releases/download/v12.10.1/forgejo-runner-12.10.1-linux-amd64
 sudo chmod +x /usr/local/bin/forgejo-runner
 
-# Get token: Admin panel → Actions → Runners → Create new runner
-sudo -u git forgejo-runner register \
-  --no-interactive \
-  --instance "http://localhost:3000" \
-  --token "PASTE_TOKEN" \
-  --name "fedora-linux" \
-  --labels "linux,ubuntu-latest,fedora" \
-  --executor "auto"
+# In Forgejo UI: Admin panel → Actions → Runners → Create new runner
+# Copy the UUID and Token shown, then:
+echo "PASTE_TOKEN" > /home/git/runner-token
+sudo chown git:git /home/git/runner-token && sudo chmod 600 /home/git/runner-token
+
+sudo -u git forgejo-runner generate-config > /home/git/.forgejo-runner.yaml
+sudo chown git:git /home/git/.forgejo-runner.yaml
+
+# Edit /home/git/.forgejo-runner.yaml — add at the bottom under connections:
+#   connections:
+#     heartbits-ci:
+#       url: http://localhost:3000
+#       uuid: PASTE_UUID_FROM_UI
+#       token_url: file:///home/git/runner-token
+#       labels:
+#         - linux
+#         - ubuntu-latest
+#         - fedora
 
 sudo tee /etc/systemd/system/forgejo-runner.service << 'EOF'
 [Unit]
@@ -192,7 +202,7 @@ After=network.target forgejo.service
 User=git
 Group=git
 WorkingDirectory=/home/git
-ExecStart=/usr/local/bin/forgejo-runner daemon
+ExecStart=/usr/local/bin/forgejo-runner daemon --config /home/git/.forgejo-runner.yaml
 Restart=always
 RestartSec=5s
 Environment=HOME=/home/git
@@ -220,17 +230,29 @@ go build -o ~/bin/forgejo-runner .
 
 ### Registration — config file approach (v12+)
 
-`register` is deprecated in v12+. Use a config file instead.
+`register` is fully deprecated in v12+. The UI creates the runner entry and hands you credentials.
 
-1. Create a runner token in Forgejo: **Admin panel → Actions → Runners → Create new runner**
-2. Save the token: `echo "PASTE_TOKEN" > ~/Projects/ci-token`
-3. Generate config: `~/bin/forgejo-runner generate-config > ~/.forgejo-runner.yaml`
-4. Edit `~/.forgejo-runner.yaml` — find the `connections:` line at the bottom and add:
+**In Forgejo UI: Admin panel → Actions → Runners → Create new runner**
+
+The page shows you both a **UUID** and a **Token** — copy both immediately.
+
+```bash
+echo "PASTE_TOKEN_FROM_UI" > ~/Projects/ci-token
+```
+
+Generate the config and add the connection:
+
+```bash
+~/bin/forgejo-runner generate-config > ~/.forgejo-runner.yaml
+```
+
+Edit `~/.forgejo-runner.yaml` — find `connections:` at the bottom and add:
 
 ```yaml
   connections:
     heartbits-ci:
       url: http://192.168.1.12:3000
+      uuid: PASTE_UUID_FROM_UI
       token_url: file:///Users/laztoum/Projects/ci-token
       labels:
         - macos
@@ -238,10 +260,9 @@ go build -o ~/bin/forgejo-runner .
         - self-hosted
 ```
 
-Labels must be a YAML list — a comma-separated string registers as one label and breaks matching.
-
-On first start the runner auto-registers and stores its UUID in the config. Do not add a `uuid`
-field manually — let it be generated.
+**Critical**: labels must be a YAML list — a comma-separated string registers as a single label
+and breaks `runs-on` matching in workflows. The UUID must come from the Forgejo UI; a
+self-generated UUID will be rejected as "unregistered runner".
 
 ### LaunchAgent
 
