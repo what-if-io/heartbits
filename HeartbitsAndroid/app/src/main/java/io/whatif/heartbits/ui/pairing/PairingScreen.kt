@@ -368,25 +368,27 @@ private fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Composable
 private fun GradientQRCode(content: String, modifier: Modifier = Modifier) {
-    val bitmap = remember(content) {
-        try {
-            val size = 512
-            val hints = mapOf(EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M)
-            val matrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints)
-            val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-            for (x in 0 until size) {
-                for (y in 0 until size) {
-                    if (matrix[x, y]) {
-                        val t = (x.toFloat() / size + y.toFloat() / size) / 2f
-                        val color = lerp(HB.Coral, HB.Purple, t)
-                        bmp.setPixel(x, y, color.toArgb())
-                    } else {
-                        bmp.setPixel(x, y, HB.Background.toArgb())
-                    }
+    // Runs on IO — bulk setPixels() instead of 262k setPixel() calls on main thread
+    val bitmap by produceState<Bitmap?>(initialValue = null, content) {
+        value = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val size = 256
+                val hints = mapOf(EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M)
+                val matrix = QRCodeWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints)
+                val coralArgb = HB.Coral.toArgb()
+                val purpleArgb = HB.Purple.toArgb()
+                val bgArgb = HB.Background.toArgb()
+                val pixels = IntArray(size * size) { i ->
+                    val x = i % size
+                    val y = i / size
+                    if (matrix[x, y]) lerp(coralArgb, purpleArgb, (x + y).toFloat() / (size * 2))
+                    else bgArgb
                 }
-            }
-            bmp
-        } catch (_: Exception) { null }
+                val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+                bmp.setPixels(pixels, 0, size, 0, 0, size, size)
+                bmp
+            } catch (_: Exception) { null }
+        }
     }
 
     bitmap?.let {
@@ -394,9 +396,9 @@ private fun GradientQRCode(content: String, modifier: Modifier = Modifier) {
     }
 }
 
-private fun lerp(a: Color, b: Color, t: Float): Color = Color(
-    red   = a.red   + (b.red   - a.red)   * t,
-    green = a.green + (b.green - a.green) * t,
-    blue  = a.blue  + (b.blue  - a.blue)  * t,
-    alpha = 1f
-)
+private fun lerp(a: Int, b: Int, t: Float): Int {
+    val r = ((a shr 16 and 0xFF) + t * ((b shr 16 and 0xFF) - (a shr 16 and 0xFF))).toInt()
+    val g = ((a shr 8  and 0xFF) + t * ((b shr 8  and 0xFF) - (a shr 8  and 0xFF))).toInt()
+    val bl = ((a and 0xFF)       + t * ((b and 0xFF)         - (a and 0xFF))).toInt()
+    return (0xFF shl 24) or (r shl 16) or (g shl 8) or bl
+}
