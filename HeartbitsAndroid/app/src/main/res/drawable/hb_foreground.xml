@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Heart shape sized for the adaptive icon safe zone (72dp centred in 108dp canvas).
+  Gradient runs coral → purple, top-left to bottom-right — matches iOS brand.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:pathData="
+          M54,90
+          C20,72 6,54 6,38
+          C6,22 18,12 30,12
+          C38,12 46,17 54,26
+          C62,17 70,12 78,12
+          C90,12 102,22 102,38
+          C102,54 88,72 54,90 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="6"
+                android:startY="12"
+                android:endX="102"
+                android:endY="90"
+                android:type="linear">
+                <item android:offset="0"   android:color="#FFFF6B6B" />
+                <item android:offset="1"   android:color="#FF7B35DE" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+</vector>
