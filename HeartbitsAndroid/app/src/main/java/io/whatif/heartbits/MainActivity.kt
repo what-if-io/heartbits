@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.whatif.heartbits.data.BondStore
@@ -174,7 +175,7 @@ private fun BondSheet(
             Spacer(Modifier.height(16.dp))
 
             if (vm.partnerName.isNotEmpty()) {
-                Text(vm.partnerName, fontSize = 26.sp, fontWeight = FontWeight.ExtraLight, color = Color.White)
+                Text(vm.partnerName, fontSize = 26.sp, fontWeight = FontWeight(200), color = Color.White)
             }
             Text(BondStore.display(roomId), fontSize = 15.sp, color = Color.White.copy(alpha = 0.4f), modifier = Modifier.padding(top = 4.dp))
 
@@ -221,6 +222,3 @@ private fun BondSheet(
         )
     }
 }
-
-private val androidx.compose.ui.text.font.FontWeight.Companion.ExtraLight
-    get() = androidx.compose.ui.text.font.FontWeight(200)

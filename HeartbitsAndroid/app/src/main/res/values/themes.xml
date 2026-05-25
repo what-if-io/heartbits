@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--suppress ALL -->
 <resources>
-    <style name="Theme.Heartbits" parent="android:Theme.Material.NoTitleBar">
+    <style name="Theme.Heartbits" parent="android:Theme.DeviceDefault.NoActionBar">
         <item name="android:windowBackground">#FF070710</item>
         <item name="android:statusBarColor">#FF070710</item>
         <item name="android:navigationBarColor">#FF070710</item>
