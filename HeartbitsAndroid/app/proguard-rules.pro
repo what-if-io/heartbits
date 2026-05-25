@@ -1,0 +1,2 @@
+-keep class io.whatif.heartbits.data.** { *; }
+-keepattributes *Annotation*
