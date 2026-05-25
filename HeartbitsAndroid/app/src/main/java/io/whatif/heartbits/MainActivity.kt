@@ -1,3 +1,5 @@
+@file:Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+
 package io.whatif.heartbits
 
 import android.content.Intent
@@ -15,6 +17,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -141,7 +144,7 @@ private fun RootScreen(bondStore: BondStore, roomId: String, partnerName: String
     }
 
     if (showSheet) {
-        BondSheet(vm = vm, bondStore = bondStore, roomId = roomId, onDismiss = { showSheet = false })
+        BondSheet(vm = vm, bondStore = bondStore, roomId = roomId, onDismiss = { })
     }
 }
 
@@ -167,7 +170,7 @@ private fun BondSheet(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 28.dp).padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("♥", fontSize = 32.sp, color = HB.Coral)
+            Icon(Icons.Filled.Favorite, contentDescription = null, tint = HB.Coral, modifier = Modifier.size(32.dp))
             Spacer(Modifier.height(16.dp))
 
             if (vm.partnerName.isNotEmpty()) {
@@ -201,7 +204,7 @@ private fun BondSheet(
 
     if (confirmUnpair) {
         AlertDialog(
-            onDismissRequest = { confirmUnpair = false },
+            onDismissRequest = { },
             title = { Text("Change partner?") },
             text = { Text("You'll need to create or join a new bond.") },
             confirmButton = {
@@ -212,7 +215,7 @@ private fun BondSheet(
                 }) { Text("Unpair", color = Color.Red) }
             },
             dismissButton = {
-                TextButton(onClick = { confirmUnpair = false }) { Text("Cancel") }
+                TextButton(onClick = { }) { Text("Cancel") }
             },
             containerColor = HB.Background
         )

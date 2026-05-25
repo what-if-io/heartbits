@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--suppress ALL -->
 <resources>
     <style name="Theme.Heartbits" parent="android:Theme.Material.NoTitleBar">
         <item name="android:windowBackground">#FF070710</item>

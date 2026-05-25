@@ -11,9 +11,6 @@ object HB {
     val Magenta    = Color(0xFFE81F8C)
 }
 
-val brandGradient: Brush
-    get() = Brush.horizontalGradient(listOf(HB.Coral, HB.Purple))
-
 val brandGradientDiag: Brush
     get() = Brush.linearGradient(
         colors = listOf(HB.Coral, HB.Purple),

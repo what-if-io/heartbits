@@ -9,7 +9,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,6 +17,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -119,11 +120,11 @@ private fun IdleView(onCreate: () -> Unit, onJoin: () -> Unit) {
     ) {
         Spacer(Modifier.weight(1f))
 
-        Text(
-            text = "♥",
-            fontSize = if (pulse) 84.sp else 72.sp,
-            color = HB.Coral,
-            modifier = Modifier
+        Icon(
+            imageVector = Icons.Filled.Favorite,
+            contentDescription = null,
+            tint = HB.Coral,
+            modifier = Modifier.size(if (pulse) 84.dp else 72.dp)
         )
 
         Spacer(Modifier.height(34.dp))
@@ -253,7 +254,7 @@ private fun JoiningView(
         BackButton(onClick = onBack, modifier = Modifier.padding(start = 0.dp, top = 56.dp).fillMaxWidth())
         Spacer(Modifier.weight(1f))
 
-        Text("♥", fontSize = 52.sp, color = HB.Coral)
+        Icon(Icons.Filled.Favorite, contentDescription = null, tint = HB.Coral, modifier = Modifier.size(52.dp))
         Spacer(Modifier.height(22.dp))
         Text("Join a bond", fontSize = 24.sp, fontWeight = FontWeight.Thin, color = Color.White)
         Text("Enter the code your partner shared", fontSize = 13.sp, color = Color.White.copy(alpha = 0.5f), modifier = Modifier.padding(top = 6.dp))
