@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  Heart shape sized for the adaptive icon safe zone (72dp centred in 108dp canvas).
-  Gradient runs coral → purple, top-left to bottom-right — matches iOS brand.
--->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
@@ -10,21 +6,36 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
+    <!--
+      ECG waveform that morphs into the top of a heart — matches the iOS brand mark.
+      Single continuous stroke, coral→purple gradient left-to-right.
+    -->
     <path
+        android:fillColor="@android:color/transparent"
+        android:strokeWidth="5.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
         android:pathData="
-          M54,90
-          C20,72 6,54 6,38
-          C6,22 18,12 30,12
-          C38,12 46,17 54,26
-          C62,17 70,12 78,12
-          C90,12 102,22 102,38
-          C102,54 88,72 54,90 Z">
-        <aapt:attr name="android:fillColor">
+          M 10,64
+          L 27,64
+          C 28,64 29,57 32,57
+          C 35,57 36,64 37,64
+          L 38,70
+          L 43,32
+          L 47,74
+          C 49,69 52,64 56,64
+          C 58,64 60,58 62,57
+          C 64,56 66,64 69,64
+          C 70,58 73,40 79,38
+          C 84,36 84,50 84,54
+          C 84,50 84,36 89,40
+          C 95,44 100,60 101,65">
+        <aapt:attr name="android:strokeColor">
             <gradient
-                android:startX="6"
-                android:startY="12"
-                android:endX="102"
-                android:endY="90"
+                android:startX="10"
+                android:startY="64"
+                android:endX="101"
+                android:endY="64"
                 android:type="linear">
                 <item android:offset="0"   android:color="#FFFF6B6B" />
                 <item android:offset="1"   android:color="#FF7B35DE" />

@@ -9,7 +9,7 @@
         android:icon="@mipmap/hb"
         android:roundIcon="@mipmap/hb_round"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Heartbits"
+        android:theme="@style/Theme.Heartbits.Splash"
         android:supportsRtl="true">
 
         <activity
