@@ -13,6 +13,7 @@ import okhttp3.Request
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
+import okio.ByteString
 import java.util.concurrent.TimeUnit
 
 class WebSocketRelay(
@@ -42,6 +43,10 @@ class WebSocketRelay(
             try {
                 messageHandler?.invoke(json.decodeFromString(text))
             } catch (_: Exception) {}
+        }
+
+        override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
+            onMessage(webSocket, bytes.utf8())
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {

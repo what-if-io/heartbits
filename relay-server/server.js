@@ -89,11 +89,11 @@ wss.on('connection', (ws, req) => {
     if (ws.readyState === 1 /* OPEN */) ws.ping()
   }, PING_INTERVAL_MS)
 
-  ws.on('message', (data) => {
+  ws.on('message', (data, isBinary) => {
     let forwarded = 0
     for (const peer of room) {
       if (peer !== ws && peer.readyState === 1 /* OPEN */) {
-        peer.send(data)
+        peer.send(data, { binary: isBinary })
         forwarded++
       }
     }
