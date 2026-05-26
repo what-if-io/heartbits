@@ -22,17 +22,27 @@ import io.whatif.heartbits.ui.HeartBitsViewModel
 import io.whatif.heartbits.ui.send.Flatline
 import io.whatif.heartbits.ui.send.HeartbeatWaveform
 import io.whatif.heartbits.ui.theme.HB
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun FeelScreen(vm: HeartBitsViewModel) {
     val partnerBPM by vm.partnerBPM.collectAsState()
     val lastReceived by vm.lastReceived.collectAsState()
 
-    // Signal is "live" if a beat arrived within the last 10 seconds
-    val hasSignal = lastReceived?.let {
-        System.currentTimeMillis() - it < TimeUnit.SECONDS.toMillis(10)
-    } ?: false
+    // Signal is "live" if a beat arrived within the last 10 seconds.
+    // Uses a LaunchedEffect that re-checks every second so hasSignal goes false
+    // after the window expires without requiring an external recomposition trigger.
+    var hasSignal by remember { mutableStateOf(false) }
+    LaunchedEffect(lastReceived) {
+        if (lastReceived == null) {
+            hasSignal = false
+            return@LaunchedEffect
+        }
+        hasSignal = true
+        while (System.currentTimeMillis() - lastReceived!! < 10_000L) {
+            kotlinx.coroutines.delay(1_000)
+        }
+        hasSignal = false
+    }
 
     // Bloom flash on each beat
     var bloomAlpha by remember { mutableFloatStateOf(0f) }

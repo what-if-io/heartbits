@@ -147,7 +147,7 @@ private fun RootScreen(bondStore: BondStore, roomId: String, partnerName: String
     }
 
     if (showSheet) {
-        BondSheet(vm = vm, bondStore = bondStore, roomId = roomId, onDismiss = { })
+        BondSheet(vm = vm, bondStore = bondStore, roomId = roomId, onDismiss = { showSheet = false })
     }
 }
 
@@ -207,7 +207,7 @@ private fun BondSheet(
 
     if (confirmUnpair) {
         AlertDialog(
-            onDismissRequest = { },
+            onDismissRequest = { confirmUnpair = false },
             title = { Text("Change partner?") },
             text = { Text("You'll need to create or join a new bond.") },
             confirmButton = {
@@ -218,7 +218,7 @@ private fun BondSheet(
                 }) { Text("Unpair", color = Color.Red) }
             },
             dismissButton = {
-                TextButton(onClick = { }) { Text("Cancel") }
+                TextButton(onClick = { confirmUnpair = false }) { Text("Cancel") }
             },
             containerColor = HB.Background
         )

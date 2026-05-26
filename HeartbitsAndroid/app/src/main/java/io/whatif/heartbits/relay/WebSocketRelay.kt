@@ -72,6 +72,8 @@ class WebSocketRelay(
         scope.cancel()
         socket?.close(1000, "Going away")
         socket = null
+        client.dispatcher.executorService.shutdown()
+        client.connectionPool.evictAll()
     }
 
     private fun connect() {

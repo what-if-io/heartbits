@@ -3,6 +3,7 @@ package io.whatif.heartbits.health
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.sin
@@ -34,5 +35,6 @@ class HeartRateReader(private val onHeartRate: (Double) -> Unit) {
     fun stop() {
         job?.cancel()
         job = null
+        scope.cancel()
     }
 }
