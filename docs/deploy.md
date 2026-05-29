@@ -189,6 +189,18 @@ curl -sf -X POST "$AUTH/admin/v1/policies/label/_activate" \
   -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' -d '{}'
 ```
 
+### Fixing opaque access tokens on a live instance
+
+If the API rejects access tokens with `JWT verification failed: Invalid Compact JWS`,
+Zitadel is issuing opaque tokens instead of JWTs. Fresh deploys via `bootstrap.sh` set
+the correct type, but earlier installs need a one-shot patch:
+
+```bash
+ssh root@YOUR_SERVER_IP
+cd ~/deploy
+./fix-jwt-tokens.sh   # finds the heartbits-web app, switches accessTokenType → JWT, restarts api+web
+```
+
 ---
 
 ## Environment variables reference

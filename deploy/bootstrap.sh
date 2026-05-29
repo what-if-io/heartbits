@@ -88,6 +88,7 @@ PROJECT_ID=$(echo "$PROJECT_RESP" | python3 -c "import sys,json; print(json.load
 echo "Project: $PROJECT_ID"
 
 # ── Create PKCE OIDC app ──────────────────────────────────────────────────────
+# Note: Zitadel v4 OIDC config update path is /apps/{appId}/oidc_config (not /apps/oidc/{appId})
 APP_RESP=$(curl -sf -X POST "${AUTH_URL}/management/v1/projects/${PROJECT_ID}/apps/oidc" \
   -H "Authorization: Bearer $TOKEN" \
   -H "x-zitadel-orgid: $ORG_ID" \
@@ -102,7 +103,7 @@ APP_RESP=$(curl -sf -X POST "${AUTH_URL}/management/v1/projects/${PROJECT_ID}/ap
     \"authMethodType\": \"OIDC_AUTH_METHOD_TYPE_NONE\",
     \"version\": \"OIDC_VERSION_1_0\",
     \"devMode\": false,
-    \"accessTokenType\": \"OIDC_TOKEN_TYPE_BEARER\",
+    \"accessTokenType\": \"OIDC_TOKEN_TYPE_JWT\",
     \"idTokenRoleAssertions\": false,
     \"idTokenUserinfoAssertion\": false,
     \"clockSkew\": \"0s\",

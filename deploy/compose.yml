@@ -230,7 +230,7 @@ services:
     volumes:
       - ../heartbits-web:/app
       - heartbits-web-modules:/app/node_modules
-    command: sh -c "bun install --frozen-lockfile && bun run build/index.js"
+    command: sh -c "bun install --frozen-lockfile && bun run build && bun run build/index.js"
     environment:
       PORT:                     "3000"
       ORIGIN:                   https://${APP_DOMAIN}

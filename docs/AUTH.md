@@ -200,3 +200,5 @@ The API validates it independently using Zitadel's JWKS endpoint.
 | `login-client.pat` is JWE | Cannot be used as a Bearer token externally |
 | Email verification required on first login | Verify directly via event store insert (see above) |
 | Device code 5-min expiry | `bootstrap-heartbits.sh` must be run while browser is available |
+| Opaque access tokens by default | Set `"accessTokenType": "OIDC_TOKEN_TYPE_JWT"` on app create — API uses `jwtVerify` and rejects opaque tokens with "Invalid Compact JWS" |
+| OIDC config update path differs from create | Update via `PUT /management/v1/projects/{p}/apps/{a}/oidc_config` (not `/apps/oidc/{a}`); `fix-jwt-tokens.sh` patches a live instance |
