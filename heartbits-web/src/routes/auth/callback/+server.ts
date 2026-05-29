@@ -111,6 +111,19 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
     });
   }
 
+  // 8b. Bootstrap user row in app.users / app.profiles (idempotent)
+  // Small wait to allow the user to land; non-fatal if API is unavailable.
+  const API_BASE = process.env.API_BASE_INTERNAL ?? 'http://heartbits-api:3100';
+  try {
+    await fetch(`${API_BASE}/api/v1/me/init`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${sessionData.accessToken}` },
+      signal: AbortSignal.timeout(2000),
+    });
+  } catch (e) {
+    console.warn('[auth/callback] me/init failed (non-fatal):', e instanceof Error ? e.message : e);
+  }
+
   // 9. Redirect to original destination or /discover
   // State format: "randomState:encodedNextPath" or just "randomState"
   const colonIdx = expectedState.indexOf(':');

@@ -160,6 +160,7 @@ services:
       ZITADEL_JWKS_URL:       https://${AUTH_DOMAIN}/.well-known/openid-configuration
       ZITADEL_CLIENT_ID:      ${HEARTBITS_CLIENT_ID}
       HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
+      RELAY_DOMAIN:           ${RELAY_DOMAIN}
       MINIO_ENDPOINT:         minio:9000
       MINIO_BUCKET:           heartbits-media
       MINIO_ACCESS_KEY:       ${MINIO_USER:-heartbits}
@@ -206,6 +207,7 @@ services:
       SESSION_SECRET:           ${SESSION_SECRET}
       STAGING_PASSWORD:         ${STAGING_PASSWORD:-}
       PUBLIC_API_BASE:          https://${APP_DOMAIN}/api
+      API_BASE_INTERNAL:        http://heartbits-api:3100
       MONITOR_URL:              http://heartbits-monitor:4000
       WEB_URL:                  https://${APP_DOMAIN}
       AUTH_URL:                 https://${AUTH_DOMAIN}/debug/healthz
@@ -226,9 +228,15 @@ services:
       DB_PATH:   /data/heartbits.db
       INTERVAL:  "60000"
       # Internal Docker service URLs — avoids hairpin NAT
-      WEB_URL:   http://heartbits-web:3000
-      AUTH_URL:  http://zitadel:8180/debug/healthz
-      RELAY_URL: http://heartbits-relay:8765
+      WEB_URL:      http://heartbits-web:3000
+      AUTH_URL:     http://zitadel:8180/debug/healthz
+      RELAY_URL:    http://heartbits-relay:8765
+      API_URL:      http://heartbits-api:3100/health
+      # Public domain names — used for display on the status page
+      APP_DOMAIN:   ${APP_DOMAIN}
+      AUTH_DOMAIN:  ${AUTH_DOMAIN}
+      RELAY_DOMAIN: ${RELAY_DOMAIN}
+      API_DOMAIN:   ${API_DOMAIN:-}
     networks: [internal]
     restart: unless-stopped
 

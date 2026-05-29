@@ -47,15 +47,28 @@ db.exec(`
 
 // ── Services — URLs from environment ────────────────────────────────────────
 
-const WEB_URL   = process.env.WEB_URL   ?? 'http://heartbits-web:3000';
-const AUTH_URL  = process.env.AUTH_URL  ?? '';
-const RELAY_URL = process.env.RELAY_URL ?? '';
+const WEB_URL    = process.env.WEB_URL   ?? 'http://heartbits-web:3000';
+const AUTH_URL   = process.env.AUTH_URL  ?? '';
+const RELAY_URL  = process.env.RELAY_URL ?? '';
+const API_URL    = process.env.API_URL   ?? '';
 
-const SERVICES = [
-  { id: 'web',   name: 'Web',   url: WEB_URL,                      noRedirect: false },
-  ...(AUTH_URL  ? [{ id: 'auth',  name: 'Auth',  url: AUTH_URL,   noRedirect: false }] : []),
-  ...(RELAY_URL ? [{ id: 'relay', name: 'Relay', url: RELAY_URL,  noRedirect: false }] : []),
-] as const;
+// Public display names (shown on status page instead of internal Docker hostnames)
+const APP_DOMAIN   = process.env.APP_DOMAIN   ?? '';
+const AUTH_DOMAIN  = process.env.AUTH_DOMAIN  ?? '';
+const RELAY_DOMAIN = process.env.RELAY_DOMAIN ?? '';
+const API_DOMAIN   = process.env.API_DOMAIN   ?? '';
+
+interface ServiceDef {
+  id: string; name: string; url: string;
+  desc: string | null; noRedirect: boolean;
+}
+
+const SERVICES: ServiceDef[] = [
+  { id: 'web',   name: 'Web',   url: WEB_URL,  desc: APP_DOMAIN   || null, noRedirect: false },
+  ...(AUTH_URL  ? [{ id: 'auth',  name: 'Auth',  url: AUTH_URL,  desc: AUTH_DOMAIN  || null, noRedirect: false }] : []),
+  ...(RELAY_URL ? [{ id: 'relay', name: 'Relay', url: RELAY_URL, desc: RELAY_DOMAIN || null, noRedirect: false }] : []),
+  ...(API_URL   ? [{ id: 'api',   name: 'API',   url: API_URL,   desc: API_DOMAIN   || null, noRedirect: false }] : []),
+];
 
 // ── Ping ─────────────────────────────────────────────────────────────────────
 
@@ -159,7 +172,7 @@ function buildServicesPayload() {
     return {
       id:        svc.id,
       name:      svc.name,
-      desc:      svc.url.replace(/^https?:\/\//, '').replace(/\/.*$/, ''),
+      desc:      svc.desc ?? svc.url.replace(/^https?:\/\//, '').replace(/\/.*$/, ''),
       state:     latest?.status ?? 'unknown',
       latencyMs: latest?.latency_ms ?? null,
       uptime:    uptimeRow?.pct ?? null,

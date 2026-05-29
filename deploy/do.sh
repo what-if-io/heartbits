@@ -310,6 +310,10 @@ echo "── Starting HeartBits stack ──────────────
 cd "${_MY_DIR}"
 docker compose -f compose.yml up -d
 
+echo ""
+echo "── Applying DB migrations ───────────────────────────────────────────────────"
+"${_MY_DIR}/migrate.sh"
+
 ##################################################################################################
 # If already bootstrapped, just show status and exit
 ##################################################################################################

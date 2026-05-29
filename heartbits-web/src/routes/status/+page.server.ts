@@ -58,31 +58,35 @@ function seededHistory(seed: string): ('ok' | 'degraded' | 'down')[] {
 const WEB_URL   = process.env.WEB_URL   ?? '';
 const AUTH_URL  = process.env.AUTH_URL  ?? '';
 const RELAY_URL = process.env.RELAY_URL ?? '';
+const API_BASE  = process.env.API_BASE_INTERNAL ?? '';
 
 async function liveCheck(): Promise<{ services: Service[]; incidents: Incident[]; fromMonitor: false }> {
   const toState = ({ ok, ms }: { ok: boolean; ms: number }): ServiceState =>
     !ok ? 'down' : ms > 3000 ? 'degraded' : 'operational';
 
+  const apiHealthUrl = API_BASE ? `${API_BASE}/health` : '';
   const checks = await Promise.allSettled([
-    WEB_URL   ? livePing(WEB_URL)   : Promise.resolve({ ok: true, ms: -1 }),
-    AUTH_URL  ? livePing(AUTH_URL)  : Promise.resolve({ ok: true, ms: -1 }),
-    RELAY_URL ? livePing(RELAY_URL) : Promise.resolve({ ok: true, ms: -1 }),
+    WEB_URL      ? livePing(WEB_URL)      : Promise.resolve({ ok: true,  ms: -1 }),
+    AUTH_URL     ? livePing(AUTH_URL)     : Promise.resolve({ ok: true,  ms: -1 }),
+    RELAY_URL    ? livePing(RELAY_URL)    : Promise.resolve({ ok: true,  ms: -1 }),
+    apiHealthUrl ? livePing(apiHealthUrl) : Promise.resolve({ ok: false, ms: -1 }),
   ]);
   const get = (r: typeof checks[0]) => r.status === 'fulfilled' ? r.value : { ok: false, ms: -1 };
-  const [web, auth, relay] = checks.map(get);
+  const [web, auth, relay, api] = checks.map(get);
 
   const webDomain   = WEB_URL   ? new URL(WEB_URL).hostname   : 'heartbits.what-if.io';
   const authDomain  = AUTH_URL  ? new URL(AUTH_URL).hostname  : 'auth.heartbits.what-if.io';
   const relayDomain = RELAY_URL ? new URL(RELAY_URL).hostname : 'relay.heartbits.what-if.io';
+  const apiDomain   = 'api.heartbits.what-if.io';
 
   return {
     fromMonitor: false,
     incidents: [],
     services: [
-      { id: 'web',   name: 'Web',   desc: webDomain,                  state: toState(web),   latencyMs: web.ms   > 0 ? web.ms   : null, uptime: null, history: seededHistory('web')   },
-      { id: 'auth',  name: 'Auth',  desc: authDomain,                 state: toState(auth),  latencyMs: auth.ms  > 0 ? auth.ms  : null, uptime: null, history: seededHistory('auth')  },
-      { id: 'relay', name: 'Relay', desc: relayDomain,                state: toState(relay), latencyMs: relay.ms > 0 ? relay.ms : null, uptime: null, history: seededHistory('relay') },
-      { id: 'api',   name: 'API',   desc: `api.${webDomain}`,         state: 'planned',      latencyMs: null,                            uptime: null, history: seededHistory('api')   },
+      { id: 'web',   name: 'Web',   desc: webDomain,   state: toState(web),   latencyMs: web.ms   > 0 ? web.ms   : null, uptime: null, history: seededHistory('web')   },
+      { id: 'auth',  name: 'Auth',  desc: authDomain,  state: toState(auth),  latencyMs: auth.ms  > 0 ? auth.ms  : null, uptime: null, history: seededHistory('auth')  },
+      { id: 'relay', name: 'Relay', desc: relayDomain, state: toState(relay), latencyMs: relay.ms > 0 ? relay.ms : null, uptime: null, history: seededHistory('relay') },
+      { id: 'api',   name: 'API',   desc: apiDomain,   state: apiHealthUrl ? toState(api) : 'planned', latencyMs: api.ms > 0 ? api.ms : null, uptime: null, history: seededHistory('api') },
     ],
   };
 }
@@ -105,11 +109,7 @@ export const load: PageServerLoad = async () => {
         checkedAt:   data.checkedAt,
         fromMonitor: true,
         incidents:   data.incidents ?? [],
-        services: [
-          ...data.services.map(s => ({ ...s, state: s.state as ServiceState })),
-          // API is not monitored yet — always planned
-          { id: 'api', name: 'API', desc: 'api.heartbits.what-if.io', state: 'planned' as ServiceState, latencyMs: null, uptime: null, history: Array<'ok'>(90).fill('ok') },
-        ],
+        services:    data.services.map(s => ({ ...s, state: s.state as ServiceState })),
       };
     }
   } catch {
