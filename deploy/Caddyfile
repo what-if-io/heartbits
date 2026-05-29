@@ -62,11 +62,9 @@
 }
 
 # ── Status page subdomain ─────────────────────────────────────────────────────
-# To enable: add STATUS_DOMAIN=status.yourdomain.com in .env and uncomment:
-# {$STATUS_DOMAIN} {
-#     redir https://{$APP_DOMAIN}/status permanent
-# }
-# The status page is always reachable at https://{APP_DOMAIN}/status
+{$STATUS_DOMAIN} {
+	redir https://{$APP_DOMAIN}/status permanent
+}
 
 # ── Internal HTTP proxy on :8180 ───────────────────────────────────────────────
 # Not exposed publicly (Caddy only publishes 80/443 externally).

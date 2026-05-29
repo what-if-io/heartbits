@@ -17,10 +17,11 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     environment:
-      ACME_EMAIL:   ${ACME_EMAIL}
-      APP_DOMAIN:   ${APP_DOMAIN}
-      AUTH_DOMAIN:  ${AUTH_DOMAIN}
-      RELAY_DOMAIN: ${RELAY_DOMAIN}
+      ACME_EMAIL:    ${ACME_EMAIL}
+      APP_DOMAIN:    ${APP_DOMAIN}
+      AUTH_DOMAIN:   ${AUTH_DOMAIN}
+      RELAY_DOMAIN:  ${RELAY_DOMAIN}
+      STATUS_DOMAIN: ${STATUS_DOMAIN:-}
     networks:
       public:
       internal:
