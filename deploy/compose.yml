@@ -150,6 +150,12 @@ services:
       - ./zitadel/login-patch/en-ssr.js:/app/apps/login/.next/server/chunks/ssr/apps_login_locales_en_json_[json]_cjs_01zbe4u._.js:ro
       # Patched i18n config — stubs out getHostedLoginTranslation so locale patches aren't overridden
       - ./zitadel/login-patch/i18n-config.js:/app/apps/login/.next/server/chunks/ssr/_0f_prw6._.js:ro
+      # Patched global stylesheet — original Tailwind output + heartbits-overrides.css appended.
+      # Build with: ./zitadel/login-patch/build-css.sh   (run after pulling a new login image)
+      - ./zitadel/login-patch/login-styles.css:/app/apps/login/.next/static/chunks/0nd7.1rw2312f.css:ro
+      # Patched register server action — wraps addHumanUser() in try/catch so duplicate-email
+      # (and other Zitadel Connect errors) return a clean {error} instead of bubbling up as 500.
+      - ./zitadel/login-patch/register-action.js:/app/apps/login/.next/server/chunks/ssr/_0hjbh0x._.js:ro
     networks: [internal]
     depends_on:
       zitadel: { condition: service_started }
