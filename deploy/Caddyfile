@@ -61,6 +61,27 @@
 	reverse_proxy heartbits-relay:8765
 }
 
+# ── API subdomain ─────────────────────────────────────────────────────────────
+{$API_DOMAIN} {
+	encode gzip
+
+	header {
+		defer
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		-Server
+		Access-Control-Allow-Origin  "*"
+		Access-Control-Allow-Methods "GET, POST, PATCH, DELETE, OPTIONS"
+		Access-Control-Allow-Headers "Authorization, Content-Type"
+	}
+
+	@options method OPTIONS
+	respond @options 204
+
+	reverse_proxy heartbits-api:3100
+}
+
 # ── Status page subdomain ─────────────────────────────────────────────────────
 {$STATUS_DOMAIN} {
 	redir https://{$APP_DOMAIN}/status permanent

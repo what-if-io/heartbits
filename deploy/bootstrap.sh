@@ -3,7 +3,7 @@
 # Run ONCE after first `docker compose up -d` to create the HeartBits OIDC app.
 # Uses the bootstrap-admin PAT (written by Zitadel on first init) — no browser needed.
 # The bootstrap-admin machine user is created with IAM_OWNER role via
-# ZITADEL_FIRSTINSTANCE_ORG_MACHINE_* env vars in docker-compose.yml.
+# ZITADEL_FIRSTINSTANCE_ORG_MACHINE_* env vars in compose.yml.
 #
 # Usage: ./bootstrap.sh
 set -euo pipefail
@@ -45,10 +45,10 @@ done
 if [ ! -f "$PAT_FILE" ]; then
   echo "ERROR: $PAT_FILE not found."
   echo "Make sure Zitadel has completed its first-run initialisation."
-  echo "Check: docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" logs zitadel | grep -i 'setup'"
+  echo "Check: docker compose -f \"$SCRIPT_DIR/compose.yml\" logs zitadel | grep -i 'setup'"
   echo "The file is written by ZITADEL_FIRSTINSTANCE_PATPATH during first-init only."
   echo "If Zitadel was already initialised without that env var, run:"
-  echo "  docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" down -v && docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" up -d"
+  echo "  docker compose -f \"$SCRIPT_DIR/compose.yml\" down -v && docker compose -f \"$SCRIPT_DIR/compose.yml\" up -d"
   exit 1
 fi
 
@@ -67,7 +67,7 @@ HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
 if [ "$HTTP_STATUS" != "200" ]; then
   echo "ERROR: bootstrap-admin PAT is not valid (HTTP $HTTP_STATUS)."
   echo "The PAT may have expired or Zitadel was restarted with wiped data."
-  echo "Run: docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" down -v && docker compose -f \"$SCRIPT_DIR/docker-compose.yml\" up -d  then retry."
+  echo "Run: docker compose -f \"$SCRIPT_DIR/compose.yml\" down -v && docker compose -f \"$SCRIPT_DIR/compose.yml\" up -d  then retry."
   exit 1
 fi
 echo "Token valid."
@@ -220,5 +220,5 @@ echo "✓ Bootstrap complete."
 echo "  HEARTBITS_CLIENT_ID=${CLIENT_ID}"
 echo ""
 echo "Restarting heartbits-web and heartbits-api to pick up the new client ID..."
-docker compose -f "$SCRIPT_DIR/docker-compose.yml" restart heartbits-web heartbits-api
+docker compose -f "$SCRIPT_DIR/compose.yml" restart heartbits-web heartbits-api
 echo "Done."

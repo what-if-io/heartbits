@@ -104,7 +104,7 @@ rsync -avz ~/Projects/Heartbits/relay-server/ root@178.105.210.108:~/deploy/../r
 ssh root@178.105.210.108 'cd ~/deploy && docker compose restart heartbits-relay'
 ```
 
-### Deploy config only (Caddyfile, docker-compose.yml)
+### Deploy config only (Caddyfile, compose.yml)
 
 ```bash
 ./remote_do.sh   # rsyncs all deploy/ files then runs do.sh (idempotent)

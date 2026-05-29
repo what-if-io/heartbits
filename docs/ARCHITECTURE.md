@@ -392,9 +392,9 @@ Redis cache. Flip features live without deploy by changing Redis values.
 
 ---
 
-## Docker-Compose Additions
+## Compose Additions
 
-New services to add to `deploy/what-ifio/docker-compose.yml`:
+New services to add to `deploy/what-ifio/compose.yml`:
 
 ```yaml
 heartbits-api:

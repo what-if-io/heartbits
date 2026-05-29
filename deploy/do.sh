@@ -308,7 +308,7 @@ chmod 777 "${_MY_DIR}/zitadel/bootstrap"
 echo ""
 echo "── Starting HeartBits stack ─────────────────────────────────────────────────"
 cd "${_MY_DIR}"
-docker compose -f docker-compose.yml up -d
+docker compose -f compose.yml up -d
 
 ##################################################################################################
 # If already bootstrapped, just show status and exit
@@ -320,7 +320,7 @@ if [ -n "${HEARTBITS_CLIENT_ID:-}" ]; then
     echo "── Already bootstrapped (HEARTBITS_CLIENT_ID set) ───────────────────────────"
     echo "Containers brought up-to-date above. Nothing else to do."
     echo ""
-    docker compose -f docker-compose.yml ps
+    docker compose -f compose.yml ps
     echo ""
     echo "┌─────────────────────────────────────────────────────────────────────────┐"
     echo "│  HeartBits is live.                                                     │"
@@ -347,7 +347,7 @@ until [ -s "$_PAT_FILE" ]; do
     echo "  waiting for Zitadel init... (${_waited}s)"
     if [ "$_waited" -ge 300 ]; then
         echo "ERROR: Zitadel did not complete init within 5 minutes."
-        echo "Check: docker compose -f ${_MY_DIR}/docker-compose.yml logs zitadel"
+        echo "Check: docker compose -f ${_MY_DIR}/compose.yml logs zitadel"
         exit 1
     fi
 done
@@ -368,10 +368,10 @@ echo "── Running bootstrap ────────────────�
 ##################################################################################################
 echo ""
 echo "── Reloading app containers with new client ID ───────────────────────────────"
-docker compose -f docker-compose.yml up -d --force-recreate heartbits-web heartbits-api
+docker compose -f compose.yml up -d --force-recreate heartbits-web heartbits-api
 
 echo ""
-docker compose -f docker-compose.yml ps
+docker compose -f compose.yml ps
 
 echo ""
 echo "┌─────────────────────────────────────────────────────────────────────────┐"
@@ -385,7 +385,7 @@ echo "│  Admin: admin / (ZITADEL_ADMIN_PASSWORD in .env)                      
 echo "└─────────────────────────────────────────────────────────────────────────┘"
 echo ""
 echo "Useful commands:"
-echo "  docker compose -f ${_MY_DIR}/docker-compose.yml logs -f heartbits-web"
-echo "  docker compose -f ${_MY_DIR}/docker-compose.yml logs -f zitadel"
-echo "  docker compose -f ${_MY_DIR}/docker-compose.yml down"
-echo "  docker compose -f ${_MY_DIR}/docker-compose.yml down --volumes  # ⚠ destroys data"
+echo "  docker compose -f ${_MY_DIR}/compose.yml logs -f heartbits-web"
+echo "  docker compose -f ${_MY_DIR}/compose.yml logs -f zitadel"
+echo "  docker compose -f ${_MY_DIR}/compose.yml down"
+echo "  docker compose -f ${_MY_DIR}/compose.yml down --volumes  # ⚠ destroys data"
