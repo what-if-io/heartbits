@@ -33,10 +33,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (stagingPassword) {
     const isAsset = pathname.startsWith('/_app/') || pathname.startsWith('/favicon');
     const isAuth  = pathname.startsWith('/auth/');
-    const isPitch = pathname === '/pitch';
     const hasSession = !!event.locals.user;
 
-    if (!isAsset && !isAuth && !isPitch && !hasSession) {
+    if (!isAsset && !isAuth && !hasSession) {
       const stagingCookie = event.cookies.get(STAGING_COOKIE);
 
       if (request.method === 'POST') {
