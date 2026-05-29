@@ -1,0 +1,107 @@
+/* HeartBits overrides for Zitadel login UI v4.14.0
+ * Appended to the global Tailwind stylesheet via volume mount.
+ *
+ * Why this exists:
+ * 1. Zitadel's Back button uses `hover:dark:bg-white hover:dark:bg-opacity-10`,
+ *    but Tailwind v4 drops standalone bg-opacity-* — so the button goes solid
+ *    white on hover (text invisible). Override the rule to use bg-white/10.
+ * 2. We force dark mode via label policy (themeMode=DARK); also belt-and-braces
+ *    hide any theme toggle UI that still renders.
+ * 3. Polish the "Register new user" CTA so it looks like an actual call to action.
+ * 4. Tighter typography spacing under the logo.
+ */
+
+/* ── Fix #1: kill the solid-white hover on the Back / Continue buttons ─
+ *
+ * Root cause: Zitadel renders the page WITHOUT a `.dark` class on <html>,
+ * so Tailwind treats it as light mode even though the visual background is
+ * dark (#070710 from label policy). The Back button has BOTH
+ *   - `hover:bg-gray-500` (light mode hover → solid #71717b, looks white on dark bg)
+ *   - `hover:dark:bg-white hover:dark:bg-opacity-10` (dark mode hover, never fires)
+ * and Tailwind v4 silently drops the standalone `bg-opacity-*` modifier, so
+ * the dark variant would be solid white too. Override both selectors.
+ *
+ * Also: in light mode the Back button uses `text-gray-950` (near-black),
+ * which is invisible against the dark page background — force white text.
+ */
+.hover\:bg-gray-500:hover,
+.focus\:bg-gray-500:focus,
+.hover\:dark\:bg-white:hover,
+.focus\:dark\:bg-white:focus,
+.hover\:dark\:bg-white:hover:is(.dark *),
+.focus\:dark\:bg-white:focus:is(.dark *) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+.text-gray-950 {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.disabled\:hover\:bg-transparent:disabled:hover {
+  background-color: transparent !important;
+}
+
+/* ── Fix #2: hide theme toggle in the fixed bottom-right control bar ── */
+/* The toggle is a flex row of 3 buttons inside a pill — kill the whole pill */
+[class*="ThemeSwitch"],
+[data-testid*="theme"],
+[aria-label*="theme" i],
+[aria-label*="Theme" i] {
+  display: none !important;
+}
+
+/* ── Polish #3: Register-new-user + Reset-password → outlined pill ──── */
+button[data-testid="register-button"],
+button[data-testid="reset-button"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  background: rgba(255, 107, 107, 0.06);
+  color: #ff6b6b;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+}
+button[data-testid="register-button"]:hover,
+button[data-testid="reset-button"]:hover {
+  background: rgba(255, 107, 107, 0.14);
+  border-color: rgba(255, 107, 107, 0.55);
+  color: #ff8c8c;
+  transform: translateY(-1px);
+}
+button[data-testid="register-button"] > span,
+button[data-testid="reset-button"] > span {
+  color: inherit !important;
+}
+/* Small glyph before the label so they read as actions */
+button[data-testid="register-button"]::before,
+button[data-testid="reset-button"]::before {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  font-size: 12px;
+  line-height: 1;
+  margin-right: 4px;
+}
+button[data-testid="register-button"]::before { content: "+"; }
+button[data-testid="reset-button"]::before    { content: "↻"; }
+
+/* ── Polish #4: heading + description spacing under the logo ────────── */
+h1.lato_a11ec650-module__twb6aa__className,
+h1[class*="text-xl"],
+h1[class*="text-2xl"],
+form h1 {
+  margin-top: 6px;
+  letter-spacing: -0.01em;
+}
+form p + form,
+form > p:first-of-type {
+  margin-bottom: 18px;
+}
