@@ -2,9 +2,18 @@
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
 
+  interface Props {
+    data: import('./$types').PageData;
+  }
+
+  let { data }: Props = $props();
+
   let heroCanvas: HTMLCanvasElement;
   let animFrameId: number;
-  let mounted = false;
+  let mounted = $state(false);
+
+  // If user is already logged in, CTAs go directly to the app
+  let ctaHref = $derived(data.loggedIn ? '/discover' : '/auth/login');
 
   // Draw repeating ECG waveform across hero canvas
   function drawHeroWaveform() {
@@ -107,7 +116,11 @@
 </script>
 
 <svelte:head>
-  <title>HeartBits — Feel the connection</title>
+  <title>HeartBits — Feel the connection.</title>
+  <meta name="description" content="HeartBits — the dating app that puts your heart first. Share your real heartbeat with your matches. No swipes, just biology." />
+  <meta property="og:title" content="HeartBits — Feel the connection." />
+  <meta property="og:description" content="The dating app that puts your heart first. Literally. Share your real-time heartbeat with your matches." />
+  <meta property="og:url" content="https://heartbits.what-if.io" />
 </svelte:head>
 
 <div class="landing">
@@ -143,7 +156,7 @@
       </p>
 
       <div class="cta-group">
-        <a href="/discover" class="btn-cta">
+        <a href={ctaHref} class="btn-cta">
           Start feeling
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -334,7 +347,7 @@
       No swiping. No algorithm. Just biology.
     </p>
 
-    <a href="/discover" class="btn-cta btn-centered">
+    <a href={ctaHref} class="btn-cta btn-centered">
       Find your match
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

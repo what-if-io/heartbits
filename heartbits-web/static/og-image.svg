@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Background gradient -->
+    <radialGradient id="bg-orb-left" cx="15%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#FF6B6B" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#070710" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bg-orb-right" cx="85%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#7B35DE" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#070710" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bg-orb-center" cx="50%" cy="55%" r="35%">
+      <stop offset="0%" stop-color="#E81F8C" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#070710" stop-opacity="0"/>
+    </radialGradient>
+    <!-- ECG + wordmark gradient -->
+    <linearGradient id="ecg-grad" x1="0" y1="0" x2="1200" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B6B" stop-opacity="0"/>
+      <stop offset="10%" stop-color="#FF6B6B" stop-opacity="0.9"/>
+      <stop offset="45%" stop-color="#E81F8C"/>
+      <stop offset="80%" stop-color="#7B35DE" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#7B35DE" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="title-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="55%" stop-color="#E81F8C"/>
+      <stop offset="100%" stop-color="#7B35DE"/>
+    </linearGradient>
+    <!-- Subtle grid -->
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255,255,255,0.025)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Base background -->
+  <rect width="1200" height="630" fill="#070710"/>
+
+  <!-- Grid overlay -->
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Ambient orbs -->
+  <rect width="1200" height="630" fill="url(#bg-orb-left)"/>
+  <rect width="1200" height="630" fill="url(#bg-orb-right)"/>
+  <rect width="1200" height="630" fill="url(#bg-orb-center)"/>
+
+  <!-- ── ECG WAVEFORM ── centered at y=340, spans full width -->
+  <!-- Scaled-up ECG: baseline → P → QRS complex → T → baseline, repeating -->
+  <polyline
+    points="
+      0,340
+      60,340 80,320 100,360 115,340
+      130,270 145,410 160,340
+      220,340
+      260,330 285,350 300,340
+      315,270 330,410 345,340
+      405,340
+      445,330 465,352 480,340
+      495,270 510,410 525,340
+      585,340
+      620,330 640,352 655,340
+      670,270 685,410 700,340
+      760,340
+      800,330 820,352 835,340
+      850,270 865,410 880,340
+      940,340
+      980,330 1000,352 1015,340
+      1030,270 1045,410 1060,340
+      1100,340 1200,340
+    "
+    fill="none"
+    stroke="url(#ecg-grad)"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    opacity="0.55"
+  />
+
+  <!-- ── LOGO MARK (top-left area, scaled up) ── -->
+  <g transform="translate(110, 195)">
+    <!-- Mini ECG -->
+    <polyline
+      points="0,22 8,22 11,15 14,29 17,22 20,11 23,33 26,22 34,22"
+      fill="none" stroke="url(#ecg-grad-icon)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+    />
+    <!-- Heart at end -->
+    <path
+      d="M38,20 C38,17 40.5,15 43,15 C44.5,15 45.8,15.7 46.5,16.8 C47.2,15.7 48.5,15 50,15 C52.5,15 55,17 55,20 C55,25 46.5,30 46.5,30 C46.5,30 38,25 38,20Z"
+      fill="url(#ecg-grad-icon)"
+    />
+    <defs>
+      <linearGradient id="ecg-grad-icon" x1="0" y1="0" x2="55" y2="30" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#FF6B6B"/>
+        <stop offset="100%" stop-color="#7B35DE"/>
+      </linearGradient>
+    </defs>
+  </g>
+
+  <!-- ── BRAND NAME ── -->
+  <text
+    x="600"
+    y="245"
+    font-family="'DM Serif Display', 'Georgia', serif"
+    font-size="128"
+    font-weight="400"
+    text-anchor="middle"
+    fill="url(#title-grad)"
+    letter-spacing="-2"
+  >HeartBits</text>
+
+  <!-- ── TAGLINE ── -->
+  <text
+    x="600"
+    y="300"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="28"
+    font-weight="300"
+    text-anchor="middle"
+    fill="rgba(255,255,255,0.45)"
+    letter-spacing="3"
+  >Feel the connection.</text>
+
+  <!-- ── BOTTOM LABEL ── -->
+  <text
+    x="600"
+    y="560"
+    font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+    font-size="18"
+    font-weight="400"
+    text-anchor="middle"
+    fill="rgba(255,255,255,0.18)"
+    letter-spacing="2"
+  >heartbits.what-if.io</text>
+
+  <!-- Corner accent dots -->
+  <circle cx="80" cy="80" r="3" fill="rgba(255,107,107,0.4)"/>
+  <circle cx="1120" cy="80" r="3" fill="rgba(123,53,222,0.4)"/>
+  <circle cx="80" cy="550" r="3" fill="rgba(255,107,107,0.25)"/>
+  <circle cx="1120" cy="550" r="3" fill="rgba(123,53,222,0.25)"/>
+</svg>

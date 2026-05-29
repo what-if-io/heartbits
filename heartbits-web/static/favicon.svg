@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#070710"/>
+  <!-- ECG line: flat → PQRST complex → flat, then transitions into heart -->
+  <polyline
+    points="1,16 4,16 5.5,13 7,19 8.5,16 10,10 11.5,22 13,16 15,16"
+    fill="none"
+    stroke="url(#ecg)"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <!-- Heart mark (right side, ~18–31 x range, centered ~16–22 y) -->
+  <path
+    d="M18.5,17.8 C18.5,16.5 19.5,15.5 20.8,15.5 C21.5,15.5 22.1,15.85 22.5,16.4 C22.9,15.85 23.5,15.5 24.2,15.5 C25.5,15.5 26.5,16.5 26.5,17.8 C26.5,20.1 22.5,22.5 22.5,22.5 C22.5,22.5 18.5,20.1 18.5,17.8Z"
+    fill="url(#hg)"
+  />
+  <!-- Connector between ECG end and heart -->
+  <line x1="15" y1="16" x2="18" y2="16" stroke="url(#ecg)" stroke-width="1.7" stroke-linecap="round"/>
+  <defs>
+    <linearGradient id="ecg" x1="0" y1="0" x2="20" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#C94AAF"/>
+    </linearGradient>
+    <linearGradient id="hg" x1="18" y1="15" x2="27" y2="23" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E03E8C"/>
+      <stop offset="100%" stop-color="#7B35DE"/>
+    </linearGradient>
+  </defs>
+</svg>
