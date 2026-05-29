@@ -20,6 +20,6 @@ export const load: PageServerLoad = ({ locals, url }) => {
   }
 
   const next = url.searchParams.get('next') ?? '';
-  const issuer = pubEnv.PUBLIC_ZITADEL_ISSUER ?? 'https://account.what-if.io';
+  const issuer = pubEnv.PUBLIC_ZITADEL_ISSUER ?? '';
   return { next, issuer };
 };

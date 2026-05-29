@@ -53,11 +53,11 @@ const app = new Elysia()
             'Auth: Zitadel OIDC. Pass `Authorization: Bearer <access_token>`.',
           contact: {
             name: 'HeartBits',
-            url: 'https://api.what-if.io',
+            url: `https://${process.env['API_DOMAIN'] ?? 'api.heartbits.example.com'}`,
           },
         },
         servers: [
-          { url: 'https://api.what-if.io', description: 'Production' },
+          { url: `https://${process.env['API_DOMAIN'] ?? 'api.heartbits.example.com'}`, description: 'Production' },
           { url: `http://localhost:${PORT}`, description: 'Local development' },
         ],
         tags: [

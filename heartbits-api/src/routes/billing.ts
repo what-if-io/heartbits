@@ -11,8 +11,8 @@ import { Elysia } from 'elysia'
 
 const NOT_ENABLED = {
   error: 'Payment features not yet enabled',
-  docs: 'https://api.what-if.io/swagger#/billing',
-} as const
+  docs: `https://${process.env['API_DOMAIN'] ?? 'api.heartbits.example.com'}/swagger#/billing`,
+}
 
 export const billingRoute = new Elysia({ prefix: '/api/v1/billing' })
   .post('/checkout', ({ set }) => {

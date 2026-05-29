@@ -6,7 +6,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-VM="${VM:-root@178.105.210.108}"
+VM="${VM:-root@YOUR_SERVER_IP}"
 
 echo "── Syncing deploy/ → ${VM}:~/deploy/ ─────────────────────────────────────────"
 rsync -avz --checksum \

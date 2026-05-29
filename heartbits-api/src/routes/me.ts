@@ -72,7 +72,7 @@ function buildAvatarUrl(mediaId: string | null): string | null {
   if (!mediaId) return null
   const bucket = process.env['MINIO_BUCKET'] ?? 'heartbits-media'
   // Placeholder — real implementation generates a pre-signed MinIO URL
-  return `https://media.what-if.io/${bucket}/${mediaId}`
+  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${bucket}/${mediaId}`
 }
 
 // ---------------------------------------------------------------------------

@@ -11,7 +11,7 @@
     <p class="meta">Effective: 26 May 2026 · Version 1.0</p>
 
     <h2>1. Who we are</h2>
-    <p>HeartBits ("we", "us") operates the HeartBits dating platform at heartbits.what-if.io and associated mobile applications.</p>
+    <p>HeartBits ("we", "us") operates the HeartBits dating platform and associated mobile applications.</p>
 
     <h2>2. Data we collect</h2>
     <ul>

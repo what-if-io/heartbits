@@ -191,31 +191,15 @@ curl -sf -X POST "$AUTH/admin/v1/policies/label/_activate" \
 
 ---
 
-## what-if.io VM (legacy)
-
-The `tam@what-if.io` VM still runs PhD landing, Spring hunt, and Zitadel (`account.what-if.io`)
-for those services. HeartBits has moved to the Hetzner VM above.
-
-Compose root: `~/p/main/deploy/what-ifio/`  
-Auth: `https://account.what-if.io`
-
-```bash
-ssh tam@what-if.io
-cd ~/p/main/deploy/what-ifio
-docker compose ps
-```
-
----
-
 ## Environment variables reference
 
 ### `deploy/.env`
 
 | Variable | Description |
 |---|---|
-| `APP_DOMAIN` | `heartbits.what-if.io` |
-| `AUTH_DOMAIN` | `auth.heartbits.what-if.io` |
-| `RELAY_DOMAIN` | `relay.heartbits.what-if.io` |
+| `APP_DOMAIN` | your app domain, e.g. `heartbits.example.com` |
+| `AUTH_DOMAIN` | your auth domain, e.g. `auth.heartbits.example.com` |
+| `RELAY_DOMAIN` | your relay domain, e.g. `relay.heartbits.example.com` |
 | `ACME_EMAIL` | Let's Encrypt contact |
 | `POSTGRES_PASSWORD` | PostgreSQL password (generated) |
 | `MINIO_USER` | `heartbits` |

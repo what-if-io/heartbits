@@ -17,7 +17,7 @@ function ageFromDob(dob: string): number {
 
 function buildAvatarUrl(mediaId: string | null): string | null {
   if (!mediaId) return null
-  return `https://media.what-if.io/${process.env['MINIO_BUCKET'] ?? 'heartbits-media'}/${mediaId}`
+  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${process.env['MINIO_BUCKET'] ?? 'heartbits-media'}/${mediaId}`
 }
 
 export const matchesRoute = new Elysia({ prefix: '/api/v1' })

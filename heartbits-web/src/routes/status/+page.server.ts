@@ -74,10 +74,10 @@ async function liveCheck(): Promise<{ services: Service[]; incidents: Incident[]
   const get = (r: typeof checks[0]) => r.status === 'fulfilled' ? r.value : { ok: false, ms: -1 };
   const [web, auth, relay, api] = checks.map(get);
 
-  const webDomain   = WEB_URL   ? new URL(WEB_URL).hostname   : 'heartbits.what-if.io';
-  const authDomain  = AUTH_URL  ? new URL(AUTH_URL).hostname  : 'auth.heartbits.what-if.io';
-  const relayDomain = RELAY_URL ? new URL(RELAY_URL).hostname : 'relay.heartbits.what-if.io';
-  const apiDomain   = 'api.heartbits.what-if.io';
+  const webDomain   = WEB_URL   ? new URL(WEB_URL).hostname   : 'heartbits.example.com';
+  const authDomain  = AUTH_URL  ? new URL(AUTH_URL).hostname  : 'auth.heartbits.example.com';
+  const relayDomain = RELAY_URL ? new URL(RELAY_URL).hostname : 'relay.heartbits.example.com';
+  const apiDomain   = 'api.heartbits.example.com';
 
   return {
     fromMonitor: false,

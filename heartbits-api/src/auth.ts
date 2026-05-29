@@ -130,7 +130,7 @@ export const authPlugin = new Elysia({ name: 'auth' })
     try {
       const jwks = await getJwks()
       // SECURITY: verify issuer and audience to prevent token confusion attacks.
-      // ZITADEL_ISSUER  = e.g. "https://auth.what-if.io"
+      // ZITADEL_ISSUER  = e.g. "https://auth.heartbits.what-if.io"
       // ZITADEL_CLIENT_ID = the OIDC client_id registered in Zitadel for this app.
       // Both are required env vars (validated at startup in index.ts).
       const issuer = process.env['ZITADEL_ISSUER']

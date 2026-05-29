@@ -5,10 +5,10 @@
  * Uses openid-client v6 (discovery-based, no manual endpoint config needed).
  *
  * Environment variables required:
- *   PUBLIC_ZITADEL_ISSUER      — e.g. https://account.what-if.io
+ *   PUBLIC_ZITADEL_ISSUER      — e.g. https://auth.heartbits.example.com
  *   PUBLIC_ZITADEL_CLIENT_ID   — the OIDC app's client ID
  *   SESSION_SECRET             — 32+ random bytes for signing session cookies
- *   ORIGIN                     — canonical app URL, e.g. https://heartbits.what-if.io
+ *   ORIGIN                     — canonical app URL, e.g. https://heartbits.example.com
  * Optional:
  *   ZITADEL_CLIENT_SECRET      — only for confidential clients (omit for PKCE-only)
  */

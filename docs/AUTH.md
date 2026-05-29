@@ -83,7 +83,7 @@ This is intercepted by Caddy:
 ```caddyfile
 handle /ui/console/assets/environment.json {
     header Content-Type "application/json"
-    respond `{"api":"https://auth.heartbits.what-if.io","issuer":"https://auth.heartbits.what-if.io","clientid":"371112534759112708"}` 200
+    respond `{"api":"https://auth.heartbits.what-if.io","issuer":"https://auth.heartbits.what-if.io","clientid":"YOUR_ZITADEL_INSTANCE_ID"}` 200
 }
 ```
 
@@ -93,7 +93,7 @@ The HeartBits OIDC app lives in the HeartBits project under the TreasureHunt org
 
 | Field | Value |
 |---|---|
-| Client ID | `374680100000000002` (in `.env` as `HEARTBITS_CLIENT_ID`) |
+| Client ID | `YOUR_HEARTBITS_CLIENT_ID` (in `.env` as `HEARTBITS_CLIENT_ID`) |
 | Auth method | `PKCE` (no client secret) |
 | Grant type | Authorization Code |
 | Redirect URIs | `https://heartbits.what-if.io/auth/callback`, `http://localhost:5173/auth/callback` |
@@ -114,7 +114,7 @@ It cannot be used as a Bearer token in external API calls.
 
 ## Bootstrap script
 
-`deploy/what-ifio/bootstrap-heartbits.sh`
+`deploy/bootstrap.sh`
 
 Runs once on a fresh Zitadel instance. Idempotent: skips if `HEARTBITS_CLIENT_ID` is already
 set in `.env`.
@@ -131,16 +131,16 @@ What it does:
 To verify it without waiting for an email (no SMTP configured):
 
 ```bash
-docker exec -i what-ifio-postgres-1 psql -U hunt -d zitadel << 'SQL'
+docker exec -i heartbits-postgres-1 psql -U heartbits -d zitadel << 'SQL'
 INSERT INTO eventstore.events2
   (instance_id, aggregate_type, aggregate_id, event_type, sequence,
    revision, created_at, payload, creator, owner, position, in_tx_order)
 VALUES (
-  '371112533014085636', 'user', '371112533014675460',
+  'YOUR_ZITADEL_INSTANCE_ID', 'user', 'YOUR_ZITADEL_USER_AGGREGATE_ID',
   'user.human.email.verified',
-  (SELECT MAX(sequence) + 1 FROM eventstore.events2 WHERE aggregate_id = '371112533014675460'),
+  (SELECT MAX(sequence) + 1 FROM eventstore.events2 WHERE aggregate_id = 'YOUR_ZITADEL_USER_AGGREGATE_ID'),
   1, NOW(), '{}'::jsonb,
-  '371112533014740996', '371112533014151172',
+  'YOUR_ZITADEL_CREATOR_ID', 'YOUR_ZITADEL_OWNER_ID',
   (SELECT MAX(position) + 0.001 FROM eventstore.events2), 0
 );
 SQL
@@ -157,7 +157,7 @@ cp .env.example .env
 
 # Required values for local dev:
 # PUBLIC_ZITADEL_ISSUER=https://auth.heartbits.what-if.io
-# PUBLIC_ZITADEL_CLIENT_ID=374680100000000002  (or a local test client)
+# PUBLIC_ZITADEL_CLIENT_ID=YOUR_HEARTBITS_CLIENT_ID  (or a local test client)
 # SESSION_SECRET=<any 32+ hex chars for dev>
 # ORIGIN=http://localhost:5173
 

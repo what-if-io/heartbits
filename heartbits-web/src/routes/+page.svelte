@@ -120,7 +120,7 @@
   <meta name="description" content="HeartBits — the dating app that puts your heart first. Share your real heartbeat with your matches. No swipes, just biology." />
   <meta property="og:title" content="HeartBits — Feel the connection." />
   <meta property="og:description" content="The dating app that puts your heart first. Literally. Share your real-time heartbeat with your matches." />
-  <meta property="og:url" content="https://heartbits.what-if.io" />
+  <meta property="og:url" content={typeof window !== 'undefined' ? window.location.origin : ''} />
 </svelte:head>
 
 <div class="landing">

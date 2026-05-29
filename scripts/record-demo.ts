@@ -12,7 +12,7 @@
  *
  * Output: ./demo-recording.webm + screenshots in ./demo-screenshots/
  *
- * Set BASE_URL env var to target a different host (default: https://heartbits.what-if.io)
+ * Set BASE_URL env var to target a different host (default: https://heartbits.example.com)
  * Set STAGING_PASSWORD env var if the staging gate is active.
  */
 
@@ -20,7 +20,7 @@ import { chromium } from 'playwright';
 import path from 'path';
 import fs from 'fs';
 
-const BASE_URL = process.env.BASE_URL ?? 'https://heartbits.what-if.io';
+const BASE_URL = process.env.BASE_URL ?? 'https://heartbits.example.com';
 const STAGING_PASSWORD = process.env.STAGING_PASSWORD ?? '';
 const SCREENSHOT_DIR = path.join(process.cwd(), 'demo-screenshots');
 const VIDEO_DIR = path.join(process.cwd(), 'demo-video');

@@ -80,12 +80,12 @@ The moment two people match, their hearts sync live for the first time.
 
 ## Auth Flow
 
-PKCE Authorization Code flow via Zitadel (`https://account.what-if.io`):
+PKCE Authorization Code flow via Zitadel (`https://auth.heartbits.example.com`):
 
 ```
 App (mobile/web)
   │
-  ├─1─► PKCE auth request → https://account.what-if.io/oauth/v2/authorize
+  ├─1─► PKCE auth request → https://auth.heartbits.example.com/oauth/v2/authorize
   ├─2─◄ Authorization code (redirect to heartbits://auth/callback or heartbits.what-if.io/auth/callback)
   ├─3─► Token exchange → access_token + id_token
   └─4─► API calls: Authorization: Bearer <access_token>
@@ -406,8 +406,8 @@ heartbits-api:
   environment:
     DATABASE_URL: postgres://heartbits_api:${HB_API_DB_PASSWORD}@postgres:5432/heartbits
     REDIS_URL: redis://redis:6379
-    ZITADEL_JWKS_URL: https://account.what-if.io/.well-known/openid-configuration
-    ZITADEL_ISSUER: https://account.what-if.io     # required for JWT iss validation
+    ZITADEL_JWKS_URL: https://auth.heartbits.example.com/.well-known/openid-configuration
+    ZITADEL_ISSUER: https://auth.heartbits.example.com     # required for JWT iss validation
     ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}      # required for JWT aud validation
     HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
     MINIO_ENDPOINT: minio:9000
@@ -420,7 +420,7 @@ heartbits-relay:
   environment:
     ROOM_TOKEN: ${RELAY_ROOM_TOKEN}               # Phase 0 fallback
     REDIS_URL: redis://redis:6379                 # enables Phase 1
-    ZITADEL_JWKS_URL: https://account.what-if.io/.well-known/openid-configuration
+    ZITADEL_JWKS_URL: https://auth.heartbits.example.com/.well-known/openid-configuration
     PORT: 8765
   networks: [internal]
 
