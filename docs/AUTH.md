@@ -1,6 +1,6 @@
 # HeartBits — Auth Reference
 
-Auth provider: Zitadel v4.14 at `https://account.what-if.io`  
+Auth provider: Zitadel v4.14 at `https://auth.heartbits.what-if.io`  
 Flow: PKCE Authorization Code (no client secret)  
 Session: HMAC-signed cookie (`hb_session`), 7-day TTL  
 
@@ -67,8 +67,8 @@ Unauthenticated requests redirect to `/auth/login?next=<original-path>`.
 
 ### Admin access
 
-URL: `https://account.what-if.io/ui/console`  
-Login: `admin@account.what-if.io` / `${ZITADEL_ADMIN_PASSWORD}`
+URL: `https://auth.heartbits.what-if.io/ui/console`  
+Login: `admin@auth.heartbits.what-if.io` / `${ZITADEL_ADMIN_PASSWORD}`
 
 The console requires HTTP/2 (gRPC-web). Behind Caddy, this works via:
 ```caddyfile
@@ -83,7 +83,7 @@ This is intercepted by Caddy:
 ```caddyfile
 handle /ui/console/assets/environment.json {
     header Content-Type "application/json"
-    respond `{"api":"https://account.what-if.io","issuer":"https://account.what-if.io","clientid":"371112534759112708"}` 200
+    respond `{"api":"https://auth.heartbits.what-if.io","issuer":"https://auth.heartbits.what-if.io","clientid":"371112534759112708"}` 200
 }
 ```
 
@@ -104,7 +104,7 @@ Managed by `bootstrap-heartbits.sh` on first run.
 ### Login UI
 
 Zitadel v4 uses a separate Next.js login container (`ghcr.io/zitadel/zitadel-login:v4.14.0`).
-It runs at `https://account.what-if.io/ui/v2/login/` and is proxied by Caddy.
+It runs at `https://auth.heartbits.what-if.io/ui/v2/login/` and is proxied by Caddy.
 
 The `login-client.pat` file (at `editions/spring/zitadel/bootstrap/login-client.pat`) is a
 JWE-encrypted token for internal communication between the login container and Zitadel.
@@ -156,7 +156,7 @@ docker compose restart zitadel
 cp .env.example .env
 
 # Required values for local dev:
-# PUBLIC_ZITADEL_ISSUER=https://account.what-if.io
+# PUBLIC_ZITADEL_ISSUER=https://auth.heartbits.what-if.io
 # PUBLIC_ZITADEL_CLIENT_ID=374680100000000002  (or a local test client)
 # SESSION_SECRET=<any 32+ hex chars for dev>
 # ORIGIN=http://localhost:5173
