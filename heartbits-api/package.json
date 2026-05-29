@@ -1,0 +1,19 @@
+{
+  "name": "heartbits-api",
+  "version": "0.1.0",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "worker": "bun run src/worker.ts"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "dependencies": {
+    "elysia": "latest",
+    "@elysiajs/swagger": "latest",
+    "postgres": "^3.4",
+    "ioredis": "^5.4",
+    "jose": "^5.9"
+  }
+}

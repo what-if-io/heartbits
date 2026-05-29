@@ -1,0 +1,83 @@
+# HeartBits — Caddy blocks to merge into remote-Caddyfile
+#
+# These blocks replace/supplement the existing hb.what-if.io and
+# heartbits.what-if.io entries.  Copy the relevant sections into
+# deploy/what-ifio/Caddyfile (or the remote Caddyfile) and reload:
+#
+#   caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile
+
+# ── HeartBits WebSocket relay ─────────────────────────────────────────────────
+hb.what-if.io {
+	encode gzip
+
+	# Security headers for WebSocket upgrade endpoint
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Content-Security-Policy "default-src 'none'"
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+	}
+
+	reverse_proxy heartbits-relay:8765
+}
+
+# ── HeartBits REST API ────────────────────────────────────────────────────────
+api.what-if.io {
+	encode gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Content-Security-Policy "default-src 'none'"
+		Access-Control-Allow-Origin "https://heartbits.what-if.io"
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+	}
+
+	reverse_proxy heartbits-api:3100
+}
+
+# ── HeartBits Web App ─────────────────────────────────────────────────────────
+heartbits.what-if.io {
+	encode gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		# SECURITY TODO: tighten 'unsafe-inline' once SvelteKit build uses
+		# nonce-based CSP (requires adapter-node CSP hook).
+		Content-Security-Policy "default-src 'self'; connect-src 'self' https://api.what-if.io wss://hb.what-if.io https://auth.what-if.io; img-src 'self' https://media.what-if.io data:; style-src 'self' 'unsafe-inline'; script-src 'self'"
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), camera=(), microphone=(), payment=()"
+	}
+
+	basicauth {
+		{$DAPPS_USER} {$DAPPS_PASS_HASH}
+	}
+	reverse_proxy heartbits-web:3000
+}
+
+# ── HeartBits Media (MinIO proxy — GET only) ──────────────────────────────────
+media.what-if.io {
+	encode gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Content-Security-Policy "default-src 'none'; img-src 'self'"
+		-Server
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Cache-Control "private, no-store"
+	}
+
+	# Block all write methods at the Caddy boundary
+	@not_readonly method POST PUT PATCH DELETE
+	respond @not_readonly 405
+
+	reverse_proxy minio:9000
+}

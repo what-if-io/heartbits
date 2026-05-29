@@ -3,14 +3,34 @@
 // Simple room-based fanout: every message sent by one client in a room
 // is forwarded to all other clients in that room.
 //
-// Auth: every connection must present a Bearer token in the
-//   Authorization: Bearer <ROOM_TOKEN>  HTTP upgrade header.
-//   Set ROOM_TOKEN in the environment (or .env). If unset the server
-//   starts in open mode (local dev only — never deploy without a token).
+// ---------------------------------------------------------------------------
+// Auth — Phase 0 / Phase 1 hybrid
+// ---------------------------------------------------------------------------
 //
+// Phase 0 (current): static ROOM_TOKEN checked on every connection.
+//   ROOM_TOKEN must be injected from environment / CI secrets — NEVER hardcoded.
+//   Set ROOM_TOKEN in the environment. If unset: open mode (local dev ONLY).
+//
+// Phase 1 (JWT + room membership): enabled when REDIS_URL is set.
+//   Connection presents a Zitadel JWT access token.
+//   Relay verifies:
+//     1. JWT signature via JWKS (fetched from ZITADEL_JWKS_URL, cached in memory).
+//     2. Redis key relay:room:{roomId} → "{user_a}:{user_b}" written by the API.
+//     3. JWT `sub` must match one of user_a or user_b (prevents room squatting).
+//   If the Redis key is missing (e.g. consent was withdrawn), connection is rejected.
+//
+// Phase 2 (target): ROOM_TOKEN deprecated, JWT only.
+//
+// SECURITY RISK (Phase 0): A static token in all clients means any client can
+//   connect to ANY room — room isolation is not enforced at the relay level.
+//   A compromised or leaked token allows an adversary to listen to any room.
+//   Phase 1 JWT+Redis membership validation closes this gap entirely.
+//
+// ---------------------------------------------------------------------------
 // Usage:
 //   npm install
-//   ROOM_TOKEN=<secret> npm start      # listens on ws://localhost:8765
+//   ROOM_TOKEN=<secret> npm start                          # Phase 0
+//   REDIS_URL=redis://... ZITADEL_JWKS_URL=https://... npm start  # Phase 1
 //   PORT=9000 ROOM_TOKEN=<secret> npm start
 //
 // Room URL:  ws://localhost:8765/<roomId>
@@ -19,27 +39,153 @@
 //   Alice sends a beat → Bob receives it (and vice versa)
 
 const { WebSocketServer } = require('ws')
-const http = require('http')
-const fs   = require('fs')
-const path = require('path')
+const http  = require('http')
+const fs    = require('fs')
+const path  = require('path')
 
 const PORT       = parseInt(process.env.PORT       ?? '8765', 10)
 const ROOM_TOKEN = process.env.ROOM_TOKEN ?? null
+const REDIS_URL  = process.env.REDIS_URL  ?? null
 
-if (!ROOM_TOKEN) {
-  console.warn('[!] ROOM_TOKEN not set — running in open mode (local dev only)')
+// Phase 1: lazy-loaded Redis + JWKS clients
+let redisClient   = null
+let jwksCache     = null  // { keySets: Map<kid, CryptoKey>, fetchedAt: number }
+const JWKS_TTL_MS = 3600 * 1000
+
+if (!ROOM_TOKEN && !REDIS_URL) {
+  console.warn('[!] ROOM_TOKEN not set and REDIS_URL not set — running in OPEN mode (local dev only)')
 }
 
-// Validate auth. Accepts either:
-//   Authorization: Bearer <token>   (native clients)
-//   ?token=<token> query param      (browser WebSocket — can't set headers)
-function authorized(req) {
-  if (!ROOM_TOKEN) return true
-  const header = req.headers['authorization'] ?? ''
-  const [scheme, headerToken] = header.split(' ')
-  if (scheme === 'Bearer' && headerToken === ROOM_TOKEN) return true
-  const qs = new URL(req.url, 'http://x').searchParams
-  return qs.get('token') === ROOM_TOKEN
+// ---------------------------------------------------------------------------
+// Phase 1 helpers: Redis room membership + JWT validation
+// ---------------------------------------------------------------------------
+
+/**
+ * Initialise ioredis client lazily (Phase 1 only).
+ * Returns null if REDIS_URL is not set.
+ */
+function getRedis() {
+  if (!REDIS_URL) return null
+  if (redisClient) return redisClient
+  try {
+    const Redis = require('ioredis')
+    redisClient = new Redis(REDIS_URL, { lazyConnect: false, maxRetriesPerRequest: 2 })
+    redisClient.on('error', (e) => console.error('[redis]', e.message))
+    return redisClient
+  } catch (e) {
+    console.error('[relay] ioredis not installed — Phase 1 disabled:', e.message)
+    return null
+  }
+}
+
+/**
+ * Fetch JWKS from Zitadel discovery and verify a JWT.
+ * Returns the decoded payload or throws on failure.
+ *
+ * We use jose (must be installed: npm i jose) for RS256 verification.
+ * SECURITY TODO: enforce `iss` and `aud` claims here once we know the exact
+ * Zitadel issuer URL and client_id used by the relay.
+ */
+async function verifyJwt(token) {
+  const jwksUrl = process.env['ZITADEL_JWKS_URL']
+  if (!jwksUrl) throw new Error('ZITADEL_JWKS_URL not set')
+
+  // Lazy-load jose
+  let jose
+  try {
+    jose = require('jose')
+  } catch (e) {
+    throw new Error('jose not installed — run: npm i jose')
+  }
+
+  const now = Date.now()
+  if (!jwksCache || now - jwksCache.fetchedAt > JWKS_TTL_MS) {
+    // Fetch OIDC discovery → jwks_uri
+    const discovery = await fetch(jwksUrl).then((r) => {
+      if (!r.ok) throw new Error(`JWKS discovery failed: ${r.status}`)
+      return r.json()
+    })
+    jwksCache = {
+      jwks: jose.createRemoteJWKSet(new URL(discovery.jwks_uri)),
+      fetchedAt: now,
+    }
+  }
+
+  const { payload } = await jose.jwtVerify(token, jwksCache.jwks)
+  return payload
+}
+
+// ---------------------------------------------------------------------------
+// authorizeConnection: returns { ok, userId, roomId } or { ok: false, reason }
+// ---------------------------------------------------------------------------
+
+async function authorizeConnection(req) {
+  const url    = new URL(req.url ?? '/', 'http://x')
+  const roomId = url.pathname.replace(/^\//, '') || null
+  const qs     = url.searchParams
+
+  // ── Phase 1: JWT + Redis room membership ──────────────────────────────
+  const redis = getRedis()
+  if (redis) {
+    // Extract token from Authorization header or ?token= query param
+    const authHeader = req.headers['authorization'] ?? ''
+    const [scheme, headerToken] = authHeader.split(' ')
+    const token = (scheme === 'Bearer' && headerToken) ? headerToken : qs.get('token')
+
+    if (!token) {
+      return { ok: false, reason: 'Missing token' }
+    }
+
+    let payload
+    try {
+      payload = await verifyJwt(token)
+    } catch (e) {
+      return { ok: false, reason: `JWT invalid: ${e.message}` }
+    }
+
+    const userId = payload.sub
+    if (!userId) return { ok: false, reason: 'JWT missing sub claim' }
+
+    if (!roomId) return { ok: false, reason: 'Missing roomId in URL path' }
+
+    // Check Redis: relay:room:{roomId} → "{user_a}:{user_b}"
+    let roomVal
+    try {
+      roomVal = await redis.get(`relay:room:${roomId}`)
+    } catch (e) {
+      return { ok: false, reason: 'Redis unavailable' }
+    }
+
+    if (!roomVal) {
+      // Key missing: room doesn't exist, OR consent was withdrawn (key was deleted)
+      return { ok: false, reason: 'Room not found or biometric consent withdrawn' }
+    }
+
+    const [userA, userB] = roomVal.split(':')
+    if (userId !== userA && userId !== userB) {
+      return { ok: false, reason: 'User not authorised for this room' }
+    }
+
+    return { ok: true, userId, roomId }
+  }
+
+  // ── Phase 0 fallback: static ROOM_TOKEN ───────────────────────────────
+  if (!ROOM_TOKEN) {
+    // Open mode (local dev only — log a warning per connection)
+    console.warn('[!] open mode: accepting unauthenticated connection')
+    return { ok: true, userId: null, roomId: roomId ?? 'default' }
+  }
+
+  const authHeader = req.headers['authorization'] ?? ''
+  const [scheme, headerToken] = authHeader.split(' ')
+  if (scheme === 'Bearer' && headerToken === ROOM_TOKEN) {
+    return { ok: true, userId: null, roomId: roomId ?? 'default' }
+  }
+  if (qs.get('token') === ROOM_TOKEN) {
+    return { ok: true, userId: null, roomId: roomId ?? 'default' }
+  }
+
+  return { ok: false, reason: 'Invalid token' }
 }
 
 // HTTP server: /ping health check, /test page, 404 everywhere else
@@ -59,13 +205,24 @@ const httpServer = http.createServer((req, res) => {
 
 const wss = new WebSocketServer({
   server: httpServer,
+  // verifyClient runs synchronously — async auth happens after upgrade via
+  // a per-connection authResult attached to the request object.
   verifyClient({ req }, cb) {
-    if (authorized(req)) {
-      cb(true)
-    } else {
-      console.warn(`[!] rejected unauthenticated connection from ${req.socket.remoteAddress}`)
-      cb(false, 401, 'Unauthorized')
-    }
+    authorizeConnection(req)
+      .then((result) => {
+        if (result.ok) {
+          // Attach result so the 'connection' handler can read it without re-checking
+          req._authResult = result
+          cb(true)
+        } else {
+          console.warn(`[!] rejected connection from ${req.socket.remoteAddress}: ${result.reason}`)
+          cb(false, 401, 'Unauthorized')
+        }
+      })
+      .catch((e) => {
+        console.error('[!] verifyClient error:', e.message)
+        cb(false, 500, 'Internal error')
+      })
   },
 })
 
@@ -76,7 +233,10 @@ const rooms = new Map()
 const PING_INTERVAL_MS = 20_000
 
 wss.on('connection', (ws, req) => {
-  const roomId = new URL(req.url ?? '/', 'http://x').pathname.replace(/^\//, '') || 'default'
+  // Auth result was attached by verifyClient — use it directly
+  const authResult = req._authResult ?? {}
+  const rawPath = new URL(req.url ?? '/', 'http://x').pathname.replace(/^\//, '')
+  const roomId = (authResult.roomId ?? rawPath) || 'default'
 
   if (!rooms.has(roomId)) rooms.set(roomId, new Set())
   const room = rooms.get(roomId)
