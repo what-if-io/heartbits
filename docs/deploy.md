@@ -4,13 +4,13 @@
 
 | | |
 |---|---|
-| **VM** | Hetzner CX33 — `root@178.105.210.108` |
+| **VM** | Hetzner CX33 — `root@YOUR_SERVER_IP` |
 | **App** | `https://heartbits.what-if.io` |
 | **Auth** | `https://auth.heartbits.what-if.io` (Zitadel v4.14) |
 | **Relay** | `https://relay.heartbits.what-if.io` |
 | **Compose root** | `~/deploy/` on the VM |
 
-DNS: all three domains → `178.105.210.108`, gray-cloud (DNS-only) in Cloudflare.
+DNS: all three domains → `YOUR_SERVER_IP`, gray-cloud (DNS-only) in Cloudflare.
 
 ---
 
@@ -50,7 +50,7 @@ A `down --volumes` wipes the Zitadel DB. Before re-running:
 
 ```bash
 # On the VM — clear stale secrets so do.sh re-bootstraps
-ssh root@178.105.210.108
+ssh root@YOUR_SERVER_IP
 cd ~/deploy
 sed -i 's/^HEARTBITS_CLIENT_ID=.*/HEARTBITS_CLIENT_ID=/' .env
 rm -f zitadel/bootstrap/admin.pat zitadel/bootstrap/login-client.pat
@@ -86,22 +86,22 @@ cd ~/Projects/Heartbits/heartbits-web
 bun run build
 
 # Sync and restart (bun install runs inside the container on start)
-rsync -avz --delete ~/Projects/Heartbits/heartbits-web/ root@178.105.210.108:~/deploy/../heartbits-web/
-ssh root@178.105.210.108 'cd ~/deploy && docker compose restart heartbits-web'
+rsync -avz --delete ~/Projects/Heartbits/heartbits-web/ root@YOUR_SERVER_IP:~/deploy/../heartbits-web/
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-web'
 ```
 
 ### heartbits-api
 
 ```bash
-rsync -avz ~/Projects/Heartbits/heartbits-api/ root@178.105.210.108:~/deploy/../heartbits-api/
-ssh root@178.105.210.108 'cd ~/deploy && docker compose restart heartbits-api'
+rsync -avz ~/Projects/Heartbits/heartbits-api/ root@YOUR_SERVER_IP:~/deploy/../heartbits-api/
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-api'
 ```
 
 ### relay-server
 
 ```bash
-rsync -avz ~/Projects/Heartbits/relay-server/ root@178.105.210.108:~/deploy/../relay-server/
-ssh root@178.105.210.108 'cd ~/deploy && docker compose restart heartbits-relay'
+rsync -avz ~/Projects/Heartbits/relay-server/ root@YOUR_SERVER_IP:~/deploy/../relay-server/
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-relay'
 ```
 
 ### Deploy config only (Caddyfile, compose.yml)
@@ -117,7 +117,7 @@ ssh root@178.105.210.108 'cd ~/deploy && docker compose restart heartbits-relay'
 `STAGING_PASSWORD` in `.env` gates the app behind a simple password wall (served by the SvelteKit app itself — no browser auth dialogs). Not set → no gate.
 
 ```bash
-ssh root@178.105.210.108
+ssh root@YOUR_SERVER_IP
 cd ~/deploy
 # Enable
 echo "STAGING_PASSWORD=secret" >> .env
@@ -133,11 +133,11 @@ docker compose up -d heartbits-web
 ## Service health
 
 ```bash
-ssh root@178.105.210.108 'cd ~/deploy && docker compose ps'
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose ps'
 
 # Logs
-ssh root@178.105.210.108 'cd ~/deploy && docker compose logs -f heartbits-web'
-ssh root@178.105.210.108 'cd ~/deploy && docker compose logs -f zitadel'
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose logs -f heartbits-web'
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose logs -f zitadel'
 
 # OIDC discovery
 curl -s https://auth.heartbits.what-if.io/.well-known/openid-configuration | python3 -m json.tool | head -10
@@ -167,7 +167,7 @@ curl -sf https://auth.heartbits.what-if.io/admin/v1/policies/label \
 ### Re-applying branding
 
 ```bash
-ssh root@178.105.210.108
+ssh root@YOUR_SERVER_IP
 cd ~/deploy
 # Re-run only the branding section (bootstrap exits early if CLIENT_ID set)
 # Workaround: call the API directly with admin.pat
