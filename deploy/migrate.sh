@@ -7,6 +7,14 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "${SCRIPT_DIR}"
 
+# Load .env so POSTGRES_PASSWORD / WORKER_POSTGRES_PASSWORD are available
+if [ -f "${SCRIPT_DIR}/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "${SCRIPT_DIR}/.env"
+  set +a
+fi
+
 echo "── HeartBits DB migrations ──────────────────────────────────────────────────"
 
 # Wait until postgres is accepting connections
@@ -24,5 +32,23 @@ echo "  Postgres ready. Applying 001_initial_schema.sql..."
 
 docker compose exec -T postgres psql -U heartbits -d heartbits \
   < "${SCRIPT_DIR}/../heartbits-api/migrations/001_initial_schema.sql"
+
+echo "  Setting role passwords from environment..."
+
+# Set heartbits_api password from POSTGRES_PASSWORD (same creds compose uses)
+if [ -n "${POSTGRES_PASSWORD:-}" ]; then
+  docker compose exec -T postgres psql -U heartbits -d heartbits \
+    -c "ALTER ROLE heartbits_api PASSWORD '${POSTGRES_PASSWORD}';"
+  echo "  heartbits_api password updated."
+fi
+
+# Set heartbits_worker password from WORKER_POSTGRES_PASSWORD
+if [ -n "${WORKER_POSTGRES_PASSWORD:-}" ]; then
+  docker compose exec -T postgres psql -U heartbits -d heartbits \
+    -c "ALTER ROLE heartbits_worker PASSWORD '${WORKER_POSTGRES_PASSWORD}';"
+  echo "  heartbits_worker password updated."
+else
+  echo "  WARNING: WORKER_POSTGRES_PASSWORD not set — heartbits_worker keeps placeholder password."
+fi
 
 echo "── Migrations complete ───────────────────────────────────────────────────────"
