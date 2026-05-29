@@ -34,7 +34,7 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return
 
-  // Skip cross-origin requests (e.g. WebSocket upgrades to hb.what-if.io)
+  // Skip cross-origin requests (e.g. WebSocket upgrades to relay.heartbits.what-if.io)
   const url = new URL(event.request.url)
   if (url.origin !== self.location.origin) return
 

@@ -17,11 +17,11 @@ The moment two people match, their hearts sync live for the first time.
 ```
                         ┌─────────────────────────────────────────────┐
                         │           Caddy 2 (TLS + routing)            │
-                        │  hb.what-if.io       → heartbits-relay:8765 │
+                        │  relay.heartbits.what-if.io → relay:8765    │
                         │  heartbits.what-if.io → heartbits-web:3000  │
-                        │  account.what-if.io  → zitadel:8180         │
-                        │  (planned) api.what-if.io → heartbits-api   │
-                        │  (planned) media.what-if.io → minio:9000    │
+                        │  auth.heartbits.what-if.io → zitadel:8180   │
+                        │  api.heartbits.what-if.io → heartbits-api   │
+                        │  (planned) media.heartbits.what-if.io→minio │
                         └─────────────────────────────────────────────┘
                                         │
          ┌──────────────────────────────┼──────────────────────────┐
@@ -55,11 +55,12 @@ The moment two people match, their hearts sync live for the first time.
 
 | Subdomain | Service | Status |
 |---|---|---|
-| `hb.what-if.io` | WebSocket relay | Live |
-| `heartbits.what-if.io` | SvelteKit web app / PWA | Live (basic-auth gated) |
-| `account.what-if.io` | Zitadel OIDC + login UI | Live |
-| `api.what-if.io` | REST API (heartbits-api) | Planned |
-| `media.what-if.io` | Signed photo URLs via MinIO | Planned |
+| `relay.heartbits.what-if.io` | WebSocket relay | Live |
+| `heartbits.what-if.io` | SvelteKit web app / PWA | Live |
+| `auth.heartbits.what-if.io` | Zitadel OIDC + login UI | Live |
+| `api.heartbits.what-if.io` | REST API (heartbits-api) | Live |
+| `status.heartbits.what-if.io` | Status page redirect | Live |
+| `media.heartbits.what-if.io` | Signed photo URLs via MinIO | Planned |
 
 ---
 
@@ -435,8 +436,8 @@ heartbits-web:
   command: bun run preview  # or node build for SvelteKit
   environment:
     PORT: 3000
-    PUBLIC_API_URL: https://api.what-if.io
-    PUBLIC_RELAY_URL: wss://hb.what-if.io
+    PUBLIC_API_URL: https://api.heartbits.what-if.io
+    PUBLIC_RELAY_URL: wss://relay.heartbits.what-if.io
   networks: [internal]
 
 minio:
@@ -447,8 +448,8 @@ minio:
 ```
 
 New Caddyfile blocks: see `docs/Caddyfile.heartbits` for the full security-hardened
-Caddy config for `api.what-if.io`, `heartbits.what-if.io`, `hb.what-if.io`,
-and `media.what-if.io` (GET-only proxy to MinIO with security headers).
+Caddy config for `api.heartbits.what-if.io`, `heartbits.what-if.io`, `relay.heartbits.what-if.io`,
+and `media.heartbits.what-if.io` (GET-only proxy to MinIO with security headers).
 
 ---
 

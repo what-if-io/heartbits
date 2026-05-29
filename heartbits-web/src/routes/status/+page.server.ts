@@ -12,7 +12,20 @@ export interface Service {
   history: ('ok' | 'degraded' | 'down')[];
 }
 
-async function ping(url: string, noRedirect = false): Promise<{ ok: boolean; ms: number }> {
+export interface Incident {
+  id: number;
+  service: string;
+  severity: 'degraded' | 'down';
+  started_at: number;
+  resolved_at: number | null;
+  message: string | null;
+}
+
+const MONITOR_URL = process.env.MONITOR_URL ?? 'http://heartbits-monitor:4000';
+
+// ── Live fallback pings (used when monitor is unavailable) ────────────────────
+
+async function livePing(url: string, noRedirect = false): Promise<{ ok: boolean; ms: number }> {
   const t = performance.now();
   try {
     const r = await fetch(url, {
@@ -21,14 +34,13 @@ async function ping(url: string, noRedirect = false): Promise<{ ok: boolean; ms:
       redirect: noRedirect ? 'manual' : 'follow',
       headers: { 'User-Agent': 'HeartBits-Status/1.0' },
     });
-    // opaqueredirect (status 0) = redirect was returned = server is alive
     return { ok: r.status === 0 || r.status < 500, ms: Math.round(performance.now() - t) };
   } catch {
     return { ok: false, ms: -1 };
   }
 }
 
-function history(seed: string): ('ok' | 'degraded' | 'down')[] {
+function seededHistory(seed: string): ('ok' | 'degraded' | 'down')[] {
   let s = [...seed].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) | 0, 0x9e37);
   const rnd = () => {
     s = Math.imul(s ^ (s >>> 16), 0x45d9f3b);
@@ -36,70 +48,73 @@ function history(seed: string): ('ok' | 'degraded' | 'down')[] {
     return (s >>> 0) / 2 ** 32;
   };
   return Array.from({ length: 90 }, (_, i) => {
-    const r = rnd();
-    const stab = i >= 80 ? 0.003 : 0.007;
+    const r = rnd(), stab = i >= 80 ? 0.003 : 0.007;
     if (r < stab * 0.6) return 'down';
-    if (r < stab * 3) return 'degraded';
+    if (r < stab * 3)   return 'degraded';
     return 'ok';
   });
 }
 
-export const load: PageServerLoad = async () => {
-  const [webR, authR, relayR] = await Promise.allSettled([
-    ping('https://heartbits.what-if.io/'),
-    ping('https://account.what-if.io/debug/healthz'),
-    ping('http://hb.what-if.io/', true), // WS relay — check via HTTP, don't follow redirect
-  ]);
+const WEB_URL   = process.env.WEB_URL   ?? '';
+const AUTH_URL  = process.env.AUTH_URL  ?? '';
+const RELAY_URL = process.env.RELAY_URL ?? '';
 
-  const get = (r: typeof webR) =>
-    r.status === 'fulfilled' ? r.value : { ok: false, ms: -1 };
-
+async function liveCheck(): Promise<{ services: Service[]; incidents: Incident[]; fromMonitor: false }> {
   const toState = ({ ok, ms }: { ok: boolean; ms: number }): ServiceState =>
     !ok ? 'down' : ms > 3000 ? 'degraded' : 'operational';
 
-  const web   = get(webR);
-  const auth  = get(authR);
-  const relay = get(relayR);
+  const checks = await Promise.allSettled([
+    WEB_URL   ? livePing(WEB_URL)   : Promise.resolve({ ok: true, ms: -1 }),
+    AUTH_URL  ? livePing(AUTH_URL)  : Promise.resolve({ ok: true, ms: -1 }),
+    RELAY_URL ? livePing(RELAY_URL) : Promise.resolve({ ok: true, ms: -1 }),
+  ]);
+  const get = (r: typeof checks[0]) => r.status === 'fulfilled' ? r.value : { ok: false, ms: -1 };
+  const [web, auth, relay] = checks.map(get);
+
+  const webDomain   = WEB_URL   ? new URL(WEB_URL).hostname   : 'heartbits.what-if.io';
+  const authDomain  = AUTH_URL  ? new URL(AUTH_URL).hostname  : 'auth.heartbits.what-if.io';
+  const relayDomain = RELAY_URL ? new URL(RELAY_URL).hostname : 'relay.heartbits.what-if.io';
 
   return {
-    checkedAt: Date.now(),
+    fromMonitor: false,
+    incidents: [],
     services: [
-      {
-        id: 'web',
-        name: 'Web',
-        desc: 'heartbits.what-if.io',
-        state: toState(web),
-        latencyMs: web.ms > 0 ? web.ms : null,
-        uptime: 99.98,
-        history: history('web'),
-      },
-      {
-        id: 'auth',
-        name: 'Auth',
-        desc: 'account.what-if.io',
-        state: toState(auth),
-        latencyMs: auth.ms > 0 ? auth.ms : null,
-        uptime: 99.95,
-        history: history('auth'),
-      },
-      {
-        id: 'relay',
-        name: 'Relay',
-        desc: 'hb.what-if.io',
-        state: toState(relay),
-        latencyMs: relay.ms > 0 ? relay.ms : null,
-        uptime: 100.0,
-        history: history('relay'),
-      },
-      {
-        id: 'api',
-        name: 'API',
-        desc: 'api.heartbits.what-if.io',
-        state: 'planned',
-        latencyMs: null,
-        uptime: null,
-        history: history('api'),
-      },
-    ] satisfies Service[],
+      { id: 'web',   name: 'Web',   desc: webDomain,                  state: toState(web),   latencyMs: web.ms   > 0 ? web.ms   : null, uptime: null, history: seededHistory('web')   },
+      { id: 'auth',  name: 'Auth',  desc: authDomain,                 state: toState(auth),  latencyMs: auth.ms  > 0 ? auth.ms  : null, uptime: null, history: seededHistory('auth')  },
+      { id: 'relay', name: 'Relay', desc: relayDomain,                state: toState(relay), latencyMs: relay.ms > 0 ? relay.ms : null, uptime: null, history: seededHistory('relay') },
+      { id: 'api',   name: 'API',   desc: `api.${webDomain}`,         state: 'planned',      latencyMs: null,                            uptime: null, history: seededHistory('api')   },
+    ],
   };
+}
+
+// ── Load ──────────────────────────────────────────────────────────────────────
+
+export const load: PageServerLoad = async () => {
+  // Prefer monitor data (has real history + incidents)
+  try {
+    const r = await fetch(`${MONITOR_URL}/status`, {
+      signal: AbortSignal.timeout(3000),
+    });
+    if (r.ok) {
+      const data = await r.json() as {
+        checkedAt: number;
+        services: Service[];
+        incidents: Incident[];
+      };
+      return {
+        checkedAt:   data.checkedAt,
+        fromMonitor: true,
+        incidents:   data.incidents ?? [],
+        services: [
+          ...data.services.map(s => ({ ...s, state: s.state as ServiceState })),
+          // API is not monitored yet — always planned
+          { id: 'api', name: 'API', desc: 'api.heartbits.what-if.io', state: 'planned' as ServiceState, latencyMs: null, uptime: null, history: Array<'ok'>(90).fill('ok') },
+        ],
+      };
+    }
+  } catch {
+    // Monitor not available — fall through to live pings
+  }
+
+  return { checkedAt: Date.now(), ...(await liveCheck()) };
 };

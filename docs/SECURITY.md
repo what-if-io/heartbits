@@ -143,7 +143,7 @@ The following MUST be completed before any public user can create an account.
 - [ ] **Media deletion worker** — consume `hb:worker:media_delete` Redis queue; call MinIO `removeObject` for all media rows where `user_id` matches, then delete the media rows.
 - [ ] **audit_log partitioning** — implement pg_partman monthly partitions with 7-year retention per the migration comment.
 - [ ] **Caddy security headers** — apply the config from `docs/Caddyfile.heartbits` to the production Caddyfile.
-- [ ] **Add `api.what-if.io` Caddy block** to the remote Caddyfile (currently missing; only `hb.what-if.io` and `heartbits.what-if.io` exist).
+- [x] **Add `api.heartbits.what-if.io` Caddy block** — done; proxies to heartbits-api:3100 with CORS headers.
 - [ ] **Log sanitisation** — verify Caddy does not log `?token=` query parameter in access logs (rotate any logs that may contain it).
 - [ ] **CSP nonce for SvelteKit** — replace `'unsafe-inline'` in the web app CSP with nonce-based CSP using SvelteKit's adapter-node CSP hook.
 - [ ] **Rate limit on `POST /api/v1/me/init`** — currently unlimited. A bot could create unlimited Zitadel accounts and call init repeatedly. Add IP-based rate limiting at Caddy level.

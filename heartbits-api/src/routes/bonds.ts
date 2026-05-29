@@ -15,6 +15,9 @@ import { redis } from '../redis'
 /** Relay room Redis TTL — 30 days */
 const RELAY_ROOM_TTL_SEC = 30 * 24 * 60 * 60
 
+const RELAY_DOMAIN = process.env['RELAY_DOMAIN'] ?? 'relay.heartbits.what-if.io'
+const relayWssUrl = (roomId: string) => `wss://${RELAY_DOMAIN}/${roomId}`
+
 export const bondsRoute = new Elysia({ prefix: '/api/v1' })
   .use(authPlugin)
 
@@ -147,7 +150,7 @@ export const bondsRoute = new Elysia({ prefix: '/api/v1' })
           partner_id: row.user_a_id === auth.userId ? row.user_b_id : row.user_a_id,
           matched_at: row.matched_at.toISOString(),
           // Relay connection hint
-          relay_url: `wss://hb.what-if.io?room=${row.room_id}`,
+          relay_url: relayWssUrl(row.room_id),
         }
       })
     },
@@ -228,7 +231,7 @@ export const bondsRoute = new Elysia({ prefix: '/api/v1' })
             match_id: match.id,
             room_id: existing.room_id,
             created_at: existing.created_at.toISOString(),
-            relay_url: `wss://hb.what-if.io?room=${existing.room_id}`,
+            relay_url: relayWssUrl(existing.room_id),
             created: false,
           }
         }
@@ -266,7 +269,7 @@ export const bondsRoute = new Elysia({ prefix: '/api/v1' })
           match_id: match.id,
           room_id: bond.room_id,
           created_at: bond.created_at.toISOString(),
-          relay_url: `wss://hb.what-if.io?room=${bond.room_id}`,
+          relay_url: relayWssUrl(bond.room_id),
           created: true,
         }
       })

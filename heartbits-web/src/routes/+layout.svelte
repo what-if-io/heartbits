@@ -29,7 +29,7 @@
 {@render children()}
 
 {#if showDemoBanner}
-  <div class="demo-banner">
+  <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>
     <span class="demo-pill">Demo</span>
     <span class="demo-text">Exploring HeartBits in demo mode</span>
     <a href="/auth/login" class="demo-cta">Create account →</a>
@@ -57,11 +57,6 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     font-size: 13px;
-  }
-
-  /* Push banner up above BottomNav when both visible */
-  :global(.has-bottom-nav) .demo-banner {
-    bottom: 64px;
   }
 
   .demo-pill {

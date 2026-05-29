@@ -1,0 +1,7 @@
+{
+  "name": "heartbits-monitor",
+  "private": true,
+  "scripts": {
+    "start": "bun run monitor.ts"
+  }
+}

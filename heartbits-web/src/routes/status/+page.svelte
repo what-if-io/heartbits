@@ -78,10 +78,26 @@
   const opCount   = $derived(data.services.filter(s => s.state === 'operational').length);
   const liveCount = $derived(data.services.filter(s => s.state !== 'planned').length);
 
+  const openIncidents     = $derived((data.incidents ?? []).filter(i => i.resolved_at == null));
+  const resolvedIncidents = $derived((data.incidents ?? []).filter(i => i.resolved_at != null));
+
   function elapsedStr(s: number): string {
     if (s < 5)  return 'just now';
     if (s < 60) return `${s}s ago`;
     return `${Math.round(s / 60)}m ago`;
+  }
+
+  function fmtDate(ms: number): string {
+    return new Date(ms).toLocaleString('en-GB', {
+      day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
+    });
+  }
+
+  function duration(start: number, end: number | null): string {
+    const d = ((end ?? Date.now()) - start) / 1000;
+    if (d < 60)   return `${Math.round(d)}s`;
+    if (d < 3600) return `${Math.round(d / 60)}m`;
+    return `${(d / 3600).toFixed(1)}h`;
   }
 </script>
 
@@ -163,7 +179,11 @@
           <span class="meta-sep">·</span>
           {data.services.filter(s => s.state !== 'planned').length} services monitored
           <span class="meta-sep">·</span>
-          {data.services.filter(s => s.state === 'planned').length} pending
+          {#if data.fromMonitor}
+            <span class="meta-monitor">● live monitoring</span>
+          {:else}
+            <span class="meta-live">◌ live check</span>
+          {/if}
         </p>
       </section>
 
@@ -267,14 +287,56 @@
 
       <!-- ── INCIDENTS ──────────────────────────────────────────────────────── -->
       <section class="incidents" aria-label="Incident history">
-        <h2 class="section-label">Incidents</h2>
-        <div class="incidents-empty">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-            <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.25"/>
-            <path d="M5.5 9L7.5 11L12.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          No incidents reported in the last 90 days
-        </div>
+        <h2 class="section-label">Incidents — 90 Days</h2>
+
+        {#if openIncidents.length > 0}
+          <div class="incidents-open">
+            {#each openIncidents as inc (inc.id)}
+              <div class="incident-active" style:--ic={STATE_COLOR[inc.severity]}>
+                <div class="inc-dot"></div>
+                <div class="inc-body">
+                  <div class="inc-title">{inc.message ?? `${inc.service} ${inc.severity}`}</div>
+                  <div class="inc-meta">
+                    {fmtDate(inc.started_at)}
+                    <span class="meta-sep">·</span>
+                    ongoing for {duration(inc.started_at, null)}
+                  </div>
+                </div>
+              </div>
+            {/each}
+          </div>
+        {/if}
+
+        {#if resolvedIncidents.length > 0}
+          <div class="incident-list">
+            {#each resolvedIncidents as inc (inc.id)}
+              <div class="incident-row">
+                <div class="inc-severity-dot" style:background={STATE_COLOR[inc.severity]}></div>
+                <div class="inc-row-body">
+                  <span class="inc-row-title">{inc.message ?? `${inc.service} ${inc.severity}`}</span>
+                  <span class="inc-row-meta">
+                    {fmtDate(inc.started_at)}
+                    <span class="meta-sep">·</span>
+                    resolved after {duration(inc.started_at, inc.resolved_at)}
+                  </span>
+                </div>
+                <span class="inc-resolved-badge">Resolved</span>
+              </div>
+            {/each}
+          </div>
+        {:else if openIncidents.length === 0}
+          <div class="incidents-empty">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.2" stroke-opacity="0.25"/>
+              <path d="M5.5 9L7.5 11L12.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {#if data.fromMonitor}
+              No incidents reported in the last 90 days
+            {:else}
+              Incident history available once monitoring starts
+            {/if}
+          </div>
+        {/if}
       </section>
 
     </div><!-- /wrap -->
@@ -681,6 +743,10 @@
 
   /* ── INCIDENTS ──────────────────────────────────────────── */
   .incidents { margin-bottom: 64px; }
+
+  .meta-monitor { color: #00e87a; opacity: 0.7; }
+  .meta-live    { color: rgba(255,255,255,0.28); }
+
   .incidents-empty {
     display: flex;
     align-items: center;
@@ -693,6 +759,60 @@
     font-size: 12.5px;
     color: rgba(255,255,255,0.26);
     letter-spacing: 0.02em;
+  }
+
+  /* Active (open) incidents */
+  .incidents-open { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .incident-active {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 18px 20px; border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--ic) 28%, transparent);
+    background: color-mix(in srgb, var(--ic) 6%, transparent);
+  }
+  .inc-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--ic); flex-shrink: 0; margin-top: 3px;
+    animation: inc-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes inc-pulse {
+    0%, 100% { box-shadow: 0 0 0 0   color-mix(in srgb, var(--ic) 50%, transparent); }
+    55%      { box-shadow: 0 0 0 6px color-mix(in srgb, var(--ic) 0%,  transparent); }
+  }
+  .inc-title {
+    font-family: var(--font-display); font-size: 14px; font-weight: 700;
+    color: color-mix(in srgb, var(--ic) 90%, white); margin-bottom: 4px;
+  }
+  .inc-meta {
+    font-family: var(--font-mono); font-size: 11px;
+    color: rgba(255,255,255,0.35); letter-spacing: 0.02em;
+  }
+
+  /* Resolved incident list */
+  .incident-list { display: flex; flex-direction: column; gap: 2px; }
+  .incident-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-radius: 10px;
+    background: rgba(255,255,255,0.016);
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .incident-row:hover { background: rgba(255,255,255,0.028); }
+  .inc-severity-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; opacity: 0.7; }
+  .inc-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .inc-row-title {
+    font-family: var(--font-display); font-size: 13px; font-weight: 600;
+    color: rgba(255,255,255,0.75);
+  }
+  .inc-row-meta {
+    font-family: var(--font-mono); font-size: 10px;
+    color: rgba(255,255,255,0.28); letter-spacing: 0.02em;
+  }
+  .inc-resolved-badge {
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: rgba(0,232,122,0.55); padding: 2px 8px;
+    border-radius: 100px; border: 1px solid rgba(0,232,122,0.15);
+    background: rgba(0,232,122,0.05); flex-shrink: 0;
   }
 
   /* ── FOOTER ─────────────────────────────────────────────── */

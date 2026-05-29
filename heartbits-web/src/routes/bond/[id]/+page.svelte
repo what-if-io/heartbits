@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { slide } from 'svelte/transition';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
@@ -175,43 +176,91 @@
     return Math.max(60, Math.min(88, current + (Math.random() - 0.5) * 2.5));
   }
 
+  // yourBpm tick — always runs, simulated on web (real device would replace this)
   let bpmInterval: ReturnType<typeof setInterval>;
+  // Partner simulation — only when relay is unavailable
+  let partnerSimInterval: ReturnType<typeof setInterval>;
   let wsTimeout: ReturnType<typeof setTimeout>;
   let ws: WebSocket | null = null;
+
+  // ── CHAT ──────────────────────────────────────────────
+  interface ChatMsg { id: number; from: 'me' | 'them'; text: string; }
+  let messages = $state<ChatMsg[]>([]);
+  let chatOpen = $state(false);
+  let chatUnread = $state(0);
+  let chatInput = $state('');
+  let chatScrollEl: HTMLDivElement;
+  let msgId = 0;
+
+  function sendChat() {
+    const text = chatInput.trim();
+    if (!text) return;
+    messages = [...messages, { id: ++msgId, from: 'me', text }];
+    chatInput = '';
+    if (ws?.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'chat', text }));
+    }
+    setTimeout(() => { chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }); }, 30);
+  }
+
+  function handleChatKey(e: KeyboardEvent) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
+  }
+
+  // ── SIMULATION ────────────────────────────────────────
+  function checkSync() {
+    const diff = Math.abs(Math.round(partnerBpm) - Math.round(yourBpm));
+    if (diff <= 5 && !inSync) { inSync = true; setTimeout(() => { syncVisible = true; }, 200); }
+    else if (diff > 5 && inSync) { inSync = false; syncVisible = false; }
+  }
 
   function startSimulation() {
     connectionStatus = 'live';
     connected = true;
     animateBpmCountUp(Math.round(partnerBpm));
     scheduleNextPulse();
-    bpmInterval = setInterval(() => {
+    partnerSimInterval = setInterval(() => {
       partnerBpm = simulateBpm(partnerBpm);
-      yourBpm = simulateBpm(yourBpm);
-      // Sync check
-      const diff = Math.abs(Math.round(partnerBpm) - Math.round(yourBpm));
-      if (diff <= 5 && !inSync) {
-        inSync = true;
-        setTimeout(() => { syncVisible = true; }, 200);
-      } else if (diff > 5 && inSync) {
-        inSync = false;
-        syncVisible = false;
-      }
+      checkSync();
     }, 2400);
   }
 
-  function connectWebSocket(roomId: string) {
+  async function connectWebSocket(bondId: string) {
     try {
-      wsTimeout = setTimeout(() => {
-        if (!connected) startSimulation();
-      }, 2500);
-      ws = new WebSocket(`wss://hb.what-if.io/${roomId}?token=mock-token`);
-      ws.onopen = () => { clearTimeout(wsTimeout); connectionStatus = 'live'; connected = true; animateBpmCountUp(Math.round(partnerBpm)); scheduleNextPulse(); };
+      wsTimeout = setTimeout(() => { if (!connected) startSimulation(); }, 4000);
+      const res = await fetch(`/bond/${bondId}/connect`);
+      const cfg = await res.json() as { demo: boolean; relayUrl?: string | null; token?: string | null };
+      if (cfg.demo || !cfg.relayUrl) { clearTimeout(wsTimeout); startSimulation(); return; }
+
+      ws = new WebSocket(`${cfg.relayUrl}?token=${cfg.token}`);
+      ws.onopen = () => {
+        clearTimeout(wsTimeout);
+        connectionStatus = 'live';
+        connected = true;
+        animateBpmCountUp(Math.round(partnerBpm));
+        scheduleNextPulse();
+      };
       ws.onmessage = (event) => {
-        try { const d = JSON.parse(event.data); if (d.bpm) partnerBpm = d.bpm; } catch {}
+        try {
+          const d = JSON.parse(event.data);
+          // BPM — typed protocol or backward compat
+          const newBpm = d.type === 'bpm' && typeof d.value === 'number' ? d.value
+            : typeof d.bpm === 'number' ? d.bpm : null;
+          if (newBpm !== null) { partnerBpm = newBpm; checkSync(); }
+          // Chat
+          if (d.type === 'chat' && typeof d.text === 'string') {
+            messages = [...messages, { id: ++msgId, from: 'them', text: d.text }];
+            if (!chatOpen) chatUnread++;
+            setTimeout(() => { chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }); }, 30);
+          }
+        } catch {}
       };
       ws.onerror = () => { clearTimeout(wsTimeout); startSimulation(); };
       ws.onclose = () => { if (connected) { connectionStatus = 'offline'; connected = false; } };
-    } catch { startSimulation(); }
+    } catch {
+      clearTimeout(wsTimeout);
+      startSimulation();
+    }
   }
 
   onMount(() => {
@@ -222,6 +271,13 @@
       initParticles(particleCanvas.offsetWidth, particleCanvas.offsetHeight);
       particleRafId = requestAnimationFrame(drawParticles);
     }
+    // Always tick own BPM and send it over relay when connected
+    bpmInterval = setInterval(() => {
+      yourBpm = simulateBpm(yourBpm);
+      if (ws?.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'bpm', value: Math.round(yourBpm) }));
+      }
+    }, 2000);
     // GDPR Art. 9: require explicit consent before transmitting biometric data
     if (checkConsent()) {
       connectWebSocket(id);
@@ -233,6 +289,7 @@
   onDestroy(() => {
     ws?.close();
     clearInterval(bpmInterval);
+    clearInterval(partnerSimInterval);
     clearTimeout(wsTimeout);
     clearTimeout(pulseTimeout);
     cancelAnimationFrame(particleRafId);
@@ -395,8 +452,61 @@
         />
       </div>
     </div>
+
+    <!-- ── CHAT TOGGLE ───────────────────── -->
+    <button
+      class="chat-toggle"
+      onclick={() => { chatOpen = !chatOpen; if (chatOpen) chatUnread = 0; }}
+    >
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+        <path d="M1.5 1.5H13.5V9.5H8L5 13V9.5H1.5V1.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <span>Message {partnerName}</span>
+      {#if chatUnread > 0 && !chatOpen}
+        <span class="chat-badge">{chatUnread}</span>
+      {/if}
+    </button>
   </div>
 </div>
+
+<!-- ── CHAT DRAWER ────────────────── -->
+{#if chatOpen}
+  <div class="chat-drawer" transition:slide={{duration: 220, axis: 'y'}}>
+    <div class="chat-drawer-header">
+      <span class="chat-partner-name">{partnerName}</span>
+      <button class="chat-close" onclick={() => chatOpen = false} aria-label="Close chat">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="chat-messages" bind:this={chatScrollEl}>
+      {#if messages.length === 0}
+        <p class="chat-empty">No messages yet</p>
+      {/if}
+      {#each messages as msg (msg.id)}
+        <div class="chat-msg" class:me={msg.from === 'me'} class:them={msg.from === 'them'}>
+          <span class="chat-bubble">{msg.text}</span>
+        </div>
+      {/each}
+    </div>
+    <div class="chat-input-row">
+      <input
+        type="text"
+        bind:value={chatInput}
+        onkeydown={handleChatKey}
+        placeholder="Say something…"
+        class="chat-input"
+        maxlength={500}
+      />
+      <button class="chat-send" onclick={sendChat} disabled={!chatInput.trim()}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M13 7L1 1.5L3.5 7L1 12.5L13 7Z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+{/if}
 
 <BottomNav />
 
@@ -774,4 +884,172 @@
     z-index: 2;
     pointer-events: none;
   }
+
+  /* ── CHAT TOGGLE ─────────────────────────────────── */
+  .chat-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.45);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s;
+    position: relative;
+  }
+
+  .chat-toggle:hover {
+    background: rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.7);
+  }
+
+  .chat-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #FF6B6B;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    padding: 0 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── CHAT DRAWER ─────────────────────────────────── */
+  .chat-drawer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: var(--nav-h, 72px);
+    z-index: 150;
+    height: min(58vh, 440px);
+    background: rgba(7,7,16,0.97);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+
+  .chat-partner-name {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .chat-close {
+    color: rgba(255,255,255,0.3);
+    padding: 4px;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .chat-close:hover { color: rgba(255,255,255,0.6); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overscroll-behavior: contain;
+  }
+
+  .chat-empty {
+    margin: auto;
+    color: rgba(255,255,255,0.18);
+    font-size: 13px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .chat-msg {
+    display: flex;
+  }
+
+  .chat-msg.me   { justify-content: flex-end; }
+  .chat-msg.them { justify-content: flex-start; }
+
+  .chat-bubble {
+    max-width: 74%;
+    padding: 9px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .chat-msg.me .chat-bubble {
+    background: linear-gradient(135deg, #FF6B6B, #E81F8C);
+    color: white;
+    border-bottom-right-radius: 5px;
+  }
+
+  .chat-msg.them .chat-bubble {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.82);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-bottom-left-radius: 5px;
+  }
+
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 22px;
+    padding: 9px 16px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.88);
+    outline: none;
+    transition: border-color 0.18s;
+  }
+
+  .chat-input:focus { border-color: rgba(255,107,107,0.4); }
+  .chat-input::placeholder { color: rgba(255,255,255,0.2); }
+
+  .chat-send {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FF6B6B, #E81F8C);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: opacity 0.18s, transform 0.12s;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .chat-send:disabled { opacity: 0.3; cursor: default; }
+  .chat-send:not(:disabled):hover { transform: scale(1.06); }
 </style>

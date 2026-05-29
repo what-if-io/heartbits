@@ -3,6 +3,12 @@
   import BottomNav from '$lib/components/BottomNav.svelte';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import { consent, grantConsent, withdrawConsent } from '$lib/stores/consent';
+  import type { LayoutData } from '../$types';
+
+  let { data }: { data: LayoutData } = $props();
+
+  const displayName = $derived(data.user?.name?.split(' ')[0] ?? 'You');
+  const initial = $derived(displayName[0]?.toUpperCase() ?? 'Y');
 
   // ── PROFILE STATE ────────────────────────────────────────
   // Toggle is derived from consent store (writable — use $ prefix)
@@ -81,7 +87,7 @@
       <div class="avatar-ring-outer">
         <div class="avatar-ring-inner">
           <div class="avatar">
-            <span>Y</span>
+            <span>{initial}</span>
           </div>
         </div>
       </div>
@@ -89,7 +95,7 @@
       <!-- Name + age -->
       <div class="identity">
         <h2 class="name">
-          {editMode ? 'Tap to edit' : 'You'}
+          {editMode ? 'Tap to edit' : displayName}
           {#if editMode}
             <span class="edit-hint">✎</span>
           {/if}
