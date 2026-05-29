@@ -82,6 +82,22 @@
 	reverse_proxy heartbits-api:3100
 }
 
+# ── Media / object storage (public avatar CDN) ────────────────────────────────
+{$MEDIA_DOMAIN} {
+	encode gzip
+
+	header {
+		defer
+		Cache-Control              "public, max-age=31536000, immutable"
+		Access-Control-Allow-Origin "*"
+		X-Content-Type-Options     "nosniff"
+		-Server
+	}
+
+	# Proxy to MinIO S3 API — bucket is public-read (policy set by API on startup)
+	reverse_proxy minio:9000
+}
+
 # ── Status page subdomain ─────────────────────────────────────────────────────
 {$STATUS_DOMAIN} {
 	redir https://{$APP_DOMAIN}/status permanent

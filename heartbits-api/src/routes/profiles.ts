@@ -5,8 +5,8 @@ import { Elysia, t } from 'elysia'
 import { authPlugin } from '../auth'
 import { withUser } from '../db'
 import { decryptField } from '../crypto'
+import { avatarUrl } from '../minio'
 
-/** Derive integer age from stored date string without exposing the exact date. */
 function ageFromDob(dob: string): number {
   const birth = new Date(dob)
   const today = new Date()
@@ -14,11 +14,6 @@ function ageFromDob(dob: string): number {
   const m = today.getMonth() - birth.getMonth()
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
   return age
-}
-
-function buildAvatarUrl(mediaId: string | null): string | null {
-  if (!mediaId) return null
-  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${process.env['MINIO_BUCKET'] ?? 'heartbits-media'}/${mediaId}`
 }
 
 export const profilesRoute = new Elysia({ prefix: '/api/v1' })
@@ -70,7 +65,7 @@ export const profilesRoute = new Elysia({ prefix: '/api/v1' })
           age,
           bio,
           gender: profile.gender,
-          avatar_url: buildAvatarUrl(profile.avatar_media_id),
+          avatar_url: avatarUrl(profile.avatar_media_id),
           // Distance band is only available in discover context
           distance_band: null,
           bpm: null,

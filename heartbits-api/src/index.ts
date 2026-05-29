@@ -8,12 +8,14 @@ import { swagger } from '@elysiajs/swagger'
 
 import { healthRoute } from './routes/health'
 import { meRoutes } from './routes/me'
+import { mediaRoute } from './routes/media'
 import { profilesRoute } from './routes/profiles'
 import { discoverRoute } from './routes/discover'
 import { swipesRoute } from './routes/swipes'
 import { matchesRoute } from './routes/matches'
 import { bondsRoute } from './routes/bonds'
 import { billingRoute } from './routes/billing'
+import { ensureBucket } from './minio'
 
 // Validate required env vars at startup (fail fast)
 const REQUIRED_ENV = [
@@ -124,6 +126,7 @@ const app = new Elysia()
   // ── Routes ────────────────────────────────────────────────────────────────
   .use(healthRoute)
   .use(meRoutes)
+  .use(mediaRoute)
   .use(profilesRoute)
   .use(discoverRoute)
   .use(swipesRoute)
@@ -133,6 +136,9 @@ const app = new Elysia()
 
   // ── Start ─────────────────────────────────────────────────────────────────
   .listen(PORT)
+
+// Create bucket + set public-read policy (idempotent, non-fatal)
+ensureBucket().catch(console.error)
 
 console.log(
   `[heartbits-api] running at http://${app.server?.hostname}:${app.server?.port}`,

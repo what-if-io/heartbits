@@ -16,6 +16,7 @@ import { withUser } from '../db'
 import { decryptField } from '../crypto'
 import { rateLimit } from '../redis'
 import type { DistanceBand } from '../types'
+import { avatarUrl } from '../minio'
 
 const DISCOVER_LIMIT = 20
 const DISCOVER_RATE_LIMIT = 60
@@ -59,10 +60,7 @@ function distanceBand(myGeohash: string | null, theirGeohash: string | null): Di
   return '50km+'
 }
 
-function buildAvatarUrl(mediaId: string | null): string | null {
-  if (!mediaId) return null
-  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${process.env['MINIO_BUCKET'] ?? 'heartbits-media'}/${mediaId}`
-}
+
 
 export const discoverRoute = new Elysia({ prefix: '/api/v1' })
   .use(authPlugin)
@@ -196,7 +194,7 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
             age,
             bio,
             gender: candidate.gender,
-            avatar_url: buildAvatarUrl(candidate.avatar_media_id),
+            avatar_url: avatarUrl(candidate.avatar_media_id),
             distance_band: distanceBand(myProfile.location_geohash6, candidate.location_geohash6),
             bpm: null,
           })

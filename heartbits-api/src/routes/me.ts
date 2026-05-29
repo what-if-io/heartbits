@@ -16,6 +16,7 @@ import { sql, withUser } from '../db'
 import { encryptIfPresent, decryptField } from '../crypto'
 import { redis, rateLimit } from '../redis'
 import { isValidGeohash } from '../types'
+import { avatarUrl } from '../minio'
 
 // ---------------------------------------------------------------------------
 // JWT verification for /me/init (user may not exist in DB yet)
@@ -67,13 +68,6 @@ function ageFromDob(dob: string): number {
   return age
 }
 
-/** Build avatar URL from avatar_media_id. */
-function buildAvatarUrl(mediaId: string | null): string | null {
-  if (!mediaId) return null
-  const bucket = process.env['MINIO_BUCKET'] ?? 'heartbits-media'
-  // Placeholder — real implementation generates a pre-signed MinIO URL
-  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${bucket}/${mediaId}`
-}
 
 // ---------------------------------------------------------------------------
 // Route definitions
@@ -200,7 +194,7 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
           age_min: profile.age_min,
           age_max: profile.age_max,
           location_geohash6: profile.location_geohash6,
-          avatar_url: buildAvatarUrl(profile.avatar_media_id),
+          avatar_url: avatarUrl(profile.avatar_media_id),
         }
       })
     },

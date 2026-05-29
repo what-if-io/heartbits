@@ -4,6 +4,23 @@ import { SESSION_COOKIE, parseSession, sessionCookieAttrs } from '$lib/server/au
 
 const API_BASE = process.env.API_BASE_INTERNAL ?? 'http://heartbits-api:3100';
 
+/** Proxy POST /api/v1/me/avatar — forwards multipart file upload with auth header */
+export const POST: RequestHandler = async ({ request, cookies }) => {
+  const session = await parseSession(cookies.get(SESSION_COOKIE));
+  if (!session || session.isDemo) return json({ error: 'Not authenticated' }, { status: 401 });
+
+  const formData = await request.formData();
+  const res = await fetch(`${API_BASE}/api/v1/me/avatar`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${session.accessToken}` },
+    body: formData,
+    signal: AbortSignal.timeout(30_000),
+  });
+
+  const data = await res.json();
+  return json(data, { status: res.status });
+};
+
 /** Proxy PATCH /api/v1/me — keeps the access token server-side */
 export const PATCH: RequestHandler = async ({ request, cookies }) => {
   const session = await parseSession(cookies.get(SESSION_COOKIE));

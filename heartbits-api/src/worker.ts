@@ -10,7 +10,7 @@
 import { redis } from './redis'
 import { sql, withUser } from './db'
 import postgres from 'postgres'
-import { Client as MinioClient } from 'minio'
+import { minio, BUCKET } from './minio'
 
 console.log('[worker] HeartBits background worker starting…')
 
@@ -46,33 +46,7 @@ const workerSql = postgres(
   { max: 3, idle_timeout: 30, connect_timeout: 10, transform: { undefined: null } },
 )
 
-// ---------------------------------------------------------------------------
-// MinIO client (optional)
-//
-// Set MINIO_ENDPOINT, MINIO_ACCESS_KEY, MINIO_SECRET_KEY to enable object
-// deletion.  If unset, media rows are removed from DB but objects remain in
-// storage — add these vars before going to production.
-// ---------------------------------------------------------------------------
-
-const minioClient: MinioClient | null = (() => {
-  const ep = process.env['MINIO_ENDPOINT']
-  const ak = process.env['MINIO_ACCESS_KEY']
-  const sk = process.env['MINIO_SECRET_KEY']
-  if (!ep || !ak || !sk) {
-    console.warn('[worker] MinIO not configured — storage objects will not be deleted')
-    return null
-  }
-  const colonIdx = ep.lastIndexOf(':')
-  const host = colonIdx > 0 ? ep.slice(0, colonIdx) : ep
-  const port = colonIdx > 0 ? parseInt(ep.slice(colonIdx + 1), 10) : 9000
-  return new MinioClient({
-    endPoint: host,
-    port,
-    useSSL: process.env['MINIO_USE_SSL'] === 'true',
-    accessKey: ak,
-    secretKey: sk,
-  })
-})()
+// minio client imported from ./minio (shared with API routes)
 
 // ---------------------------------------------------------------------------
 // Graceful shutdown
@@ -153,7 +127,7 @@ async function processMediaDeletion(): Promise<void> {
 
   if (mediaRows.length === 0) return
 
-  if (!minioClient) {
+  if (!minio) {
     console.warn(`[worker] media_delete: MinIO not configured — removing DB rows only for user ${userId}`)
     await withUser(userId, (tx) => tx`DELETE FROM app.media WHERE user_id = ${userId}`)
     return
@@ -163,7 +137,7 @@ async function processMediaDeletion(): Promise<void> {
 
   for (const row of mediaRows) {
     try {
-      await minioClient.removeObject(row.bucket, row.object_key)
+      await minio.removeObject(row.bucket, row.object_key)
       succeeded.push(row.id)
     } catch (e: unknown) {
       const code = (e as { code?: string }).code

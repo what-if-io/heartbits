@@ -67,6 +67,8 @@ services:
     environment:
       MINIO_ROOT_USER:     ${MINIO_USER:-heartbits}
       MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+      # Public URL used when generating presigned URLs (must match Caddy vhost)
+      MINIO_SERVER_URL:    https://${MEDIA_DOMAIN}
     volumes:
       - minio_data:/data
     networks: [internal]
@@ -165,6 +167,7 @@ services:
       MINIO_BUCKET:           heartbits-media
       MINIO_ACCESS_KEY:       ${MINIO_USER:-heartbits}
       MINIO_SECRET_KEY:       ${MINIO_PASSWORD}
+      MEDIA_DOMAIN:           ${MEDIA_DOMAIN}
       PORT:                   "3100"
     networks: [internal]
     depends_on:

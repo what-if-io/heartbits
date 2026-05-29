@@ -142,6 +142,37 @@
     }
   }
 
+  // ── AVATAR UPLOAD ────────────────────────────────────────────────────────
+  let uploadedAvatarUrl = $state<string | null>(null);
+  const avatarUrl = $derived(uploadedAvatarUrl ?? data.profile?.avatar_url ?? null);
+  let avatarUploading = $state(false);
+  let avatarError = $state('');
+  let fileInput: HTMLInputElement | undefined = $state();
+
+  async function onAvatarFileChange(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    avatarUploading = true;
+    avatarError = '';
+    const fd = new FormData();
+    fd.append('file', file);
+    try {
+      const res = await fetch('/profile', { method: 'POST', body: fd });
+      const result = await res.json() as { avatar_url?: string; error?: string };
+      if (res.ok && result.avatar_url) {
+        uploadedAvatarUrl = result.avatar_url + '?v=' + Date.now(); // bust cache
+      } else {
+        avatarError = result.error ?? 'Upload failed';
+      }
+    } catch {
+      avatarError = 'Network error';
+    } finally {
+      avatarUploading = false;
+      input.value = '';
+    }
+  }
+
   // ── DELETE ACCOUNT ───────────────────────────────────────────────────────
   let showDeleteConfirm = $state(false);
   let deleting = $state(false);
@@ -196,11 +227,48 @@
 
     <!-- Avatar section -->
     <div class="avatar-section" class:visible={avatarVisible}>
-      <div class="avatar-ring-outer">
+      <!-- Hidden file input — triggered by clicking the avatar ring -->
+      <input
+        bind:this={fileInput}
+        type="file"
+        accept="image/jpeg,image/webp,image/png"
+        class="avatar-file-input"
+        onchange={onAvatarFileChange}
+        aria-label="Upload profile photo"
+      />
+
+      <button
+        class="avatar-ring-outer"
+        class:uploading={avatarUploading}
+        onclick={() => fileInput?.click()}
+        aria-label="Change profile photo"
+        type="button"
+      >
         <div class="avatar-ring-inner">
-          <div class="avatar"><span>{initial}</span></div>
+          <div class="avatar">
+            {#if avatarUrl}
+              <img src={avatarUrl} alt="{displayName}'s avatar" class="avatar-img" />
+            {:else}
+              <span>{initial}</span>
+            {/if}
+          </div>
         </div>
-      </div>
+        <!-- Camera overlay -->
+        <div class="avatar-camera" aria-hidden="true">
+          {#if avatarUploading}
+            <span class="spinner spinner-lg"></span>
+          {:else}
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="2" y="6" width="18" height="14" rx="3" stroke="white" stroke-width="1.5" fill="none"/>
+              <circle cx="11" cy="13" r="3.5" stroke="white" stroke-width="1.5" fill="none"/>
+              <path d="M7 6L8.5 3H13.5L15 6" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          {/if}
+        </div>
+      </button>
+      {#if avatarError}
+        <p class="avatar-error">{avatarError}</p>
+      {/if}
 
       <div class="identity">
         <h2 class="name">
@@ -657,11 +725,17 @@
     transition: opacity 0.6s ease, transform 0.6s ease; margin-bottom: 8px;
   }
   .avatar-section.visible { opacity: 1; transform: translateY(0); }
+  .avatar-file-input { display: none; }
+
   .avatar-ring-outer {
     width: 186px; height: 186px; border-radius: 50%; padding: 3px;
     background: conic-gradient(from 0deg, #FF6B6B 0deg, #E81F8C 120deg, #7B35DE 240deg, #FF6B6B 360deg);
     animation: ring-rotate 6s linear infinite; position: relative;
+    cursor: pointer; border: none; appearance: none; -webkit-appearance: none;
+    transition: filter 0.2s ease;
   }
+  .avatar-ring-outer:hover { filter: brightness(1.1); }
+  .avatar-ring-outer.uploading { animation: none; filter: brightness(0.7); }
   .avatar-ring-outer::after {
     content: ''; position: absolute; inset: -6px; border-radius: 50%;
     background: radial-gradient(circle, rgba(232,31,140,0.2) 0%, transparent 70%);
@@ -684,6 +758,21 @@
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     line-height: 1; margin-top: 4px;
   }
+  .avatar-img {
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block;
+  }
+  .avatar-camera {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s ease;
+  }
+  .avatar-ring-outer:hover .avatar-camera,
+  .avatar-ring-outer.uploading .avatar-camera { opacity: 1; }
+  .avatar-error {
+    font-size: 12px; color: rgba(255,100,100,0.8); text-align: center; margin: 0;
+  }
+  .spinner-lg { width: 24px; height: 24px; border-width: 2.5px; }
   .identity { text-align: center; display: flex; flex-direction: column; gap: 6px; }
   .name {
     font-family: 'DM Serif Display', Georgia, serif; font-size: 32px; font-weight: 400;
@@ -872,7 +961,7 @@
     border-radius: 12px; padding: 12px 14px;
     font-family: inherit; font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.88);
     outline: none; transition: border-color 0.2s ease;
-    -webkit-appearance: none;
+    appearance: none; -webkit-appearance: none;
   }
   .field-input:focus { border-color: rgba(255,107,107,0.5); }
   .field-input::placeholder { color: rgba(255,255,255,0.2); }

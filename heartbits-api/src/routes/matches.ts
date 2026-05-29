@@ -5,6 +5,7 @@ import { Elysia } from 'elysia'
 import { authPlugin } from '../auth'
 import { withUser } from '../db'
 import { decryptField } from '../crypto'
+import { avatarUrl } from '../minio'
 
 function ageFromDob(dob: string): number {
   const birth = new Date(dob)
@@ -13,11 +14,6 @@ function ageFromDob(dob: string): number {
   const m = today.getMonth() - birth.getMonth()
   if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
   return age
-}
-
-function buildAvatarUrl(mediaId: string | null): string | null {
-  if (!mediaId) return null
-  return `https://${process.env['MEDIA_DOMAIN'] ?? 'media.heartbits.example.com'}/${process.env['MINIO_BUCKET'] ?? 'heartbits-media'}/${mediaId}`
 }
 
 export const matchesRoute = new Elysia({ prefix: '/api/v1' })
@@ -80,7 +76,7 @@ export const matchesRoute = new Elysia({ prefix: '/api/v1' })
                 display_name,
                 age: date_of_birth ? ageFromDob(date_of_birth) : null,
                 gender: row.partner_gender,
-                avatar_url: buildAvatarUrl(row.partner_avatar_media_id),
+                avatar_url: avatarUrl(row.partner_avatar_media_id),
                 bpm: null,
               },
               bond_id: row.bond_id,
