@@ -1,0 +1,75 @@
+{
+	email {$ACME_EMAIL}
+}
+
+# ── HeartBits web + API ────────────────────────────────────────────────────────
+{$APP_DOMAIN} {
+	encode gzip
+
+	header {
+		defer
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options    "nosniff"
+		X-Frame-Options           "DENY"
+		Referrer-Policy           "strict-origin-when-cross-origin"
+		Permissions-Policy        "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# API — strip /api prefix before forwarding
+	handle_path /api/* {
+		reverse_proxy heartbits-api:3100
+	}
+
+	# SvelteKit app
+	handle {
+		reverse_proxy heartbits-web:3000
+	}
+}
+
+# ── Zitadel auth ───────────────────────────────────────────────────────────────
+{$AUTH_DOMAIN} {
+	encode gzip
+
+	# Next.js login UI (v2)
+	handle /ui/v2/login/* {
+		reverse_proxy login:3000
+	}
+
+	# Zitadel core (OIDC, JWKS, console, SAML)
+	handle {
+		reverse_proxy zitadel:8180 {
+			transport http {
+				versions h2c 2
+			}
+		}
+	}
+}
+
+# ── WebSocket relay ────────────────────────────────────────────────────────────
+{$RELAY_DOMAIN} {
+	encode gzip
+
+	header {
+		defer
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options        "DENY"
+		Referrer-Policy        "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	reverse_proxy heartbits-relay:8765
+}
+
+# ── Internal HTTP proxy on :8180 ───────────────────────────────────────────────
+# Not exposed publicly (Caddy only publishes 80/443 externally).
+# The login container calls http://${AUTH_DOMAIN}:8180 which resolves here via
+# Docker DNS; Caddy forwards with the original Host header so Zitadel identifies
+# the instance correctly.
+:8180 {
+	reverse_proxy zitadel:8180 {
+		transport http {
+			versions h2c 2
+		}
+	}
+}

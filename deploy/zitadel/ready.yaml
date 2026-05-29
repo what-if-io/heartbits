@@ -1,0 +1,10 @@
+Log:
+  Level: error
+
+Port: 8180
+TLSMode: disabled
+
+# Force the ready-check to hit localhost instead of ExternalDomain from env
+ExternalDomain: localhost
+ExternalPort: 8180
+ExternalSecure: false
