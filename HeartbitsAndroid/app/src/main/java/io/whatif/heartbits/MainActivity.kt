@@ -40,7 +40,7 @@ import io.whatif.heartbits.ui.send.SendScreen
 import io.whatif.heartbits.ui.theme.HB
 
 private const val RELAY_BASE  = "wss://hb.what-if.io/"
-private const val RELAY_TOKEN = "fb266c34-97df-4bfc-9e51-bdba7b9c26ea"
+private const val RELAY_TOKEN = "cda99d6005b24de627b034f8ac5d27edde0abbcddaef1ac18d05a7cc3934ce61"
 
 class MainActivity : ComponentActivity() {
 

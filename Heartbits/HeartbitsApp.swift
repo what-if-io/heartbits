@@ -1,6 +1,6 @@
 import SwiftUI
 
-private let relayToken = "fb266c34-97df-4bfc-9e51-bdba7b9c26ea"
+private let relayToken = "cda99d6005b24de627b034f8ac5d27edde0abbcddaef1ac18d05a7cc3934ce61"
 private let relayBase  = "wss://hb.what-if.io/"
 
 @main
