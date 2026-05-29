@@ -193,6 +193,7 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
           id: profile.id,
           display_name,
           age,
+          date_of_birth,
           bio,
           gender: profile.gender,
           seeking: profile.seeking,

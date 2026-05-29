@@ -173,6 +173,28 @@ services:
       zitadel:  { condition: service_started }
     restart: unless-stopped
 
+  # ── HeartBits background worker ──────────────────────────────────────────
+  heartbits-worker:
+    image: oven/bun:1-alpine
+    working_dir: /app
+    volumes:
+      - ../heartbits-api:/app
+      - heartbits-api-modules:/app/node_modules
+    command: sh -c "bun install --frozen-lockfile && bun run src/worker.ts"
+    environment:
+      DATABASE_URL:            postgres://heartbits:${POSTGRES_PASSWORD}@postgres:5432/heartbits
+      WORKER_DATABASE_URL:     postgres://heartbits_worker:${WORKER_POSTGRES_PASSWORD}@postgres:5432/heartbits
+      REDIS_URL:               redis://redis:6379
+      HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
+      MINIO_ENDPOINT:          minio:9000
+      MINIO_ACCESS_KEY:        ${MINIO_USER:-heartbits}
+      MINIO_SECRET_KEY:        ${MINIO_PASSWORD}
+    networks: [internal]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis:    { condition: service_healthy }
+    restart: unless-stopped
+
   # ── HeartBits WebSocket relay ─────────────────────────────────────────────
   heartbits-relay:
     image: node:22-alpine

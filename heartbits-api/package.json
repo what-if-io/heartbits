@@ -10,10 +10,11 @@
     "bun-types": "latest"
   },
   "dependencies": {
-    "elysia": "latest",
     "@elysiajs/swagger": "latest",
-    "postgres": "^3.4",
+    "elysia": "latest",
     "ioredis": "^5.4",
-    "jose": "^5.9"
+    "jose": "^5.9",
+    "minio": "^8.0.7",
+    "postgres": "^3.4"
   }
 }

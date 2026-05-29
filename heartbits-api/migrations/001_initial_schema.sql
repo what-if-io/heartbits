@@ -29,6 +29,10 @@ BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'heartbits_billing') THEN
     CREATE ROLE heartbits_billing LOGIN PASSWORD 'changeme'; -- SECURITY: replace before deploy
   END IF;
+  -- Background worker role: needs BYPASSRLS for cross-user queries (relay cleanup, GDPR hard-delete)
+  IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'heartbits_worker') THEN
+    CREATE ROLE heartbits_worker LOGIN PASSWORD 'changeme' BYPASSRLS; -- SECURITY: replace before deploy
+  END IF;
 END
 $$;
 
@@ -321,6 +325,15 @@ GRANT SELECT (user_id, plan) ON billing.customers TO heartbits_api;
 GRANT USAGE ON SCHEMA billing TO heartbits_billing;
 GRANT SELECT, INSERT, UPDATE ON billing.customers TO heartbits_billing;
 GRANT SELECT (id) ON app.users TO heartbits_billing;
+
+-- heartbits_worker: minimal access for background jobs (BYPASSRLS set on role above)
+GRANT USAGE ON SCHEMA app TO heartbits_worker;
+-- Relay cleanup: read bonds + matches to find stale relay room keys
+GRANT SELECT ON app.bonds, app.matches TO heartbits_worker;
+-- GDPR hard-delete: delete soft-deleted users (CASCADE handles child rows)
+GRANT DELETE ON app.users TO heartbits_worker;
+-- Media: read/delete for cleanup of orphaned rows
+GRANT SELECT, DELETE ON app.media TO heartbits_worker;
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- Function: update updated_at automatically
