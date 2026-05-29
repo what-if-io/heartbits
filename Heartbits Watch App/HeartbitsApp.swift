@@ -1,7 +1,7 @@
 import SwiftUI
 
-private let relayToken = "cda99d6005b24de627b034f8ac5d27edde0abbcddaef1ac18d05a7cc3934ce61"
-private let relayBase  = "wss://hb.what-if.io/"
+private let relayToken = RelayConfig.token
+private let relayBase  = RelayConfig.base
 
 @main
 struct HeartBitsApp: App {

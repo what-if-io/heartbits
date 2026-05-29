@@ -3,9 +3,10 @@
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import type { PageData } from './$types';
 
   interface Match {
-    id: string;
+    id: string;       // bond_id — used for /bond/{id} link
     name: string;
     matchedAt: string;
     bpm: number;
@@ -14,15 +15,52 @@
     distance: string;
   }
 
-  let matches = $state<Match[]>([
-    { id: 'ela',  name: 'Ela',  matchedAt: '2 days ago',  bpm: 71, online: true,  color: '#FF6B6B', distance: '2 km' },
-    { id: 'mia',  name: 'Mia',  matchedAt: '1 week ago',  bpm: 65, online: false, color: '#7B35DE', distance: '5 km' },
-  ]);
+  const DEMO_MATCHES: Match[] = [
+    { id: 'ela', name: 'Ela', matchedAt: '2 days ago', bpm: 71, online: true,  color: '#FF6B6B', distance: '2 km' },
+    { id: 'mia', name: 'Mia', matchedAt: '1 week ago', bpm: 65, online: false, color: '#7B35DE', distance: '5 km' },
+  ];
 
-  // Simulate BPM drift for online matches
+  const PALETTE = ['#FF6B6B', '#7B35DE', '#E81F8C', '#FF8C42', '#5B8FE8', '#00B4A6', '#F5A623'];
+  function colorFromId(id: string): string {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) | 0;
+    return PALETTE[Math.abs(h) % PALETTE.length];
+  }
+
+  function relativeTime(isoStr: string): string {
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const m = Math.floor(diff / 60_000);
+    if (m < 60) return m <= 1 ? 'just now' : `${m} minutes ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return h === 1 ? '1 hour ago' : `${h} hours ago`;
+    const d = Math.floor(h / 24);
+    if (d < 7) return d === 1 ? 'yesterday' : `${d} days ago`;
+    return `${Math.floor(d / 7)} weeks ago`;
+  }
+
+  let { data }: { data: PageData } = $props();
+
+  const isDemo = data.isDemo;
+
+  let matches = $state<Match[]>(
+    isDemo
+      ? DEMO_MATCHES
+      : data.matches.map(m => ({
+          id:        m.bond_id ?? m.match_id,
+          name:      m.partner.display_name ?? 'Someone',
+          matchedAt: relativeTime(m.matched_at),
+          bpm:       m.partner.bpm ?? 72,
+          online:    false,
+          color:     colorFromId(m.partner.id),
+          distance:  '',
+        }))
+  );
+
+  // Simulate BPM drift for online matches (demo only — real BPM comes from relay)
   let bpmInterval: ReturnType<typeof setInterval>;
 
   onMount(() => {
+    if (!isDemo) return;
     bpmInterval = setInterval(() => {
       matches = matches.map(m =>
         m.online

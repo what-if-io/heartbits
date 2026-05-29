@@ -8,12 +8,17 @@ android {
     namespace = "io.whatif.heartbits"
     compileSdk = 37
 
+    val localProps = rootProject.file("local.properties")
+    val lp = java.util.Properties().apply { if (localProps.exists()) load(localProps.inputStream()) }
+
     defaultConfig {
         applicationId = "io.whatif.heartbits"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "RELAY_BASE",  "\"${lp.getProperty("relay.base",  "wss://relay.heartbits.what-if.io/")}\"")
+        buildConfigField("String", "RELAY_TOKEN", "\"${lp.getProperty("relay.token", "")}\"")
     }
 
     buildTypes {
@@ -31,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

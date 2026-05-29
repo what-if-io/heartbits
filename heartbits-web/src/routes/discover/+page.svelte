@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import MatchReveal from '$lib/components/MatchReveal.svelte';
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { grantConsent, checkConsent } from '$lib/stores/consent';
+  import type { PageData } from './$types';
 
   interface Person {
     id: string;
@@ -16,15 +17,42 @@
     color: string;
     bio: string;
     interests: string[];
+    avatar_url: string | null;
   }
 
-  const people: Person[] = [
-    { id: 'ela',  name: 'Ela',  age: 28, distance: '2 km away',  bpm: 72, color: '#FF6B6B', bio: 'Chasing sunsets and slow mornings.', interests: ['yoga', 'film', 'jazz'] },
-    { id: 'mia',  name: 'Mia',  age: 31, distance: '5 km away',  bpm: 65, color: '#7B35DE', bio: 'Books, bicycles, and bad puns.', interests: ['reading', 'cycling', 'cooking'] },
-    { id: 'zara', name: 'Zara', age: 26, distance: '1 km away',  bpm: 80, color: '#E81F8C', bio: 'Dancing through the noise of the city.', interests: ['dancing', 'music', 'art'] },
-    { id: 'lena', name: 'Lena', age: 29, distance: '8 km away',  bpm: 58, color: '#FF8C42', bio: 'Mountains, markets, and mindful living.', interests: ['hiking', 'pottery', 'tea'] },
-    { id: 'kai',  name: 'Kai',  age: 33, distance: '12 km away', bpm: 76, color: '#5B8FE8', bio: 'Architect by day, stargazer by night.', interests: ['design', 'astronomy', 'coffee'] },
+  const DEMO_PEOPLE: Person[] = [
+    { id: 'ela',  name: 'Ela',  age: 28, distance: '2 km away',  bpm: 72, color: '#FF6B6B', bio: 'Chasing sunsets and slow mornings.', interests: ['yoga', 'film', 'jazz'], avatar_url: null },
+    { id: 'mia',  name: 'Mia',  age: 31, distance: '5 km away',  bpm: 65, color: '#7B35DE', bio: 'Books, bicycles, and bad puns.', interests: ['reading', 'cycling', 'cooking'], avatar_url: null },
+    { id: 'zara', name: 'Zara', age: 26, distance: '1 km away',  bpm: 80, color: '#E81F8C', bio: 'Dancing through the noise of the city.', interests: ['dancing', 'music', 'art'], avatar_url: null },
+    { id: 'lena', name: 'Lena', age: 29, distance: '8 km away',  bpm: 58, color: '#FF8C42', bio: 'Mountains, markets, and mindful living.', interests: ['hiking', 'pottery', 'tea'], avatar_url: null },
+    { id: 'kai',  name: 'Kai',  age: 33, distance: '12 km away', bpm: 76, color: '#5B8FE8', bio: 'Architect by day, stargazer by night.', interests: ['design', 'astronomy', 'coffee'], avatar_url: null },
   ];
+
+  const PALETTE = ['#FF6B6B', '#7B35DE', '#E81F8C', '#FF8C42', '#5B8FE8', '#00B4A6', '#F5A623'];
+  function colorFromId(id: string): string {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) | 0;
+    return PALETTE[Math.abs(h) % PALETTE.length];
+  }
+
+  let { data }: { data: PageData } = $props();
+
+  // Map API profiles → Person, falling back to demo
+  const people: Person[] = (data.isDemo || data.profiles.length === 0)
+    ? DEMO_PEOPLE
+    : data.profiles.map(p => ({
+        id:         p.id,
+        name:       p.display_name ?? 'Someone',
+        age:        p.age ?? 0,
+        distance:   p.distance_band ?? '',
+        bpm:        p.bpm ?? 72,
+        color:      colorFromId(p.id),
+        bio:        p.bio ?? '',
+        interests:  [],
+        avatar_url: p.avatar_url,
+      }));
+
+  const isDemo = data.isDemo || data.profiles.length === 0;
 
   // ── STATE ───────────────────────────────────────────────
   let currentIndex = $state(0);
@@ -135,7 +163,6 @@
     if (dir === 'heart' && !checkConsent()) {
       pendingHeartAction = true;
       showConsentGate = true;
-      // Reset drag state so card springs back while gate is shown
       isDragging = false;
       dragX = 0;
       dragY = 0;
@@ -156,15 +183,53 @@
 
     await delay(420);
 
-    // Check for match (every 2nd heart in demo)
-    if (dir === 'heart' && heartsCount % 2 === 0 && person) {
-      matchRevealPerson = { ...person };
-      dragX = 0; dragY = 0; dragIntent = null;
-      transitioning = false;
-      advance();
-      await delay(300);
-      showMatchReveal = true;
-      return;
+    if (dir === 'heart') {
+      if (isDemo) {
+        // Demo: match every 2nd heart
+        if (heartsCount % 2 === 0 && person) {
+          matchRevealPerson = { ...person };
+          dragX = 0; dragY = 0; dragIntent = null;
+          transitioning = false;
+          advance();
+          await delay(300);
+          showMatchReveal = true;
+          return;
+        }
+      } else {
+        // Real: call the swipe API
+        const swipedPerson = person;
+        advance();
+        await delay(60);
+        dragX = 0; dragY = 0; dragIntent = null;
+        transitioning = false;
+
+        try {
+          const res = await fetch('/discover', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ swiped_id: swipedPerson.id, direction: 'like' }),
+          });
+          const result = await res.json() as { matched?: boolean; bond?: { id: string } };
+          if (result.matched && result.bond) {
+            // Use bond_id as person.id so MatchReveal links to /bond/{bond_id}
+            matchRevealPerson = { ...swipedPerson, id: result.bond.id };
+            await delay(300);
+            showMatchReveal = true;
+          }
+        } catch {
+          // Non-fatal — swipe recorded locally, API failure is silent
+        }
+        return;
+      }
+    }
+
+    if (dir === 'pass' && !isDemo && person) {
+      // Fire-and-forget pass swipe
+      fetch('/discover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ swiped_id: person.id, direction: 'pass' }),
+      }).catch(() => {/* non-fatal */});
     }
 
     advance();
