@@ -21,9 +21,9 @@ services:
       APP_DOMAIN:    ${APP_DOMAIN}
       AUTH_DOMAIN:   ${AUTH_DOMAIN}
       RELAY_DOMAIN:  ${RELAY_DOMAIN}
-      MEDIA_DOMAIN:  ${MEDIA_DOMAIN:-}
-      API_DOMAIN:    ${API_DOMAIN:-}
-      STATUS_DOMAIN: ${STATUS_DOMAIN:-}
+      MEDIA_DOMAIN:  ${MEDIA_DOMAIN:-127.0.0.1:19997}
+      API_DOMAIN:    ${API_DOMAIN:-127.0.0.1:19998}
+      STATUS_DOMAIN: ${STATUS_DOMAIN:-127.0.0.1:19999}
     networks:
       public:
       internal:

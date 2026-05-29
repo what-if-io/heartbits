@@ -62,8 +62,7 @@
 }
 
 # ── API subdomain ─────────────────────────────────────────────────────────────
-# Falls back to an internal-only port when API_DOMAIN is not configured.
-{$API_DOMAIN:127.0.0.1:19998} {
+{$API_DOMAIN} {
 	encode gzip
 
 	header {
@@ -84,7 +83,7 @@
 }
 
 # ── Media / object storage (public avatar CDN) ────────────────────────────────
-{$MEDIA_DOMAIN:127.0.0.1:19997} {
+{$MEDIA_DOMAIN} {
 	encode gzip
 
 	header {
@@ -100,7 +99,7 @@
 }
 
 # ── Status page subdomain ─────────────────────────────────────────────────────
-{$STATUS_DOMAIN:127.0.0.1:19999} {
+{$STATUS_DOMAIN} {
 	redir https://{$APP_DOMAIN}/status permanent
 }
 
