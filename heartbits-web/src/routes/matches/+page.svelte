@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import type { PageData } from './$types';
 
@@ -271,7 +270,6 @@
   </div>
 </div>
 
-<BottomNav />
 
 <style>
   /* ── PAGE ─────────────────────────────────────────── */

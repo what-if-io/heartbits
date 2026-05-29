@@ -4,7 +4,6 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { consent, grantConsent, checkConsent } from '$lib/stores/consent';
 
@@ -508,7 +507,6 @@
   </div>
 {/if}
 
-<BottomNav />
 
 <style>
   /* ── PAGE ─────────────────────────────────────────── */
@@ -928,7 +926,7 @@
     position: fixed;
     left: 0;
     right: 0;
-    bottom: var(--nav-h, 72px);
+    bottom: calc(var(--nav-h, 72px) + var(--demo-banner-h, 0px));
     z-index: 150;
     height: min(58vh, 440px);
     background: rgba(7,7,16,0.97);

@@ -10,7 +10,7 @@ import { redirect } from '@sveltejs/kit';
 import { env as pubEnv } from '$env/dynamic/public';
 
 export const load: PageServerLoad = ({ locals, url }) => {
-  if (locals.user) {
+  if (locals.user && !locals.user.isDemo) {
     const next = url.searchParams.get('next') ?? '/discover';
     const safeNext =
       next.startsWith('/') && !next.startsWith('//')

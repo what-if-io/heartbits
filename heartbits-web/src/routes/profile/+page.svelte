@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { goto } from '$app/navigation';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import { consent, grantConsent, withdrawConsent } from '$lib/stores/consent';
   import type { PageData } from './$types';
@@ -214,12 +213,14 @@
   <header class="page-header">
     <div class="header-inner">
       <h1 class="header-title-text">Profile</h1>
-      <button class="edit-btn" onclick={openEditSheet} aria-label="Edit profile">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M11.5 2.5L13.5 4.5L5 13H3V11L11.5 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
-        </svg>
-        <span>Edit</span>
-      </button>
+      {#if !data.isDemo}
+        <button class="edit-btn" onclick={openEditSheet} aria-label="Edit profile">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M11.5 2.5L13.5 4.5L5 13H3V11L11.5 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
+          </svg>
+          <span>Edit</span>
+        </button>
+      {/if}
     </div>
   </header>
 
@@ -240,9 +241,10 @@
       <button
         class="avatar-ring-outer"
         class:uploading={avatarUploading}
-        onclick={() => fileInput?.click()}
+        onclick={() => { if (!data.isDemo) fileInput?.click(); }}
         aria-label="Change profile photo"
         type="button"
+        style={data.isDemo ? 'cursor: default' : ''}
       >
         <div class="avatar-ring-inner">
           <div class="avatar">
@@ -384,31 +386,56 @@
       </a>
     </div>
 
-    <!-- Account actions -->
-    <div class="section-card">
-      <div class="action-list">
-        <button class="action-row" onclick={openEditSheet}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.3"/>
-            <path d="M2 16C2 13.24 5.13 11 9 11C12.87 11 16 13.24 16 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+    <!-- Account actions / demo CTA -->
+    {#if data.isDemo}
+      <div class="section-card demo-cta-card">
+        <p class="demo-cta-lead">You're exploring in demo mode.</p>
+        <p class="demo-cta-sub">Create a real account to set up your profile, share your heartbeat, and connect with others.</p>
+        <a href="/auth/initiate?next=/discover" class="demo-cta-btn">
+          Create account
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>Edit profile</span>
-          <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <div class="action-divider"></div>
-        <button class="action-row danger-row" onclick={() => showDeleteConfirm = true}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M6 3H12M3 5H15L14 16H4L3 5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
-          </svg>
-          <span>Delete account</span>
-          <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-          </svg>
-        </button>
+        </a>
+        <a href="/auth/demo-exit" class="demo-exit-link">Exit demo</a>
       </div>
-    </div>
+    {:else}
+      <div class="section-card">
+        <div class="action-list">
+          <button class="action-row" onclick={openEditSheet}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M2 16C2 13.24 5.13 11 9 11C12.87 11 16 13.24 16 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <span>Edit profile</span>
+            <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <div class="action-divider"></div>
+          <a href="/auth/logout" class="action-row">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M7 3H3V15H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 6L15 9L12 12M7 9H15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Sign out</span>
+            <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </a>
+          <div class="action-divider"></div>
+          <button class="action-row danger-row" onclick={() => showDeleteConfirm = true}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M6 3H12M3 5H15L14 16H4L3 5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
+            </svg>
+            <span>Delete account</span>
+            <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    {/if}
 
     <p class="version-note">HeartBits v0.1.0 · Built with ♥</p>
   </div>
@@ -662,7 +689,6 @@
   </div>
 {/if}
 
-<BottomNav />
 
 <style>
   /* ── PAGE ─────────────────────────────────────────── */
@@ -905,6 +931,30 @@
   .danger-row:hover { color: rgba(255,100,100,0.9); }
   .action-divider { height: 1px; background: rgba(255,255,255,0.05); }
   .version-note { text-align: center; font-size: 11px; color: rgba(255,255,255,0.14); padding: 8px; letter-spacing: 0.03em; }
+
+  .demo-cta-card { text-align: center; padding: 24px 20px; }
+  .demo-cta-lead { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.75); margin-bottom: 8px; }
+  .demo-cta-sub  { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.38); line-height: 1.6; margin-bottom: 20px; }
+  .demo-cta-btn  {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px;
+    background: linear-gradient(135deg, #FF6B6B, #E81F8C 50%, #7B35DE);
+    border-radius: 100px; font-size: 14px; font-weight: 500; color: white;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 0 24px rgba(255,107,107,0.2);
+  }
+  .demo-cta-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .demo-exit-link {
+    display: block;
+    margin-top: 14px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .demo-exit-link:hover { color: rgba(255,255,255,0.5); }
 
   /* ── EDIT SHEET ──────────────────────────────────── */
   .sheet-backdrop {

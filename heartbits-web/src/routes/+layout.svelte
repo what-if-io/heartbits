@@ -13,7 +13,7 @@
   const NO_NAV_PREFIXES = ['/', '/auth/', '/about', '/privacy', '/terms', '/pitch'];
 
   let showNav = $derived(
-    !!data.user &&
+    (!!data.user || !!data.isDemo) &&
       !NO_NAV_PREFIXES.some((p) =>
         p === '/'
           ? $page.url.pathname === '/'
@@ -24,6 +24,13 @@
   let showDemoBanner = $derived(
     data.isDemo && !$page.url.pathname.startsWith('/auth')
   );
+
+  $effect(() => {
+    document.documentElement.style.setProperty(
+      '--demo-banner-h',
+      (showDemoBanner && showNav) ? '44px' : '0px'
+    );
+  });
 </script>
 
 {@render children()}
@@ -32,7 +39,7 @@
   <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>
     <span class="demo-pill">Demo</span>
     <span class="demo-text">Exploring HeartBits in demo mode</span>
-    <a href="/auth/login" class="demo-cta">Create account →</a>
+    <a href="/auth/initiate?next=/discover" class="demo-cta">Create account →</a>
   </div>
 {/if}
 

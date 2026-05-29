@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import MatchReveal from '$lib/components/MatchReveal.svelte';
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { grantConsent, checkConsent } from '$lib/stores/consent';
@@ -95,6 +94,9 @@
   let showMatchReveal = $state(false);
   let matchRevealPerson = $state<Person | null>(null);
   let heartsCount = $state(0);
+
+  // Info sheet
+  let showInfoSheet = $state(false);
 
   // Card element for direct manipulation
   let cardEl = $state<HTMLElement | null>(null);
@@ -480,7 +482,7 @@
       </div>
 
       <!-- Info / undo button -->
-      <button class="action-btn info-btn" aria-label="Info" title="Info">
+      <button class="action-btn info-btn" onclick={() => showInfoSheet = true} aria-label="Info" title="More info">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
           <path d="M10 9V14M10 7V7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -497,7 +499,63 @@
   {/if}
 </div>
 
-<BottomNav />
+<!-- ── PROFILE INFO SHEET ───────────────────────────── -->
+{#if showInfoSheet && person}
+  <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+  <div class="info-backdrop" onclick={() => showInfoSheet = false}></div>
+  <div class="info-sheet">
+    <div class="info-sheet-handle"></div>
+    <div class="info-sheet-header">
+      <div class="info-avatar" style="background: {person.color}22; border-color: {person.color}44">
+        {#if person.avatar_url}
+          <img src={person.avatar_url} alt={person.name} class="info-avatar-img" />
+        {:else}
+          <span style="color: {person.color}">{person.name[0]}</span>
+        {/if}
+      </div>
+      <div>
+        <h2 class="info-name">{person.name}, <span style="color: {person.color}">{person.age}</span></h2>
+        <p class="info-distance">{person.distance}</p>
+      </div>
+      <button class="info-close" onclick={() => showInfoSheet = false} aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    {#if person.bio}
+      <p class="info-bio">{person.bio}</p>
+    {/if}
+    {#if person.interests.length > 0}
+      <div class="info-interests">
+        {#each person.interests as tag}
+          <span class="info-tag" style="border-color: {person.color}44; color: {person.color}cc">{tag}</span>
+        {/each}
+      </div>
+    {/if}
+    <div class="info-bpm-row">
+      <span class="info-bpm-dot" style="background: {person.color}"></span>
+      <span class="info-bpm-val" style="color: {person.color}">{person.bpm} BPM</span>
+      <span class="info-bpm-label">live heart rate</span>
+    </div>
+    <div class="info-actions">
+      <button class="info-pass" onclick={() => { showInfoSheet = false; throwCard('pass'); }}>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        Pass
+      </button>
+      <button class="info-heart" onclick={() => { showInfoSheet = false; throwCard('heart'); }}
+        style="background: linear-gradient(135deg, {person.color}, #E81F8C)">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 17C10 17 2 11.5 2 6.5C2 4.29 3.79 2.5 6 2.5C7.24 2.5 8.34 3.07 9 4C9.66 3.07 10.76 2.5 12 2.5C14.21 2.5 16 4.29 16 6.5C16 11.5 10 17 10 17Z" fill="white"/>
+        </svg>
+        Send heart
+      </button>
+    </div>
+  </div>
+{/if}
+
 
 <style>
   /* ── PAGE ─────────────────────────────────────────── */
@@ -884,6 +942,7 @@
     border-width: 1.5px;
     border-style: solid;
     animation: sonar-pulse 2.4s ease-out infinite;
+    pointer-events: none;
   }
 
   .sonar-ring.sonar-2 { animation-delay: 0.8s; }
@@ -1011,4 +1070,219 @@
       width: 300px;
     }
   }
+
+  /* ── SHORT VIEWPORTS (laptop, landscape phone) ───── */
+  @media (max-height: 740px) {
+    .card-stack { height: 380px; }
+    .card-photo { height: 200px; }
+    .card-initial-large { font-size: 88px; }
+    .discover-page { gap: 14px; }
+  }
+
+  @media (max-height: 620px) {
+    .card-stack { height: 300px; }
+    .card-photo { height: 150px; }
+    .card-initial-large { font-size: 64px; }
+    .discover-page { gap: 10px; padding-top: 12px; }
+    .ecg-strip-wrap { display: none; }
+  }
+
+  /* ── INFO SHEET ──────────────────────────────────── */
+  .info-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: fade-in 0.2s ease;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .info-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 201;
+    background: #0d0d1a;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px 24px 0 0;
+    padding: 12px 20px calc(var(--nav-h, 72px) + var(--demo-banner-h, 0px) + 16px);
+    animation: slide-up 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .info-sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .info-sheet-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .info-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border-width: 1.5px;
+    border-style: solid;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .info-avatar span {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 26px;
+  }
+
+  .info-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .info-name {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.92);
+    margin-bottom: 3px;
+  }
+
+  .info-distance {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+  }
+
+  .info-close {
+    margin-left: auto;
+    color: rgba(255,255,255,0.3);
+    padding: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+  }
+  .info-close:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.1); }
+
+  .info-bio {
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.6);
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+
+  .info-interests {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 16px;
+  }
+
+  .info-tag {
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    border-width: 1px;
+    border-style: solid;
+    background: transparent;
+  }
+
+  .info-bpm-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 100px;
+  }
+
+  .info-bpm-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.5); }
+  }
+
+  .info-bpm-val {
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .info-bpm-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .info-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .info-pass {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 20px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    color: rgba(255,255,255,0.45);
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+  .info-pass:hover { background: rgba(255,80,80,0.1); color: rgba(255,80,80,0.8); border-color: rgba(255,80,80,0.2); }
+
+  .info-heart {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 20px;
+    border-radius: 100px;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.12s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .info-heart:hover { opacity: 0.9; transform: translateY(-1px); }
 </style>
