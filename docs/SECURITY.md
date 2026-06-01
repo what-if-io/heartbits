@@ -108,7 +108,7 @@ See the pre-launch checklist below.
 
 HeartBits is a pre-launch application. Security reports should be sent to:
 
-**Email:** laztoum@protonmail.com  
+**Email:** security@what-if.io  
 **Subject prefix:** `[SECURITY] HeartBits — <brief description>`
 
 Please include:
