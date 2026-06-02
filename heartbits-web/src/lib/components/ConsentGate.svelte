@@ -135,7 +135,7 @@
     </button>
 
     <!-- ── VERSION ──────────────────────────────── -->
-    <p class="version-line">Consent version 1.0 · GDPR Art. 9 · 2026-05-26</p>
+    <p class="version-line">Consent version 1.1 · GDPR Art. 9 · 2026-06-02</p>
   </div>
 </div>
 

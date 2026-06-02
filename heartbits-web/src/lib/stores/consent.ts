@@ -5,7 +5,7 @@
 import { browser } from '$app/environment';
 import { writable, get } from 'svelte/store';
 
-const CONSENT_VERSION = '1.0';
+const CONSENT_VERSION = '1.1';
 const STORAGE_KEY = 'hb_biometric_consent';
 
 export interface ConsentRecord {
@@ -47,27 +47,44 @@ if (browser) {
   consent.set(readFromStorage());
 }
 
-export function grantConsent(version: string = CONSENT_VERSION) {
+export async function grantConsent(version: string = CONSENT_VERSION): Promise<void> {
   const now = new Date().toISOString();
   const record: ConsentRecord = { hasConsented: true, consentDate: now, version };
   consent.set(record);
   writeToStorage(record);
 
-  // Fire-and-forget API call — never block UX
+  // Persist the consent record server-side — the legally-required artifact.
+  // The /consent proxy attaches the session bearer token and the consent_type.
+  // Errors are logged, never silently swallowed.
   if (browser) {
-    const apiBase = (typeof window !== 'undefined' && (window as any).__PUBLIC_API_URL) ? (window as any).__PUBLIC_API_URL : '';
-    fetch(`${apiBase}/api/v1/me/consent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ version, grantedAt: now }),
-    }).catch(() => {});
+    try {
+      const res = await fetch('/consent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ version }),
+      });
+      if (!res.ok) {
+        console.error('[consent] server record failed:', res.status, await res.text().catch(() => ''));
+      }
+    } catch (e) {
+      console.error('[consent] server record error:', e);
+    }
   }
 }
 
-export function withdrawConsent() {
-  const record: ConsentRecord = EMPTY;
-  consent.set(record);
-  writeToStorage(record);
+export async function withdrawConsent(): Promise<void> {
+  consent.set(EMPTY);
+  writeToStorage(EMPTY);
+
+  // Withdraw server-side too — evicts the relay room keys so sharing stops.
+  if (browser) {
+    try {
+      const res = await fetch('/consent', { method: 'DELETE' });
+      if (!res.ok) console.error('[consent] server withdraw failed:', res.status);
+    } catch (e) {
+      console.error('[consent] server withdraw error:', e);
+    }
+  }
 }
 
 export function checkConsent(): boolean {
