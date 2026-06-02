@@ -17,8 +17,11 @@ const RATE_WINDOW = 3600      // per hour, per IP
 export const waitlistRoute = new Elysia().post(
   '/api/v1/waitlist',
   async ({ body, set, request }) => {
+    // Use the RIGHTMOST X-Forwarded-For hop — that's the IP Caddy appended, which
+    // a client cannot spoof. (The leftmost entry is attacker-controlled.)
+    const xff = request.headers.get('x-forwarded-for')
     const ip =
-      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      xff?.split(',').map((s) => s.trim()).filter(Boolean).pop() ||
       request.headers.get('x-real-ip') ||
       'unknown'
 

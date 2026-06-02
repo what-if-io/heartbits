@@ -10,7 +10,7 @@
 import { redis } from './redis'
 import { sql, withUser } from './db'
 import postgres from 'postgres'
-import { minio, BUCKET } from './minio'
+import { minio } from './minio'
 import { sendMail } from './mailer'
 import { emails, type EmailName } from './emails'
 

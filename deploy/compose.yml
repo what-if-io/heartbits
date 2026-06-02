@@ -186,6 +186,7 @@ services:
       # pass; new accounts only when open or the email is in REGISTRATION_ALLOWLIST.
       REGISTRATION_OPEN:      ${REGISTRATION_OPEN:-false}
       REGISTRATION_ALLOWLIST: ${REGISTRATION_ALLOWLIST:-}
+      NODE_ENV:               production
       PORT:                   "3100"
     networks: [internal]
     depends_on:

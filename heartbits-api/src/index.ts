@@ -44,9 +44,11 @@ const PORT = Number(process.env['PORT'] ?? 3100)
 // ---------------------------------------------------------------------------
 
 const app = new Elysia()
-  // ── OpenAPI / Swagger UI ──────────────────────────────────────────────────
+  // ── OpenAPI / Swagger UI (disabled in production — don't expose the API map) ─
   .use(
-    swagger({
+    process.env['NODE_ENV'] === 'production'
+      ? (a: Elysia) => a
+      : swagger({
       documentation: {
         info: {
           title: 'HeartBits API',
