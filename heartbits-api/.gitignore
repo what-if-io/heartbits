@@ -2,3 +2,6 @@ node_modules/
 dist/
 .env
 *.pat
+
+# generated email previews
+src/emails/preview/
