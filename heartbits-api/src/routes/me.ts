@@ -24,7 +24,7 @@ import { avatarUrl } from '../minio'
 
 const JWKS_CACHE_KEY = 'hb:jwks:raw'
 
-async function verifyTokenForInit(token: string): Promise<string> {
+async function verifyTokenForInit(token: string): Promise<{ sub: string; email?: string }> {
   const jwksUrl = process.env['ZITADEL_JWKS_URL']
   if (!jwksUrl) throw new Error('ZITADEL_JWKS_URL is required')
 
@@ -51,7 +51,10 @@ async function verifyTokenForInit(token: string): Promise<string> {
     audience: audience ?? undefined,
   })
   if (!payload.sub) throw new Error('JWT missing sub claim')
-  return payload.sub
+  return {
+    sub: payload.sub,
+    email: typeof payload['email'] === 'string' ? (payload['email'] as string) : undefined,
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -86,8 +89,9 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
       }
 
       let sub: string
+      let email: string | undefined
       try {
-        sub = await verifyTokenForInit(header.slice(7).trim())
+        ;({ sub, email } = await verifyTokenForInit(header.slice(7).trim()))
       } catch (err) {
         set.status = 401
         return {
@@ -106,6 +110,28 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
         return {
           error: 'account_deleted',
           message: 'This account has been deleted and cannot be reactivated.',
+        }
+      }
+
+      // Registration gate — block NEW accounts unless registration is open or the
+      // email is allowlisted. Existing users always pass. This is the authoritative
+      // "invite-only / waitlist" control at the app boundary, independent of whether
+      // the IdP allows self-registration.
+      if (existing.length === 0) {
+        const open = process.env['REGISTRATION_OPEN'] === 'true'
+        const allow = (process.env['REGISTRATION_ALLOWLIST'] ?? '')
+          .toLowerCase()
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean)
+        const em = (email ?? '').toLowerCase()
+        if (!open && !(em && allow.includes(em))) {
+          set.status = 403
+          return {
+            error: 'registration_closed',
+            message:
+              'HeartBits is invite-only right now — join the waitlist at https://heartbits.what-if.io.',
+          }
         }
       }
 
