@@ -15,6 +15,7 @@ import { swipesRoute } from './routes/swipes'
 import { matchesRoute } from './routes/matches'
 import { bondsRoute } from './routes/bonds'
 import { billingRoute } from './routes/billing'
+import { waitlistRoute } from './routes/waitlist'
 import { ensureBucket } from './minio'
 
 // Validate required env vars at startup (fail fast)
@@ -125,6 +126,7 @@ const app = new Elysia()
 
   // ── Routes ────────────────────────────────────────────────────────────────
   .use(healthRoute)
+  .use(waitlistRoute)   // public — must be before authPlugin-using routes
   .use(meRoutes)
   .use(mediaRoute)
   .use(profilesRoute)
