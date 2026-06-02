@@ -167,6 +167,9 @@
         {:else}
           <WaitlistForm />
         {/if}
+        {#if !data.loggedIn}
+          <a href="/auth/demo" class="btn-ghost">Try the demo →</a>
+        {/if}
         <a href="#how" class="btn-ghost">How it works</a>
       </div>
 
@@ -377,6 +380,7 @@
         <a href="/about">About</a>
         <a href="/privacy">Privacy</a>
         <a href="/terms">Terms</a>
+        <a href="/status">Status</a>
         <a href="mailto:hello@what-if.io">Contact</a>
       </div>
       <div class="footer-copy">HeartBits &copy; 2026</div>
