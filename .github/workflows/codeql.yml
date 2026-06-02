@@ -22,19 +22,34 @@ jobs:
         include:
           - language: javascript-typescript
             build-mode: none
-          # build-mode: none — analyse Kotlin source without a Gradle build.
-          # The Android build reads a gitignored local.properties, which makes
-          # CodeQL's autobuild fail; "none" sidesteps it entirely.
+          # Kotlin can't be analysed in build-mode "none" — it needs a real
+          # build. We compile the Android app manually below. (Swift would
+          # likewise need a macOS + Xcode build; deferred until mobile matures.)
           - language: java-kotlin
-            build-mode: none
+            build-mode: manual
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        if: matrix.language == 'java-kotlin'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
+
+      # Manual build for Kotlin. The Android SDK is preinstalled on the runner
+      # (ANDROID_HOME); local.properties is gitignored but the gradle script
+      # reads it with defaults, so its absence is fine.
+      - name: Build Android app (for CodeQL)
+        if: matrix.build-mode == 'manual'
+        working-directory: HeartbitsAndroid
+        run: ./gradlew :app:assembleDebug --no-daemon --console=plain
 
       - name: Analyze
         uses: github/codeql-action/analyze@v3
