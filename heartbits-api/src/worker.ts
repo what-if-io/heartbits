@@ -11,6 +11,8 @@ import { redis } from './redis'
 import { sql, withUser } from './db'
 import postgres from 'postgres'
 import { minio, BUCKET } from './minio'
+import { sendMail } from './mailer'
+import { emails, type EmailName } from './emails'
 
 console.log('[worker] HeartBits background worker starting…')
 
@@ -186,24 +188,50 @@ async function gdprHardDelete(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Task: push notification dispatch (stub)
+// Task: email notification dispatch
 //
-// Not yet implemented — the schema has no push_tokens table.
-// Add the table, then implement:
+// Drains hb:worker:notifications and sends a branded transactional email.
+// Payload: JSON { to: string, type: EmailName, data: object }
+//   e.g. { "to": "a@b.com", "type": "newMatch", "data": { "matchName": "Sam" } }
 //
-//   CREATE TABLE app.push_tokens (
-//     user_id   TEXT NOT NULL REFERENCES app.users(id) ON DELETE CASCADE,
-//     platform  TEXT NOT NULL CHECK (platform IN ('apns', 'fcm')),
-//     token     TEXT NOT NULL,
-//     PRIMARY KEY (user_id, platform)
-//   );
-//
-// Queue key: hb:worker:notifications
-// Payload:   JSON { userId, type, data }
+// `type` selects a template from src/emails; `data` is passed straight to it.
+// (Push notifications via APNs/FCM remain a future addition — they need a
+// push_tokens table; this path is email only.)
 // ---------------------------------------------------------------------------
 
 async function processNotifications(): Promise<void> {
-  // TODO: implement once push_tokens table is added
+  const popped = await redis.brpop('hb:worker:notifications', 5)
+  if (!popped) return
+  const [, raw] = popped
+
+  let job: { to?: string; type?: string; data?: Record<string, unknown> }
+  try {
+    job = JSON.parse(raw)
+  } catch {
+    console.error('[worker] notifications: invalid JSON payload')
+    return
+  }
+
+  if (!job.to || !job.type) {
+    console.error('[worker] notifications: payload missing "to" or "type"')
+    return
+  }
+
+  const template = emails[job.type as EmailName] as
+    | ((d: Record<string, unknown>) => { subject: string; html: string; text: string })
+    | undefined
+  if (typeof template !== 'function') {
+    console.error(`[worker] notifications: unknown email type "${job.type}"`)
+    return
+  }
+
+  const { subject, html, text } = template(job.data ?? {})
+  try {
+    await sendMail({ to: job.to, subject, html, text })
+    console.log(`[worker] email sent: ${job.type} → ${job.to}`)
+  } catch (e) {
+    console.error(`[worker] email failed (${job.type} → ${job.to}):`, e instanceof Error ? e.message : e)
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -227,7 +255,6 @@ async function run() {
     if (shuttingDown) return
     cleanupStaleRelayRooms().catch(console.error)
     gdprHardDelete().catch(console.error)
-    processNotifications().catch(console.error)
   }
 
   runScheduled()
@@ -238,7 +265,17 @@ async function run() {
     if (!shuttingDown) redis.ping().catch((e) => console.error('[worker] redis ping failed:', e))
   }, 30_000)
 
+  // Continuous email-notification loop — blocks on BRPOP, efficient at idle
+  const notificationsLoop = async () => {
+    while (!shuttingDown) {
+      await processNotifications().catch((e) =>
+        console.error('[worker] notifications error:', e instanceof Error ? e.message : e),
+      )
+    }
+  }
+
   mediaDeletionLoop()
+  notificationsLoop()
 }
 
 run().catch((e) => {

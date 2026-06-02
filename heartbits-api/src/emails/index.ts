@@ -15,6 +15,7 @@ export {
   welcome,
   newMatch,
   newMessage,
+  waitlistConfirm,
   accountDeletionScheduled,
   dataExportReady,
 } from './templates'

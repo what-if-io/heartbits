@@ -119,6 +119,31 @@ export function accountDeletionScheduled(d: { name?: string; purgeDate: string }
   }
 }
 
+// ── Waitlist confirmation ────────────────────────────────────────────────────
+export function waitlistConfirm(_d: { email?: string } = {}): EmailParts {
+  const title = "You're on the HeartBits waitlist"
+  return {
+    subject: "You're on the list — HeartBits ♥",
+    html: renderHtml({
+      title,
+      preheader: "We'll let you know the moment HeartBits opens.",
+      bodyHtml:
+        para(`Thanks for joining the HeartBits waitlist.`) +
+        para(`HeartBits turns a like into a heartbeat — the moment two people match, their hearts sync live. We're putting the finishing touches on it, and you'll be among the first through the door.`),
+      cta: { label: 'Visit HeartBits', url: BRAND.appUrl },
+    }),
+    text: renderText({
+      title,
+      lines: [
+        'Thanks for joining the HeartBits waitlist.',
+        '',
+        "HeartBits turns a like into a heartbeat — the moment two people match, their hearts sync live. We're putting the finishing touches on it, and you'll be among the first through the door.",
+      ],
+      cta: { label: 'Visit HeartBits', url: BRAND.appUrl },
+    }),
+  }
+}
+
 // ── Data export ready (GDPR Art. 20) ─────────────────────────────────────────
 export function dataExportReady(d: { name?: string; url: string; expiresIn: string }): EmailParts {
   const name = d.name?.trim() || 'there'

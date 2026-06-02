@@ -7,6 +7,7 @@
     "worker": "bun run src/worker.ts"
   },
   "devDependencies": {
+    "@types/nodemailer": "^8.0.0",
     "bun-types": "latest"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "ioredis": "^5.4",
     "jose": "^5.9",
     "minio": "^8.0.7",
+    "nodemailer": "^8.0.10",
     "postgres": "^3.4"
   }
 }
