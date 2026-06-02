@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     kotlin("plugin.compose")
@@ -9,7 +11,7 @@ android {
     compileSdk = 37
 
     val localProps = rootProject.file("local.properties")
-    val lp = java.util.Properties().apply { if (localProps.exists()) load(localProps.inputStream()) }
+    val lp = Properties().apply { if (localProps.exists()) load(localProps.inputStream()) }
 
     defaultConfig {
         applicationId = "io.whatif.heartbits"

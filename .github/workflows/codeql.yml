@@ -49,7 +49,7 @@ jobs:
       - name: Build Android app (for CodeQL)
         if: matrix.build-mode == 'manual'
         working-directory: HeartbitsAndroid
-        run: ./gradlew :app:assembleDebug --no-daemon --console=plain
+        run: ./gradlew :app:compileDebugKotlin --no-daemon --console=plain
 
       - name: Analyze
         uses: github/codeql-action/analyze@v3
