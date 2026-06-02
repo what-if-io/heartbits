@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/what-if-io/heartbits/security/policy
+    about: Please report security issues privately — do not open a public issue. See our Security Policy.
+  - name: Question or general help
+    url: https://github.com/what-if-io/heartbits/discussions
+    about: Ask questions and discuss ideas in Discussions.
