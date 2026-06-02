@@ -86,15 +86,23 @@
   }
 
   .demo-cta {
-    color: #ff6b6b;
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 16px;
+    background: linear-gradient(135deg, #ff6b6b, #e81f8c 50%, #7b35de);
+    color: #fff;
     text-decoration: none;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 100px;
     white-space: nowrap;
     flex-shrink: 0;
-    transition: color 0.15s ease;
+    box-shadow: 0 0 20px rgba(255,107,107,0.2);
+    transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
   .demo-cta:hover {
-    color: #ff8c8c;
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
 </style>
