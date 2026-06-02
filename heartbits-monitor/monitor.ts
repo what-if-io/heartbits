@@ -51,12 +51,14 @@ const WEB_URL    = process.env.WEB_URL   ?? 'http://heartbits-web:3000';
 const AUTH_URL   = process.env.AUTH_URL  ?? '';
 const RELAY_URL  = process.env.RELAY_URL ?? '';
 const API_URL    = process.env.API_URL   ?? '';
+const MEDIA_URL  = process.env.MEDIA_URL ?? '';
 
 // Public display names (shown on status page instead of internal Docker hostnames)
 const APP_DOMAIN   = process.env.APP_DOMAIN   ?? '';
 const AUTH_DOMAIN  = process.env.AUTH_DOMAIN  ?? '';
 const RELAY_DOMAIN = process.env.RELAY_DOMAIN ?? '';
 const API_DOMAIN   = process.env.API_DOMAIN   ?? '';
+const MEDIA_DOMAIN = process.env.MEDIA_DOMAIN ?? '';
 
 interface ServiceDef {
   id: string; name: string; url: string;
@@ -68,6 +70,7 @@ const SERVICES: ServiceDef[] = [
   ...(AUTH_URL  ? [{ id: 'auth',  name: 'Auth',  url: AUTH_URL,  desc: AUTH_DOMAIN  || null, noRedirect: false }] : []),
   ...(RELAY_URL ? [{ id: 'relay', name: 'Relay', url: RELAY_URL, desc: RELAY_DOMAIN || null, noRedirect: false }] : []),
   ...(API_URL   ? [{ id: 'api',   name: 'API',   url: API_URL,   desc: API_DOMAIN   || null, noRedirect: false }] : []),
+  ...(MEDIA_URL ? [{ id: 'media', name: 'Media', url: MEDIA_URL, desc: MEDIA_DOMAIN || null, noRedirect: false }] : []),
 ];
 
 // ── Ping ─────────────────────────────────────────────────────────────────────

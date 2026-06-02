@@ -271,11 +271,13 @@ services:
       AUTH_URL:     http://zitadel:8180/debug/healthz
       RELAY_URL:    http://heartbits-relay:8765
       API_URL:      http://heartbits-api:3100/health
+      MEDIA_URL:    http://minio:9000/minio/health/live
       # Public domain names — used for display on the status page
       APP_DOMAIN:   ${APP_DOMAIN}
       AUTH_DOMAIN:  ${AUTH_DOMAIN}
       RELAY_DOMAIN: ${RELAY_DOMAIN}
       API_DOMAIN:   ${API_DOMAIN:-}
+      MEDIA_DOMAIN: ${MEDIA_DOMAIN:-}
     networks: [internal]
     restart: unless-stopped
 
