@@ -11,6 +11,7 @@
 
 export const BRAND = {
   bg:      '#070710',
+  outer:   '#030308',   // page backdrop — darker than the panel so the card floats
   panel:   '#0e0e1a',
   coral:   '#FF6B6B',
   magenta: '#E81F8C',
@@ -75,11 +76,11 @@ export function renderHtml(o: HtmlLayout): string {
   <meta name="supported-color-schemes" content="dark light"/>
   <title>${esc(o.title)}</title>
 </head>
-<body style="margin:0;padding:0;background:${BRAND.bg};-webkit-text-size-adjust:100%;">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${BRAND.bg};font-size:1px;line-height:1px;">${esc(o.preheader)}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.bg};">
+<body style="margin:0;padding:0;background:${BRAND.outer};-webkit-text-size-adjust:100%;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${BRAND.outer};font-size:1px;line-height:1px;">${esc(o.preheader)}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${BRAND.outer};">
     <tr>
-      <td align="center" style="padding:32px 16px;">
+      <td align="center" style="padding:44px 24px;">
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;background:${BRAND.panel};border:1px solid ${BRAND.border};border-radius:18px;overflow:hidden;">
           <tr>
             <td style="padding:34px 40px 0;">
