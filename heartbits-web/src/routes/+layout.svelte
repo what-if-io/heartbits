@@ -39,7 +39,7 @@
   <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>
     <span class="demo-pill">Demo</span>
     <span class="demo-text">Exploring HeartBits in demo mode</span>
-    <a href="/auth/initiate?next=/discover" class="demo-cta">Create account →</a>
+    <a href="/" class="demo-cta">Join the waitlist →</a>
   </div>
 {/if}
 

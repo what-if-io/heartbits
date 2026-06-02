@@ -156,22 +156,27 @@
         The dating app that puts your heart first.<br />Literally.
       </p>
 
-      <div class="cta-group">
-        {#if data.loggedIn}
+      {#if data.loggedIn}
+        <div class="cta-group">
           <a href={ctaHref} class="btn-cta">
             Start feeling
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-        {:else}
+          <a href="#how" class="btn-ghost">How it works</a>
+        </div>
+      {:else}
+        <div class="cta-stack">
           <WaitlistForm />
-        {/if}
-        {#if !data.loggedIn}
-          <a href="/auth/demo" class="btn-ghost">Try the demo →</a>
-        {/if}
-        <a href="#how" class="btn-ghost">How it works</a>
-      </div>
+          <p class="cta-note">No spam — just one heartbeat the day we open.</p>
+          <div class="cta-secondary">
+            <a href="/auth/demo" class="link-soft">Try the demo →</a>
+            <span class="dot-sep">·</span>
+            <a href="#how" class="link-soft">How it works</a>
+          </div>
+        </div>
+      {/if}
 
       <!-- Trust signal -->
       <div class="trust">
@@ -580,6 +585,33 @@
     border-color: rgba(255,255,255,0.25);
     color: rgba(255,255,255,0.75);
   }
+
+  .cta-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .cta-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.32);
+    margin: 0;
+  }
+  .cta-secondary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .link-soft {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.2s ease;
+  }
+  .link-soft:hover { color: rgba(255,255,255,0.85); }
+  .dot-sep { color: rgba(255,255,255,0.2); }
 
   .trust {
     display: flex;

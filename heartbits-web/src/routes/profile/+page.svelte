@@ -408,9 +408,9 @@
     {#if data.isDemo}
       <div class="section-card demo-cta-card">
         <p class="demo-cta-lead">You're exploring in demo mode.</p>
-        <p class="demo-cta-sub">Create a real account to set up your profile, share your heartbeat, and connect with others.</p>
-        <a href="/auth/initiate?next=/discover" class="demo-cta-btn">
-          Create account
+        <p class="demo-cta-sub">HeartBits is opening soon. Join the waitlist to set up your profile, share your heartbeat, and connect with others.</p>
+        <a href="/" class="demo-cta-btn">
+          Join the waitlist
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>

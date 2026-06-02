@@ -43,7 +43,7 @@
           </svg>
           Try Demo
         </a>
-        <a href="/auth/login" class="cta-secondary">Create Account</a>
+        <a href="/" class="cta-secondary">Join the Waitlist</a>
       </div>
 
       <div class="ecg-hero" aria-hidden="true">
@@ -240,7 +240,7 @@
       <p class="cta-sub">Private preview. Free to join.</p>
       <div class="hero-ctas">
         <a href="/auth/demo" class="cta-primary">Try Demo First</a>
-        <a href="/auth/login" class="cta-secondary">Create Account</a>
+        <a href="/" class="cta-secondary">Join the Waitlist</a>
       </div>
       <p class="cta-platforms">iOS · Android · Web · Apple Watch · Wear OS</p>
     </div>

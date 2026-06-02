@@ -70,21 +70,31 @@
     font-size: 15px;
     outline: none;
   }
-  .wl-input:focus { border-color: #ff6b6b; }
+  .wl-input:focus {
+    border-color: rgba(255, 107, 107, 0.6);
+    box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.12);
+  }
   .wl-input::placeholder { color: rgba(255, 255, 255, 0.3); }
   .wl-btn {
-    padding: 14px 28px;
+    padding: 14px 30px;
     border-radius: 999px;
     border: none;
-    background: #ff6b6b;
-    color: #1a0710;
+    background: linear-gradient(135deg, #ff6b6b, #e81f8c 50%, #7b35de);
+    color: #fff;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.22), 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .wl-btn:hover { background: #ff8080; }
-  .wl-btn:disabled { opacity: 0.6; cursor: default; }
+  .wl-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 0 50px rgba(255, 107, 107, 0.32), 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  .wl-btn:active { transform: translateY(0); }
+  .wl-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
   .wl-done { color: #ff6b6b; font-size: 16px; font-weight: 500; }
   .wl-err { color: #ff8080; font-size: 13px; margin-top: 8px; width: 100%; }
 </style>
