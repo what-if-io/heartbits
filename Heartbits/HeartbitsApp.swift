@@ -1,7 +1,14 @@
 import SwiftUI
 
-private let relayToken = "cda99d6005b24de627b034f8ac5d27edde0abbcddaef1ac18d05a7cc3934ce61"
-private let relayBase  = "wss://hb.what-if.io/"
+// Relay config — never hardcode the token. Inject RELAY_TOKEN / RELAY_BASE via the
+// scheme's environment variables or a gitignored Secrets.xcconfig (mirrors the
+// Watch app's RelayConfig). An empty token targets an open/local-dev relay only.
+private let relayToken = ProcessInfo.processInfo.environment["RELAY_TOKEN"]
+    ?? Bundle.main.infoDictionary?["RELAY_TOKEN"] as? String
+    ?? ""
+private let relayBase = ProcessInfo.processInfo.environment["RELAY_BASE"]
+    ?? Bundle.main.infoDictionary?["RELAY_BASE"] as? String
+    ?? "wss://relay.heartbits.what-if.io/"
 
 @main
 struct HeartbitsApp: App {
