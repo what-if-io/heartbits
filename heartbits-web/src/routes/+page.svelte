@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import WaitlistForm from '$lib/components/WaitlistForm.svelte';
 
   interface Props {
     data: import('./$types').PageData;
@@ -156,12 +157,16 @@
       </p>
 
       <div class="cta-group">
-        <a href={ctaHref} class="btn-cta">
-          Start feeling
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </a>
+        {#if data.loggedIn}
+          <a href={ctaHref} class="btn-cta">
+            Start feeling
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {:else}
+          <WaitlistForm />
+        {/if}
         <a href="#how" class="btn-ghost">How it works</a>
       </div>
 
@@ -347,12 +352,18 @@
       No swiping. No algorithm. Just biology.
     </p>
 
-    <a href={ctaHref} class="btn-cta btn-centered">
-      Find your match
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
+    {#if data.loggedIn}
+      <a href={ctaHref} class="btn-cta btn-centered">
+        Find your match
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    {:else}
+      <div style="display:flex;justify-content:center;">
+        <WaitlistForm />
+      </div>
+    {/if}
   </section>
 
   <!-- ─── FOOTER ────────────────────────────────────── -->

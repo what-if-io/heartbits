@@ -16,6 +16,9 @@ import { env } from '$env/dynamic/private';
 import { parseSession, SESSION_COOKIE } from '$lib/server/auth';
 
 const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
+// Public, ungated pages — the waitlist landing and marketing/legal pages.
+// The app itself (PROTECTED_PREFIXES) stays behind the staging gate + auth.
+const PUBLIC_PATHS = new Set(['/', '/about', '/privacy', '/terms', '/pitch', '/waitlist']);
 const STAGING_COOKIE = 'hb_staging';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -31,11 +34,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   // ── Staging gate ─────────────────────────────────────────────────────────
   const stagingPassword = env.STAGING_PASSWORD;
   if (stagingPassword) {
-    const isAsset = pathname.startsWith('/_app/') || pathname.startsWith('/favicon');
+    const isAsset = pathname.startsWith('/_app/') || /\.[a-z0-9]+$/i.test(pathname);
     const isAuth  = pathname.startsWith('/auth/');
+    const isPublic = PUBLIC_PATHS.has(pathname);
     const hasSession = !!event.locals.user;
 
-    if (!isAsset && !isAuth && !hasSession) {
+    if (!isAsset && !isAuth && !isPublic && !hasSession) {
       const stagingCookie = event.cookies.get(STAGING_COOKIE);
 
       if (request.method === 'POST') {
