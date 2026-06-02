@@ -14,8 +14,7 @@ import { redirect } from '@sveltejs/kit';
 import * as oidcClient from 'openid-client';
 import {
   getOidcConfig,
-  clearSessionCookieAttrs,
-  SESSION_COOKIE
+  clearSessionCookieAttrs
 } from '$lib/server/auth';
 import { env } from '$env/dynamic/private';
 

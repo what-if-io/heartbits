@@ -20,7 +20,7 @@
   }
 
   const DEMO_PEOPLE: Person[] = [
-    { id: 'ela',  name: 'Ela',  age: 28, distance: '2 km away',  bpm: 72, color: '#FF6B6B', bio: 'Chasing sunsets and slow mornings.', interests: ['yoga', 'film', 'jazz'], avatar_url: null },
+    { id: 'ela',  name: 'Xin', age: 28, distance: '2 km away',  bpm: 72, color: '#FF6B6B', bio: 'Chasing sunsets and slow mornings.', interests: ['yoga', 'film', 'jazz'], avatar_url: null },
     { id: 'mia',  name: 'Mia',  age: 31, distance: '5 km away',  bpm: 65, color: '#7B35DE', bio: 'Books, bicycles, and bad puns.', interests: ['reading', 'cycling', 'cooking'], avatar_url: null },
     { id: 'zara', name: 'Zara', age: 26, distance: '1 km away',  bpm: 80, color: '#E81F8C', bio: 'Dancing through the noise of the city.', interests: ['dancing', 'music', 'art'], avatar_url: null },
     { id: 'lena', name: 'Lena', age: 29, distance: '8 km away',  bpm: 58, color: '#FF8C42', bio: 'Mountains, markets, and mindful living.', interests: ['hiking', 'pottery', 'tea'], avatar_url: null },

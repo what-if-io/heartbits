@@ -133,7 +133,7 @@
         </div>
         <div class="bpm-row">
           <span class="bpm-dot" style="background:#7B35DE"></span>
-          <span class="bpm-name">Ela</span>
+          <span class="bpm-name">Xin</span>
           <span class="bpm-val">71 BPM</span>
           <div class="bpm-bar"><div class="bpm-fill" style="width:71%;background:#7B35DE"></div></div>
         </div>

@@ -18,7 +18,7 @@ import { parseSession, SESSION_COOKIE } from '$lib/server/auth';
 const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 // Public, ungated pages — the waitlist landing and marketing/legal pages.
 // The app itself (PROTECTED_PREFIXES) stays behind the staging gate + auth.
-const PUBLIC_PATHS = new Set(['/', '/about', '/privacy', '/terms', '/pitch', '/status', '/waitlist']);
+const PUBLIC_PATHS = new Set(['/', '/about', '/privacy', '/terms', '/status', '/waitlist']);
 const STAGING_COOKIE = 'hb_staging';
 
 export const handle: Handle = async ({ event, resolve }) => {

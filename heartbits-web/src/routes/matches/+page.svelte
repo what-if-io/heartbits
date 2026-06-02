@@ -15,7 +15,7 @@
   }
 
   const DEMO_MATCHES: Match[] = [
-    { id: 'ela', name: 'Ela', matchedAt: '2 days ago', bpm: 71, online: true,  color: '#FF6B6B', distance: '2 km' },
+    { id: 'ela', name: 'Xin', matchedAt: '2 days ago', bpm: 71, online: true,  color: '#FF6B6B', distance: '2 km' },
     { id: 'mia', name: 'Mia', matchedAt: '1 week ago', bpm: 65, online: false, color: '#7B35DE', distance: '5 km' },
   ];
 

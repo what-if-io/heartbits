@@ -50,6 +50,7 @@
     </button>
   </form>
   {#if status === 'error'}<p class="wl-err">{message}</p>{/if}
+  <p class="wl-legal">By joining you agree to our <a href="/privacy">Privacy Policy</a>.</p>
 {/if}
 
 <style>
@@ -97,4 +98,7 @@
   .wl-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
   .wl-done { color: #ff6b6b; font-size: 16px; font-weight: 500; }
   .wl-err { color: #ff8080; font-size: 13px; margin-top: 8px; width: 100%; }
+  .wl-legal { font-size: 12px; color: rgba(255, 255, 255, 0.28); margin: 2px 0 0; width: 100%; }
+  .wl-legal a { color: rgba(255, 255, 255, 0.45); text-decoration: underline; }
+  .wl-legal a:hover { color: rgba(255, 255, 255, 0.7); }
 </style>

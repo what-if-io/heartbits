@@ -44,7 +44,7 @@ HeartBits is designed to run on a single VM with Docker Compose. All services �
 **Requirements:** a Linux VM (Ubuntu / Debian / RHEL / Rocky), Docker, and three subdomains pointed at it.
 
 ```bash
-git clone https://github.com/your-org/heartbits
+git clone https://github.com/what-if-io/heartbits
 cd heartbits/deploy
 ./do.sh
 ```
@@ -69,6 +69,8 @@ See [`docs/deploy.md`](docs/deploy.md) for the full deployment guide.
 | `Heartbits Vision App/` | visionOS companion |
 | `Heartbits Watch App/` | watchOS heart rate capture |
 | `HeartbitsAndroid/` | Android app (Kotlin) |
+
+> **Mobile apps are an early Phase‑0 prototype.** iOS / watchOS / visionOS / Android currently do live heartbeat relay only — they do **not** yet implement the auth, profiles, discovery, matching, or bonds flows described below. The **web app + API are the reference implementation**; migrating the mobile clients to the authenticated API is on the roadmap.
 
 ---
 

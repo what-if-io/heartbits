@@ -14,11 +14,9 @@ import * as oidcClient from 'openid-client';
 import {
   getOidcConfig,
   getRedirectUri,
-  parseSession,
   serializeSession,
   sessionCookieAttrs,
   clearPkceStateCookies,
-  SESSION_COOKIE,
   PKCE_COOKIE,
   STATE_COOKIE,
   type SessionData

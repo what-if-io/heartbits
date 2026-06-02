@@ -293,7 +293,7 @@
         <div class="phone-shell">
           <div class="phone-notch"></div>
           <div class="phone-screen">
-            <div class="phone-name">Ela, 28</div>
+            <div class="phone-name">Xin, 28</div>
             <div class="phone-sub">2 km away</div>
             <div class="phone-wave">
               <svg width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
@@ -356,7 +356,7 @@
     </div>
 
     <p class="moment-desc">
-      When Ela taps Send Heart, you feel her pulse in real time.<br />
+      When Xin taps Send Heart, you feel their pulse in real time.<br />
       No swiping. No algorithm. Just biology.
     </p>
 
