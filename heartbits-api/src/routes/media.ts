@@ -34,8 +34,12 @@ export const mediaRoute = new Elysia({ prefix: '/api/v1' })
         return { error: 'Unsupported image type. Send JPEG, WebP, or PNG.' }
       }
 
-      const objectKey = `${auth.userId}/${crypto.randomUUID()}.${ext}`
-      const buffer    = Buffer.from(await file.arrayBuffer())
+      const buffer = Buffer.from(await file.arrayBuffer())
+      // Object key == media row id so the public URL (avatarUrl → /{BUCKET}/{id})
+      // resolves directly to the stored object. Content-Type travels as metadata,
+      // so the extension is not needed in the key.
+      const mediaId   = crypto.randomUUID()
+      const objectKey = mediaId
 
       // Upload to MinIO first — if this fails, DB stays untouched
       await client.putObject(BUCKET, objectKey, buffer, buffer.length, {
@@ -52,8 +56,8 @@ export const mediaRoute = new Elysia({ prefix: '/api/v1' })
 
         // Insert new media row
         const [media] = await tx<{ id: string }[]>`
-          INSERT INTO app.media (user_id, bucket, object_key, purpose)
-          VALUES (${auth.userId}, ${BUCKET}, ${objectKey}, 'avatar')
+          INSERT INTO app.media (id, user_id, bucket, object_key, purpose)
+          VALUES (${mediaId}, ${auth.userId}, ${BUCKET}, ${objectKey}, 'avatar')
           RETURNING id
         `
         if (!media) throw new Error('media insert returned no row')
