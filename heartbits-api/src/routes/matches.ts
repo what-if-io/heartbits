@@ -53,7 +53,7 @@ export const matchesRoute = new Elysia({ prefix: '/api/v1' })
               WHEN m.user_a_id = ${auth.userId} THEN m.user_b_id
               ELSE m.user_a_id
             END
-          JOIN app.users u ON u.id = p.id AND u.deleted_at IS NULL
+          JOIN app.users u ON u.id = p.id AND u.deleted_at IS NULL AND u.paused_at IS NULL
           WHERE (m.user_a_id = ${auth.userId} OR m.user_b_id = ${auth.userId})
             AND m.unmatched_at IS NULL
           ORDER BY m.matched_at DESC

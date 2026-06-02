@@ -28,10 +28,14 @@ until docker compose exec -T postgres pg_isready -U heartbits -d heartbits >/dev
   fi
 done
 
-echo "  Postgres ready. Applying 001_initial_schema.sql..."
+echo "  Postgres ready. Applying migrations..."
 
-docker compose exec -T postgres psql -U heartbits -d heartbits \
-  < "${SCRIPT_DIR}/../heartbits-api/migrations/001_initial_schema.sql"
+# Apply every migrations/*.sql in lexical order (001, 002, ...).
+# Each migration must be idempotent — this runs on every deploy.
+for _m in "${SCRIPT_DIR}"/../heartbits-api/migrations/*.sql; do
+  echo "    → $(basename "${_m}")"
+  docker compose exec -T postgres psql -U heartbits -d heartbits < "${_m}"
+done
 
 echo "  Setting role passwords from environment..."
 

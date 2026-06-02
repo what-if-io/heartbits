@@ -95,13 +95,28 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
         }
       }
 
-      // Upsert user row
+      // Block re-init of a deleted account. The row is kept (soft-delete) until
+      // the 30-day GDPR hard-delete, but the identity must not be resurrected —
+      // pause is the reversible path, delete is final.
+      const existing = await sql<{ deleted_at: Date | null }[]>`
+        SELECT deleted_at FROM app.users WHERE zitadel_sub = ${sub} LIMIT 1
+      `
+      if (existing[0]?.deleted_at) {
+        set.status = 403
+        return {
+          error: 'account_deleted',
+          message: 'This account has been deleted and cannot be reactivated.',
+        }
+      }
+
+      // Upsert user row. ON CONFLICT clears paused_at — logging back in
+      // reactivates a paused account with all data intact.
       const [user] = await sql<{ id: string; created: boolean }[]>`
         WITH ins AS (
           INSERT INTO app.users (id, zitadel_sub, created_at, last_seen_at)
           VALUES (gen_random_uuid(), ${sub}, NOW(), NOW())
           ON CONFLICT (zitadel_sub) DO UPDATE
-            SET last_seen_at = NOW()
+            SET last_seen_at = NOW(), paused_at = NULL
           RETURNING id,
             (xmax = 0) AS created
         )
@@ -334,6 +349,41 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
         summary: 'Update current user profile',
         tags: ['me'],
       },
+    },
+  )
+
+  // ── POST /api/v1/me/pause — reversible deactivation ─────────────────────────
+  //
+  // Sets paused_at. The user is hidden from discovery and matches but NO data is
+  // destroyed. Logging in again (POST /me/init) clears paused_at and reactivates
+  // the account. This is the reversible counterpart to DELETE /me (erasure).
+  .post(
+    '/me/pause',
+    async ({ auth, set, request }) => {
+      const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? null
+
+      await sql.begin(async (tx) => {
+        await tx`
+          UPDATE app.users
+          SET paused_at = NOW()
+          WHERE id = ${auth.userId} AND deleted_at IS NULL
+        `
+        await tx`
+          INSERT INTO app.audit_log
+            (id, actor_id, action, target_type, target_id, ip_address, created_at)
+          VALUES
+            (gen_random_uuid(), ${auth.userId}, 'account.pause', 'user', ${auth.userId},
+             ${ip}::inet, NOW())
+        `
+      })
+
+      set.status = 200
+      return {
+        message: 'Your account is paused. Log in again any time to reactivate it.',
+      }
+    },
+    {
+      detail: { summary: 'Pause (deactivate) account — reversible', tags: ['me'] },
     },
   )
 

@@ -138,6 +138,7 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
           JOIN app.users u ON u.id = p.id
           WHERE p.id != ${auth.userId}
             AND u.deleted_at IS NULL
+            AND u.paused_at IS NULL
             -- Exclude already-swiped
             AND p.id NOT IN (
               SELECT swiped_id

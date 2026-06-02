@@ -172,7 +172,23 @@
     }
   }
 
-  // ── DELETE ACCOUNT ───────────────────────────────────────────────────────
+  // ── PAUSE ACCOUNT (reversible) ───────────────────────────────────────────
+  let pausing = $state(false);
+
+  async function pauseAccount() {
+    if (pausing) return;
+    pausing = true;
+    try {
+      const res = await fetch('/profile/pause', { method: 'POST' });
+      // End the Zitadel session too; logging back in reactivates the account.
+      if (res.ok) window.location.href = '/auth/logout';
+      else pausing = false;
+    } catch {
+      pausing = false;
+    }
+  }
+
+  // ── DELETE ACCOUNT (erasure) ─────────────────────────────────────────────
   let showDeleteConfirm = $state(false);
   let deleting = $state(false);
 
@@ -181,7 +197,9 @@
     deleting = true;
     try {
       const res = await fetch('/profile', { method: 'DELETE' });
-      if (res.ok) goto('/');
+      // Full logout so the Zitadel SSO session ends — otherwise the next login
+      // silently re-authenticates a now-deleted account (zombie session).
+      if (res.ok) window.location.href = '/auth/logout';
       else deleting = false;
     } catch {
       deleting = false;
@@ -423,6 +441,16 @@
               <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
           </a>
+          <div class="action-divider"></div>
+          <button class="action-row" onclick={pauseAccount} disabled={pausing}>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M7 4V14M11 4V14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            </svg>
+            <span>{pausing ? 'Pausing…' : 'Pause account'}</span>
+            <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+          </button>
           <div class="action-divider"></div>
           <button class="action-row danger-row" onclick={() => showDeleteConfirm = true}>
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
