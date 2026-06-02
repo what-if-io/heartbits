@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hero_title_line1": "Siente la",
+  "hero_title_line2": "conexión.",
+  "hero_subline": "La app de citas que pone tu corazón primero. Literalmente.",
+  "waitlist_placeholder": "tu@email.com",
+  "waitlist_cta": "Únete a la lista",
+  "waitlist_joining": "Uniéndote…",
+  "waitlist_note": "Sin spam — solo un latido el día que abramos.",
+  "waitlist_success": "Estás en la lista — revisa tu correo.",
+  "waitlist_error": "Algo salió mal. Inténtalo de nuevo.",
+  "waitlist_legal_pre": "Al unirte aceptas nuestra ",
+  "waitlist_legal_link": "Política de Privacidad",
+  "try_demo": "Prueba la demo →",
+  "how_it_works": "Cómo funciona",
+  "nav_about": "Acerca de",
+  "nav_privacy": "Privacidad",
+  "nav_terms": "Términos",
+  "nav_status": "Estado",
+  "nav_contact": "Contacto"
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hero_title_line1": "Ressentez la",
+  "hero_title_line2": "connexion.",
+  "hero_subline": "L'application de rencontres qui fait passer votre cœur en premier. Littéralement.",
+  "waitlist_placeholder": "vous@email.com",
+  "waitlist_cta": "Rejoindre la liste",
+  "waitlist_joining": "Inscription…",
+  "waitlist_note": "Pas de spam — juste un battement de cœur le jour de l'ouverture.",
+  "waitlist_success": "Vous êtes sur la liste — vérifiez votre boîte mail.",
+  "waitlist_error": "Une erreur s'est produite. Veuillez réessayer.",
+  "waitlist_legal_pre": "En vous inscrivant, vous acceptez notre ",
+  "waitlist_legal_link": "Politique de Confidentialité",
+  "try_demo": "Essayer la démo →",
+  "how_it_works": "Comment ça marche",
+  "nav_about": "À propos",
+  "nav_privacy": "Confidentialité",
+  "nav_terms": "Conditions",
+  "nav_status": "Statut",
+  "nav_contact": "Contact"
+}

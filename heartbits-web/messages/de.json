@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hero_title_line1": "Spüre die",
+  "hero_title_line2": "Verbindung.",
+  "hero_subline": "Die Dating-App, die dein Herz an die erste Stelle setzt. Wörtlich.",
+  "waitlist_placeholder": "du@email.com",
+  "waitlist_cta": "Auf die Warteliste",
+  "waitlist_joining": "Wird eingetragen…",
+  "waitlist_note": "Kein Spam — nur ein Herzschlag am Tag der Eröffnung.",
+  "waitlist_success": "Du bist auf der Liste — schau in dein Postfach.",
+  "waitlist_error": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  "waitlist_legal_pre": "Mit dem Beitritt akzeptierst du unsere ",
+  "waitlist_legal_link": "Datenschutzerklärung",
+  "try_demo": "Demo ausprobieren →",
+  "how_it_works": "So funktioniert's",
+  "nav_about": "Über uns",
+  "nav_privacy": "Datenschutz",
+  "nav_terms": "AGB",
+  "nav_status": "Status",
+  "nav_contact": "Kontakt"
+}

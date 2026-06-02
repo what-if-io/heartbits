@@ -1,0 +1,21 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "hero_title_line1": "Feel the",
+  "hero_title_line2": "connection.",
+  "hero_subline": "The dating app that puts your heart first. Literally.",
+  "waitlist_placeholder": "you@email.com",
+  "waitlist_cta": "Join the waitlist",
+  "waitlist_joining": "Joining…",
+  "waitlist_note": "No spam — just one heartbeat the day we open.",
+  "waitlist_success": "You're on the list — check your inbox.",
+  "waitlist_error": "Something went wrong. Please try again.",
+  "waitlist_legal_pre": "By joining you agree to our ",
+  "waitlist_legal_link": "Privacy Policy",
+  "try_demo": "Try the demo →",
+  "how_it_works": "How it works",
+  "nav_about": "About",
+  "nav_privacy": "Privacy",
+  "nav_terms": "Terms",
+  "nav_status": "Status",
+  "nav_contact": "Contact"
+}
