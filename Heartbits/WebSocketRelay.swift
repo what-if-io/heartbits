@@ -11,7 +11,7 @@ import Foundation
 //
 // URL format:  wss://host/<roomId>
 //   local dev  ws://localhost:8765/alice-bob
-//   production wss://hb.what-if.io/alice-bob
+//   production wss://relay.heartbits.what-if.io/alice-bob
 
 public actor WebSocketRelay: HeartBitRelay {
     private let url: URL
@@ -41,7 +41,7 @@ public actor WebSocketRelay: HeartBitRelay {
     }()
 
     /// - Parameters:
-    ///   - url:   WebSocket room URL, e.g. `wss://hb.what-if.io/alice-bob`
+    ///   - url:   WebSocket room URL, e.g. `wss://relay.heartbits.what-if.io/alice-bob`
     ///   - token: Bearer token sent in `Authorization` header during upgrade.
     ///            Pass `nil` only for local dev with no server token set.
     public init(url: URL, token: String? = nil) {

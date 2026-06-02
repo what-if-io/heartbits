@@ -26,7 +26,7 @@
     <p>HeartBits is provided "as is". We are not a medical device and heart rate readings should not be used for medical purposes.</p>
 
     <h2>6. Contact</h2>
-    <p><a href="mailto:hello@heartbits.app">hello@heartbits.app</a></p>
+    <p><a href="mailto:hello@what-if.io">hello@what-if.io</a></p>
   </div>
 </div>
 

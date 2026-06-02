@@ -13,7 +13,7 @@
     <p>We're building something that feels more like biology and less like browsing.</p>
     <h2>The team</h2>
     <p>We're a small team obsessed with the idea that technology can create more human moments, not fewer.</p>
-    <p>Questions? <a href="mailto:hello@heartbits.app">hello@heartbits.app</a></p>
+    <p>Questions? <a href="mailto:hello@what-if.io">hello@what-if.io</a></p>
   </div>
 </div>
 

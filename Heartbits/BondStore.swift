@@ -4,7 +4,7 @@ import Observation
 // ── BondStore ─────────────────────────────────────────────────────────────────
 //
 // Persists the shared room ID that both partners connect to.
-// Room ID = WebSocket path on the relay: wss://hb.what-if.io/<roomId>
+// Room ID = WebSocket path on the relay: wss://relay.heartbits.what-if.io/<roomId>
 //
 // Flow:
 //   Creator  → BondStore.generateId() → show QR → store.confirm(id) → isBonded

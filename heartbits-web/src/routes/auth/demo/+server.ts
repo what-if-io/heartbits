@@ -9,7 +9,7 @@ import {
 export const GET: RequestHandler = async ({ cookies, url }) => {
   const session: SessionData = {
     userId: 'demo',
-    email: 'demo@heartbits.app',
+    email: 'demo@what-if.io',
     name: 'Demo User',
     accessToken: '',
     expiresAt: Math.floor(Date.now() / 1000) + 3600,

@@ -21,7 +21,7 @@ The moment two people match, their hearts sync live for the first time.
                         │  heartbits.what-if.io → heartbits-web:3000  │
                         │  auth.heartbits.what-if.io → zitadel:8180   │
                         │  api.heartbits.what-if.io → heartbits-api   │
-                        │  (planned) media.heartbits.what-if.io→minio │
+                        │  media.heartbits.what-if.io → minio:9000    │
                         └─────────────────────────────────────────────┘
                                         │
          ┌──────────────────────────────┼──────────────────────────┐
@@ -60,7 +60,7 @@ The moment two people match, their hearts sync live for the first time.
 | `auth.heartbits.what-if.io` | Zitadel OIDC + login UI | Live |
 | `api.heartbits.what-if.io` | REST API (heartbits-api) | Live |
 | `status.heartbits.what-if.io` | Status page redirect | Live |
-| `media.heartbits.what-if.io` | Signed photo URLs via MinIO | Planned |
+| `media.heartbits.what-if.io` | Signed photo URLs via MinIO | Live |
 
 ---
 
@@ -395,7 +395,7 @@ Redis cache. Flip features live without deploy by changing Redis values.
 
 ## Compose Additions
 
-New services to add to `deploy/what-ifio/compose.yml`:
+New services to add to `deploy/compose.yml`:
 
 ```yaml
 heartbits-api:
@@ -480,7 +480,7 @@ Use Xcode build settings (`RELAY_TOKEN = $(RELAY_TOKEN)` from CI) and Android `b
    before any public user can connect to the relay. Consent gate is enforced at the bond
    endpoint. Heart-rate data is NEVER stored — relay fanout only.
 4. **No media CDN yet** — MinIO on the same VPS as the API means photo serving competes
-   with API CPU; acceptable for launch, add Cloudflare in front of `media.what-if.io`
+   with API CPU; acceptable for launch, add Cloudflare in front of `media.heartbits.what-if.io`
    when traffic warrants.
 5. **Hard-delete worker not implemented** — soft-deleted users must be hard-deleted within
    30 days per GDPR Art. 17. Implement before launch.

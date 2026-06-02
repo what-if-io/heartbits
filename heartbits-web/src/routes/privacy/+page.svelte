@@ -33,10 +33,10 @@
     </ul>
 
     <h2>5. Your rights</h2>
-    <p>Under GDPR you have the right to access, rectify, export, and erase your data. To exercise these rights, contact us at <a href="mailto:privacy@heartbits.app">privacy@heartbits.app</a> or use the account deletion option in your profile.</p>
+    <p>Under GDPR you have the right to access, rectify, export, and erase your data. To exercise these rights, contact us at <a href="mailto:privacy@what-if.io">privacy@what-if.io</a> or use the account deletion option in your profile.</p>
 
     <h2>6. Contact</h2>
-    <p><a href="mailto:privacy@heartbits.app">privacy@heartbits.app</a></p>
+    <p><a href="mailto:privacy@what-if.io">privacy@what-if.io</a></p>
   </div>
 </div>
 
