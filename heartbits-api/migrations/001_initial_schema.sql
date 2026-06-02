@@ -331,7 +331,7 @@ GRANT USAGE ON SCHEMA app TO heartbits_worker;
 -- Relay cleanup: read bonds + matches to find stale relay room keys
 GRANT SELECT ON app.bonds, app.matches TO heartbits_worker;
 -- GDPR hard-delete: delete soft-deleted users (CASCADE handles child rows)
-GRANT DELETE ON app.users TO heartbits_worker;
+GRANT SELECT, DELETE ON app.users TO heartbits_worker;
 -- Media: read/delete for cleanup of orphaned rows
 GRANT SELECT, DELETE ON app.media TO heartbits_worker;
 
