@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js';
+
   let email = $state('');
   let status = $state<'idle' | 'loading' | 'done' | 'error'>('idle');
   let message = $state('');
@@ -20,14 +22,14 @@
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         status = 'done';
-        message = data.message ?? "You're on the list — check your inbox.";
+        message = data.message ?? m.waitlist_success();
       } else {
         status = 'error';
-        message = data.error ?? 'Something went wrong. Please try again.';
+        message = data.error ?? m.waitlist_error();
       }
     } catch {
       status = 'error';
-      message = 'Network error. Please try again.';
+      message = m.waitlist_error();
     }
   }
 </script>
@@ -40,17 +42,17 @@
       class="wl-input"
       type="email"
       required
-      placeholder="you@email.com"
+      placeholder={m.waitlist_placeholder()}
       bind:value={email}
       autocomplete="email"
       aria-label="Email address"
     />
     <button class="wl-btn" type="submit" disabled={status === 'loading'}>
-      {status === 'loading' ? 'Joining…' : 'Join the waitlist'}
+      {status === 'loading' ? m.waitlist_joining() : m.waitlist_cta()}
     </button>
   </form>
   {#if status === 'error'}<p class="wl-err">{message}</p>{/if}
-  <p class="wl-legal">By joining you agree to our <a href="/privacy">Privacy Policy</a>.</p>
+  <p class="wl-legal">{m.waitlist_legal_pre()}<a href="/privacy">{m.waitlist_legal_link()}</a>.</p>
 {/if}
 
 <style>

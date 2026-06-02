@@ -2,6 +2,8 @@
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import WaitlistForm from '$lib/components/WaitlistForm.svelte';
+  import LangSwitcher from '$lib/components/LangSwitcher.svelte';
+  import { m } from '$lib/paraglide/messages.js';
 
   interface Props {
     data: import('./$types').PageData;
@@ -148,12 +150,12 @@
       </div>
 
       <h1 class="headline">
-        Feel the<br />
-        <em class="grad-text">connection.</em>
+        {m.hero_title_line1()}<br />
+        <em class="grad-text">{m.hero_title_line2()}</em>
       </h1>
 
       <p class="subline">
-        The dating app that puts your heart first.<br />Literally.
+        {m.hero_subline()}
       </p>
 
       {#if data.loggedIn}
@@ -164,16 +166,16 @@
               <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-          <a href="#how" class="btn-ghost">How it works</a>
+          <a href="#how" class="btn-ghost">{m.how_it_works()}</a>
         </div>
       {:else}
         <div class="cta-stack">
           <WaitlistForm />
-          <p class="cta-note">No spam — just one heartbeat the day we open.</p>
+          <p class="cta-note">{m.waitlist_note()}</p>
           <div class="cta-secondary">
-            <a href="/auth/demo" class="link-soft">Try the demo →</a>
+            <a href="/auth/demo" class="link-soft">{m.try_demo()}</a>
             <span class="dot-sep">·</span>
-            <a href="#how" class="link-soft">How it works</a>
+            <a href="#how" class="link-soft">{m.how_it_works()}</a>
           </div>
         </div>
       {/if}
@@ -382,11 +384,12 @@
         <span>HeartBits</span>
       </div>
       <div class="footer-links">
-        <a href="/about">About</a>
-        <a href="/privacy">Privacy</a>
-        <a href="/terms">Terms</a>
-        <a href="/status">Status</a>
-        <a href="mailto:hello@what-if.io">Contact</a>
+        <a href="/about">{m.nav_about()}</a>
+        <a href="/privacy">{m.nav_privacy()}</a>
+        <a href="/terms">{m.nav_terms()}</a>
+        <a href="/status">{m.nav_status()}</a>
+        <a href="mailto:hello@what-if.io">{m.nav_contact()}</a>
+        <LangSwitcher />
       </div>
       <div class="footer-copy">HeartBits &copy; 2026</div>
     </div>

@@ -14,6 +14,7 @@ import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { parseSession, SESSION_COOKIE } from '$lib/server/auth';
+import { paraglideMiddleware } from '$lib/paraglide/server';
 
 const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 // Public, ungated pages — the waitlist landing and marketing/legal pages.
@@ -21,7 +22,13 @@ const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 const PUBLIC_PATHS = new Set(['/', '/about', '/privacy', '/terms', '/status', '/waitlist']);
 const STAGING_COOKIE = 'hb_staging';
 
-export const handle: Handle = async ({ event, resolve }) => {
+// Paraglide locale middleware wraps the app handle so SSR renders in the
+// request's language (cookie + Accept-Language). Cookie strategy means no URL
+// rewriting, so we keep the original event.
+export const handle: Handle = (input) =>
+  paraglideMiddleware(input.event.request, () => appHandle(input));
+
+const appHandle: Handle = async ({ event, resolve }) => {
   const { url: { pathname }, request } = event;
 
   // ── Session (parse first so staging gate can check it) ───────────────────
