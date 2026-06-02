@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: web — build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: heartbits-web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build
+
+  api:
+    name: api — deps + bundle
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: heartbits-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      # Bundle the entrypoints — catches import/syntax errors without running
+      - run: bun build src/index.ts src/worker.ts --target bun --outdir /tmp/api-build
+
+  relay:
+    name: relay — syntax
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: relay-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: relay-server/package-lock.json
+      - run: npm ci
+      - run: node --check server.js
