@@ -15,6 +15,7 @@ import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { parseSession, SESSION_COOKIE } from '$lib/server/auth';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { deLocalizeUrl, localizeHref } from '$lib/paraglide/runtime';
 
 const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 // Public, ungated pages — the waitlist landing and marketing/legal pages.
@@ -22,14 +23,25 @@ const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 const PUBLIC_PATHS = new Set(['/', '/about', '/privacy', '/terms', '/status', '/waitlist']);
 const STAGING_COOKIE = 'hb_staging';
 
-// Paraglide locale middleware wraps the app handle so SSR renders in the
-// request's language (cookie + Accept-Language). Cookie strategy means no URL
-// rewriting, so we keep the original event.
+// Paraglide locale middleware resolves the locale (URL prefix → cookie →
+// Accept-Language) and lets us stamp <html lang>. URL strategy means page paths
+// carry a locale prefix (/es/discover), so route decisions below use the
+// de-localized pathname while redirects keep the prefix to preserve the locale.
 export const handle: Handle = (input) =>
-  paraglideMiddleware(input.event.request, () => appHandle(input));
+  paraglideMiddleware(input.event.request, ({ request, locale }) => {
+    input.event.request = request;
+    return appHandle(input, locale);
+  });
 
-const appHandle: Handle = async ({ event, resolve }) => {
-  const { url: { pathname }, request } = event;
+const appHandle = async (
+  { event, resolve }: Parameters<Handle>[0],
+  locale: string
+): Promise<Response> => {
+  const { request } = event;
+  // Canonical, locale-stripped path for routing/auth/staging decisions.
+  const pathname = deLocalizeUrl(event.url).pathname;
+  // Original (possibly locale-prefixed) path, used for redirect targets.
+  const localizedPath = event.url.pathname;
 
   // ── Session (parse first so staging gate can check it) ───────────────────
   const sessionCookie = event.cookies.get(SESSION_COOKIE);
@@ -57,7 +69,7 @@ const appHandle: Handle = async ({ event, resolve }) => {
           const cookie = `${STAGING_COOKIE}=${stagingPassword}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
           return new Response(null, {
             status: 302,
-            headers: { Location: pathname || '/', 'Set-Cookie': cookie }
+            headers: { Location: localizedPath || '/', 'Set-Cookie': cookie }
           });
         }
         return new Response(stagingPage(true), {
@@ -79,13 +91,16 @@ const appHandle: Handle = async ({ event, resolve }) => {
   if (!pathname.startsWith('/auth')) {
     const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
     if (isProtected && !event.locals.user) {
-      const loginUrl = new URL('/auth/login', event.url.origin);
-      loginUrl.searchParams.set('next', pathname);
+      // Keep the user in their locale: localized /auth/login, next = current path.
+      const loginUrl = new URL(localizeHref('/auth/login', { locale }), event.url.origin);
+      loginUrl.searchParams.set('next', localizedPath);
       throw redirect(302, loginUrl.toString());
     }
   }
 
-  return resolve(event);
+  return resolve(event, {
+    transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+  });
 };
 
 function stagingPage(error: boolean): string {
