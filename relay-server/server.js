@@ -46,14 +46,22 @@ const path  = require('path')
 const PORT       = parseInt(process.env.PORT       ?? '8765', 10)
 const ROOM_TOKEN = process.env.ROOM_TOKEN ?? null
 const REDIS_URL  = process.env.REDIS_URL  ?? null
+// Open mode (no auth at all) must be opted into explicitly — it never engages by
+// accident from a misconfigured prod env. Local dev only.
+const DEV_OPEN   = process.env.RELAY_DEV_OPEN === 'true'
 
 // Phase 1: lazy-loaded Redis + JWKS clients
 let redisClient   = null
 let jwksCache     = null  // { keySets: Map<kid, CryptoKey>, fetchedAt: number }
 const JWKS_TTL_MS = 3600 * 1000
 
-if (!ROOM_TOKEN && !REDIS_URL) {
-  console.warn('[!] ROOM_TOKEN not set and REDIS_URL not set — running in OPEN mode (local dev only)')
+if (!ROOM_TOKEN && !REDIS_URL && !DEV_OPEN) {
+  console.error('[FATAL] No auth configured. Set REDIS_URL (Phase 1 JWT+membership) or')
+  console.error('        ROOM_TOKEN (Phase 0), or RELAY_DEV_OPEN=true for local dev only.')
+  process.exit(1)
+}
+if (DEV_OPEN && !ROOM_TOKEN && !REDIS_URL) {
+  console.warn('[!] RELAY_DEV_OPEN=true — accepting UNAUTHENTICATED connections (local dev only)')
 }
 
 // ---------------------------------------------------------------------------
@@ -83,12 +91,19 @@ function getRedis() {
  * Returns the decoded payload or throws on failure.
  *
  * We use jose (must be installed: npm i jose) for RS256 verification.
- * SECURITY TODO: enforce `iss` and `aud` claims here once we know the exact
- * Zitadel issuer URL and client_id used by the relay.
+ * SECURITY: issuer and audience are enforced (mirrors heartbits-api/src/auth.ts)
+ * to prevent token-confusion — a token minted for a different OIDC app must not
+ * grant relay access. ZITADEL_ISSUER + ZITADEL_CLIENT_ID are required in Phase 1.
  */
 async function verifyJwt(token) {
   const jwksUrl = process.env['ZITADEL_JWKS_URL']
   if (!jwksUrl) throw new Error('ZITADEL_JWKS_URL not set')
+  const issuer   = process.env['ZITADEL_ISSUER']
+  const audience = process.env['ZITADEL_CLIENT_ID']
+  if (!issuer || !audience) {
+    // Fail closed: never verify a token without iss/aud constraints in production.
+    throw new Error('ZITADEL_ISSUER and ZITADEL_CLIENT_ID must be set to verify JWTs')
+  }
 
   // Lazy-load jose
   let jose
@@ -111,7 +126,7 @@ async function verifyJwt(token) {
     }
   }
 
-  const { payload } = await jose.jwtVerify(token, jwksCache.jwks)
+  const { payload } = await jose.jwtVerify(token, jwksCache.jwks, { issuer, audience })
   return payload
 }
 
@@ -171,9 +186,12 @@ async function authorizeConnection(req) {
 
   // ── Phase 0 fallback: static ROOM_TOKEN ───────────────────────────────
   if (!ROOM_TOKEN) {
-    // Open mode (local dev only — log a warning per connection)
-    console.warn('[!] open mode: accepting unauthenticated connection')
-    return { ok: true, userId: null, roomId: roomId ?? 'default' }
+    if (DEV_OPEN) {
+      // Open mode — only reachable when explicitly opted in (local dev).
+      console.warn('[!] open mode: accepting unauthenticated connection')
+      return { ok: true, userId: null, roomId: roomId ?? 'default' }
+    }
+    return { ok: false, reason: 'Relay not configured for authentication' }
   }
 
   const authHeader = req.headers['authorization'] ?? ''

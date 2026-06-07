@@ -46,13 +46,17 @@ if [ -n "${POSTGRES_PASSWORD:-}" ]; then
   echo "  heartbits_api password updated."
 fi
 
-# Set heartbits_worker password from WORKER_POSTGRES_PASSWORD
-if [ -n "${WORKER_POSTGRES_PASSWORD:-}" ]; then
-  docker compose exec -T postgres psql -U heartbits -d heartbits \
-    -c "ALTER ROLE heartbits_worker PASSWORD '${WORKER_POSTGRES_PASSWORD}';"
-  echo "  heartbits_worker password updated."
-else
-  echo "  WARNING: WORKER_POSTGRES_PASSWORD not set — heartbits_worker keeps placeholder password."
+# Set heartbits_worker password from WORKER_POSTGRES_PASSWORD.
+# Hard-fail: the worker role has BYPASSRLS + DELETE ON app.users — it must never
+# be left on the migration placeholder password ('changeme').
+if [ -z "${WORKER_POSTGRES_PASSWORD:-}" ]; then
+  echo "ERROR: WORKER_POSTGRES_PASSWORD is not set. Refusing to leave the BYPASSRLS"
+  echo "       worker role on its placeholder password. Set it in deploy/.env"
+  echo "       (do.sh generates it automatically) and re-run."
+  exit 1
 fi
+docker compose exec -T postgres psql -U heartbits -d heartbits \
+  -c "ALTER ROLE heartbits_worker PASSWORD '${WORKER_POSTGRES_PASSWORD}';"
+echo "  heartbits_worker password updated."
 
 echo "── Migrations complete ───────────────────────────────────────────────────────"

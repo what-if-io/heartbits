@@ -170,7 +170,10 @@ services:
       - heartbits-api-modules:/app/node_modules
     command: sh -c "bun install --frozen-lockfile && bun run src/index.ts"
     environment:
-      DATABASE_URL:           postgres://heartbits:${POSTGRES_PASSWORD}@postgres:5432/heartbits
+      # Connect as the scoped, non-owner role so Row-Level Security is enforced.
+      # (The superuser/owner bypasses RLS — see migrations/004_force_rls.sql.)
+      # migrate.sh sets heartbits_api's password to POSTGRES_PASSWORD.
+      DATABASE_URL:           postgres://heartbits_api:${POSTGRES_PASSWORD}@postgres:5432/heartbits
       REDIS_URL:              redis://redis:6379
       ZITADEL_ISSUER:         https://${AUTH_DOMAIN}
       ZITADEL_JWKS_URL:       https://${AUTH_DOMAIN}/.well-known/openid-configuration
@@ -204,7 +207,9 @@ services:
       - heartbits-api-modules:/app/node_modules
     command: sh -c "bun install --frozen-lockfile && bun run src/worker.ts"
     environment:
-      DATABASE_URL:            postgres://heartbits:${POSTGRES_PASSWORD}@postgres:5432/heartbits
+      # RLS-bound pool (per-user media deletion). WORKER_DATABASE_URL is the
+      # BYPASSRLS pool for cross-user sweeps. See migrations/004_force_rls.sql.
+      DATABASE_URL:            postgres://heartbits_api:${POSTGRES_PASSWORD}@postgres:5432/heartbits
       WORKER_DATABASE_URL:     postgres://heartbits_worker:${WORKER_POSTGRES_PASSWORD}@postgres:5432/heartbits
       REDIS_URL:               redis://redis:6379
       HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
@@ -236,6 +241,9 @@ services:
       ROOM_TOKEN:       ${ROOM_TOKEN}
       REDIS_URL:        redis://redis:6379
       ZITADEL_JWKS_URL: https://${AUTH_DOMAIN}/.well-known/openid-configuration
+      # Required to enforce JWT iss/aud (token-confusion defense, mirrors the API).
+      ZITADEL_ISSUER:    https://${AUTH_DOMAIN}
+      ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}
     networks: [internal]
     depends_on:
       redis: { condition: service_healthy }

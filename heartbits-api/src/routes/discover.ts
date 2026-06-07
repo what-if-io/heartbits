@@ -109,6 +109,13 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
           ? myProfile.location_geohash6.slice(0, 4)
           : null
 
+        // `seeking` is NOT NULL DEFAULT '{}', so it is never SQL NULL. An empty
+        // array means "no gender preference" → show everyone. Collapse empty to
+        // null so the IS NULL branch below matches (otherwise gender = ANY('{}')
+        // is always false and the feed is permanently empty for default users).
+        const seekingFilter =
+          myProfile.seeking && myProfile.seeking.length > 0 ? myProfile.seeking : null
+
         // ── Query candidates ──────────────────────────────────────────────
         // We use a subquery to exclude already-swiped users.
         // Age filtering is done in-app after decryption because date_of_birth
@@ -146,9 +153,10 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
               WHERE swiper_id = ${auth.userId}
             )
             -- Gender filter: only show profiles whose gender is in our seeking list
+            -- (empty/unset seeking → seekingFilter is null → no filter applied)
             AND (
-              ${myProfile.seeking} IS NULL
-              OR p.gender = ANY(${myProfile.seeking ?? []})
+              ${seekingFilter} IS NULL
+              OR p.gender = ANY(${seekingFilter ?? []})
             )
             -- Location filter: first 4 chars of geohash (≈160km box)
             AND (
