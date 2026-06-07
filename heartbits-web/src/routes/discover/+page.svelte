@@ -5,6 +5,7 @@
   import MatchReveal from '$lib/components/MatchReveal.svelte';
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { grantConsent, checkConsent } from '$lib/stores/consent';
+  import { m } from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   interface Person {
@@ -41,7 +42,7 @@
     ? DEMO_PEOPLE
     : data.profiles.map(p => ({
         id:         p.id,
-        name:       p.display_name ?? 'Someone',
+        name:       p.display_name ?? m.discover_someone(),
         age:        p.age ?? 0,
         distance:   p.distance_band ?? '',
         bpm:        p.bpm ?? 72,
@@ -300,8 +301,8 @@
 </script>
 
 <svelte:head>
-  <title>Discover — HeartBits</title>
-  <meta name="description" content="Discover people whose heartbeat resonates with yours." />
+  <title>{m.discover_title()}</title>
+  <meta name="description" content={m.discover_meta_description()} />
   <meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -344,9 +345,9 @@
           </defs>
         </svg>
       </div>
-      <h2 class="done-title">That's everyone for now.</h2>
-      <p class="done-sub">Your first match is out there.<br />Come back when new hearts are near.</p>
-      <a href="/matches" class="btn-primary">See your bonds</a>
+      <h2 class="done-title">{m.discover_done_title()}</h2>
+      <p class="done-sub">{m.discover_done_sub_line1()}<br />{m.discover_done_sub_line2()}</p>
+      <a href="/matches" class="btn-primary">{m.discover_see_bonds()}</a>
     </div>
 
   {:else if person}
@@ -384,12 +385,12 @@
         ontouchend={onTouchEnd}
         role="button"
         tabindex="0"
-        aria-label="Drag card to pass or send heart"
+        aria-label={m.discover_card_aria()}
         bind:this={cardEl}
       >
         <!-- Pass stamp -->
         <div class="stamp stamp-pass" style="opacity: {dragIntent === 'pass' ? Math.min(dragProgress * 1.6, 1) : 0}">
-          PASS
+          {m.discover_stamp_pass()}
         </div>
         <!-- Heart stamp -->
         <div class="stamp stamp-heart" style="opacity: {dragIntent === 'heart' ? Math.min(dragProgress * 1.6, 1) : 0}">
@@ -407,7 +408,7 @@
           <div class="card-bpm-badge">
             <span class="bpm-live-dot" style="background: {person.color}; box-shadow: 0 0 6px {person.color}"></span>
             <span class="bpm-val" style="color: {person.color}">{person.bpm}</span>
-            <span class="bpm-unit">BPM</span>
+            <span class="bpm-unit">{m.discover_bpm_unit()}</span>
           </div>
         </div>
 
@@ -440,7 +441,7 @@
       <div class="ecg-label">
         <span class="live-dot" style="background: {person.color}; box-shadow: 0 0 5px {person.color}"></span>
         <span class="ecg-name" style="color: {person.color}">{person.name}</span>
-        <span class="ecg-bpm" style="color: {person.color}">{person.bpm} BPM</span>
+        <span class="ecg-bpm" style="color: {person.color}">{m.discover_sheet_bpm({ bpm: person.bpm })}</span>
       </div>
       <EcgWaveform
         bpm={person.bpm}
@@ -456,8 +457,8 @@
       <button
         class="action-btn pass-btn"
         onclick={() => throwCard('pass')}
-        aria-label="Pass"
-        title="Pass (←)"
+        aria-label={m.discover_pass()}
+        title={m.discover_pass_title()}
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -472,8 +473,8 @@
         <button
           class="action-btn heart-btn"
           onclick={() => throwCard('heart')}
-          aria-label="Send heart"
-          title="Send heart (→)"
+          aria-label={m.discover_send_heart()}
+          title={m.discover_send_heart_title()}
         >
           <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
             <path d="M15 26C15 26 3 18.5 3 11C3 7.13 6.13 4 10 4C12.07 4 13.93 4.96 15 6.5C16.07 4.96 17.93 4 20 4C23.87 4 27 7.13 27 11C27 18.5 15 26 15 26Z" fill="white" stroke="white" stroke-width="0.5"/>
@@ -482,7 +483,7 @@
       </div>
 
       <!-- Info / undo button -->
-      <button class="action-btn info-btn" onclick={() => showInfoSheet = true} aria-label="Info" title="More info">
+      <button class="action-btn info-btn" onclick={() => showInfoSheet = true} aria-label={m.discover_info()} title={m.discover_info_title()}>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
           <path d="M10 9V14M10 7V7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
@@ -492,9 +493,9 @@
 
     <!-- Key hints -->
     <div class="key-hints">
-      <span>← pass</span>
-      <span>drag to decide</span>
-      <span>→ send heart</span>
+      <span>{m.discover_hint_pass()}</span>
+      <span>{m.discover_hint_drag()}</span>
+      <span>{m.discover_hint_heart()}</span>
     </div>
   {/if}
 </div>
@@ -517,7 +518,7 @@
         <h2 class="info-name">{person.name}, <span style="color: {person.color}">{person.age}</span></h2>
         <p class="info-distance">{person.distance}</p>
       </div>
-      <button class="info-close" onclick={() => showInfoSheet = false} aria-label="Close">
+      <button class="info-close" onclick={() => showInfoSheet = false} aria-label={m.discover_close()}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
@@ -535,22 +536,22 @@
     {/if}
     <div class="info-bpm-row">
       <span class="info-bpm-dot" style="background: {person.color}"></span>
-      <span class="info-bpm-val" style="color: {person.color}">{person.bpm} BPM</span>
-      <span class="info-bpm-label">live heart rate</span>
+      <span class="info-bpm-val" style="color: {person.color}">{m.discover_sheet_bpm({ bpm: person.bpm })}</span>
+      <span class="info-bpm-label">{m.discover_live_heart_rate()}</span>
     </div>
     <div class="info-actions">
       <button class="info-pass" onclick={() => { showInfoSheet = false; throwCard('pass'); }}>
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
-        Pass
+        {m.discover_pass()}
       </button>
       <button class="info-heart" onclick={() => { showInfoSheet = false; throwCard('heart'); }}
         style="background: linear-gradient(135deg, {person.color}, #E81F8C)">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
           <path d="M10 17C10 17 2 11.5 2 6.5C2 4.29 3.79 2.5 6 2.5C7.24 2.5 8.34 3.07 9 4C9.66 3.07 10.76 2.5 12 2.5C14.21 2.5 16 4.29 16 6.5C16 11.5 10 17 10 17Z" fill="white"/>
         </svg>
-        Send heart
+        {m.discover_send_heart()}
       </button>
     </div>
   </div>

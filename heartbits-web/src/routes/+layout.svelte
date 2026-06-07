@@ -2,6 +2,7 @@
   import '../app.css';
   import { page } from '$app/stores';
   import BottomNav from '$lib/components/BottomNav.svelte';
+  import { m } from '$lib/paraglide/messages.js';
 
   interface Props {
     children: import('svelte').Snippet;
@@ -9,6 +10,9 @@
   }
 
   let { children, data }: Props = $props();
+
+  // Self-referencing canonical (SSR-correct, query/hash stripped) for every page.
+  let canonical = $derived(`${$page.url.origin}${$page.url.pathname}`);
 
   const NO_NAV_PREFIXES = ['/', '/auth/', '/about', '/privacy', '/terms', '/pitch'];
 
@@ -33,13 +37,17 @@
   });
 </script>
 
+<svelte:head>
+  <link rel="canonical" href={canonical} />
+</svelte:head>
+
 {@render children()}
 
 {#if showDemoBanner}
   <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>
-    <span class="demo-pill">Demo</span>
-    <span class="demo-text">Exploring HeartBits in demo mode</span>
-    <a href="/" class="demo-cta">Join the waitlist →</a>
+    <span class="demo-pill">{m.demo_pill()}</span>
+    <span class="demo-text">{m.demo_exploring()}</span>
+    <a href="/" class="demo-cta">{m.demo_join_waitlist()}</a>
   </div>
 {/if}
 

@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import { m } from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   interface Match {
@@ -28,13 +29,13 @@
 
   function relativeTime(isoStr: string): string {
     const diff = Date.now() - new Date(isoStr).getTime();
-    const m = Math.floor(diff / 60_000);
-    if (m < 60) return m <= 1 ? 'just now' : `${m} minutes ago`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return h === 1 ? '1 hour ago' : `${h} hours ago`;
+    const mins = Math.floor(diff / 60_000);
+    if (mins < 60) return mins <= 1 ? m.matches_just_now() : m.matches_minutes_ago({ count: mins });
+    const h = Math.floor(mins / 60);
+    if (h < 24) return h === 1 ? m.matches_one_hour_ago() : m.matches_hours_ago({ count: h });
     const d = Math.floor(h / 24);
-    if (d < 7) return d === 1 ? 'yesterday' : `${d} days ago`;
-    return `${Math.floor(d / 7)} weeks ago`;
+    if (d < 7) return d === 1 ? m.matches_yesterday() : m.matches_days_ago({ count: d });
+    return m.matches_weeks_ago({ count: Math.floor(d / 7) });
   }
 
   let { data }: { data: PageData } = $props();
@@ -44,13 +45,13 @@
   let matches = $state<Match[]>(
     isDemo
       ? DEMO_MATCHES
-      : data.matches.map(m => ({
-          id:        m.bond_id ?? m.match_id,
-          name:      m.partner.display_name ?? 'Someone',
-          matchedAt: relativeTime(m.matched_at),
-          bpm:       m.partner.bpm ?? 72,
+      : data.matches.map(match => ({
+          id:        match.bond_id ?? match.match_id,
+          name:      match.partner.display_name ?? m.matches_someone(),
+          matchedAt: relativeTime(match.matched_at),
+          bpm:       match.partner.bpm ?? 72,
           online:    false,
-          color:     colorFromId(m.partner.id),
+          color:     colorFromId(match.partner.id),
           distance:  '',
         }))
   );
@@ -61,10 +62,10 @@
   onMount(() => {
     if (!isDemo) return;
     bpmInterval = setInterval(() => {
-      matches = matches.map(m =>
-        m.online
-          ? { ...m, bpm: Math.round(Math.max(58, Math.min(88, m.bpm + (Math.random() - 0.5) * 3))) }
-          : m
+      matches = matches.map(match =>
+        match.online
+          ? { ...match, bpm: Math.round(Math.max(58, Math.min(88, match.bpm + (Math.random() - 0.5) * 3))) }
+          : match
       );
     }, 2000);
   });
@@ -145,8 +146,8 @@
 </script>
 
 <svelte:head>
-  <title>Your Bonds — HeartBits</title>
-  <meta name="description" content="Your HeartBits matches — people who sent you their heartbeat." />
+  <title>{m.matches_title()}</title>
+  <meta name="description" content={m.matches_meta_description()} />
   <meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -156,7 +157,7 @@
     <div class="header-inner">
       <div class="header-title">
         <HeartLogo size={26} />
-        <h1>Bonds</h1>
+        <h1>{m.matches_heading()}</h1>
       </div>
       {#if matches.length > 0}
         <span class="count">{matches.length}</span>
@@ -175,9 +176,9 @@
             style="width: 260px; height: 56px"
           ></canvas>
         </div>
-        <p class="empty-title">Your first match is out there.</p>
-        <p class="empty-sub">Go discover someone whose heart beats like yours.</p>
-        <a href="/discover" class="btn-discover">Start discovering</a>
+        <p class="empty-title">{m.matches_empty_title()}</p>
+        <p class="empty-sub">{m.matches_empty_sub()}</p>
+        <a href="/discover" class="btn-discover">{m.matches_start_discovering()}</a>
       </div>
     {:else}
       <!-- ── MATCH LIST ───────────────────── -->
@@ -239,10 +240,10 @@
                   <div class="bpm-badge" style="--mc: {match.color}">
                     <span class="bpm-dot" style="background: {match.color}; box-shadow: 0 0 4px {match.color}"></span>
                     <span class="bpm-num" style="color: {match.color}">{match.bpm}</span>
-                    <span class="bpm-unit">bpm</span>
+                    <span class="bpm-unit">{m.matches_bpm_unit()}</span>
                   </div>
                 {:else}
-                  <div class="offline-badge">offline</div>
+                  <div class="offline-badge">{m.matches_offline()}</div>
                 {/if}
                 <svg class="chevron" width="14" height="14" viewBox="0 0 14 14" fill="none">
                   <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -264,7 +265,7 @@
             </linearGradient>
           </defs>
         </svg>
-        Live heartbeats update every 2 seconds
+        {m.matches_uptime_note()}
       </p>
     {/if}
   </div>

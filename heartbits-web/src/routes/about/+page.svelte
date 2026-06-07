@@ -1,19 +1,23 @@
+<script lang="ts">
+  import { m } from '$lib/paraglide/messages.js';
+</script>
+
 <svelte:head>
-  <title>About — HeartBits</title>
-  <meta name="description" content="HeartBits is a dating app built around real human connection — your actual heartbeat." />
+  <title>{m.about_title()}</title>
+  <meta name="description" content={m.about_meta_description()} />
   <meta name="robots" content="index, follow" />
 </svelte:head>
 
 <div class="page">
   <div class="inner">
-    <a href="/" class="back">← Back</a>
-    <h1>About <em>HeartBits</em></h1>
-    <p class="lead">Every other dating app asks you to swipe on a photo. We ask you to feel a heartbeat.</p>
-    <p>HeartBits uses your device and wearable sensors to share your real-time heart rate with people you match with. The "like" is sending your heartbeat. The match is two people whose hearts reach out at the same moment.</p>
-    <p>We're building something that feels more like biology and less like browsing.</p>
-    <h2>The team</h2>
-    <p>We're a small team obsessed with the idea that technology can create more human moments, not fewer.</p>
-    <p>Questions? <a href="mailto:hello@what-if.io">hello@what-if.io</a></p>
+    <a href="/" class="back">{m.about_back()}</a>
+    <h1>{m.about_heading_pre()}<em>{m.about_heading_em()}</em></h1>
+    <p class="lead">{m.about_lead()}</p>
+    <p>{m.about_para1()}</p>
+    <p>{m.about_para2()}</p>
+    <h2>{m.about_team_heading()}</h2>
+    <p>{m.about_team_para()}</p>
+    <p>{m.about_questions_pre()}<a href="mailto:hello@what-if.io">hello@what-if.io</a></p>
   </div>
 </div>
 

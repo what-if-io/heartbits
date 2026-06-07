@@ -161,7 +161,7 @@
       {#if data.loggedIn}
         <div class="cta-group">
           <a href={ctaHref} class="btn-cta">
-            Start feeling
+            {m.hero_start_feeling()}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -184,9 +184,9 @@
       <div class="trust">
         <div class="bpm-live">
           <span class="dot-live"></span>
-          <span>72 BPM</span>
+          <span>{m.hero_bpm({ bpm: 72 })}</span>
         </div>
-        <span class="trust-text">Real heartbeats. Real people. Real moments.</span>
+        <span class="trust-text">{m.hero_trust()}</span>
       </div>
     </div>
 
@@ -201,8 +201,8 @@
 
   <!-- ─── HOW IT WORKS ──────────────────────────────── -->
   <section class="how" id="how">
-    <div class="section-label">How it works</div>
-    <h2 class="section-title">Three heartbeats to <em class="grad-text">forever.</em></h2>
+    <div class="section-label">{m.how_label()}</div>
+    <h2 class="section-title">{m.how_title_pre()}<em class="grad-text">{m.how_title_em()}</em></h2>
 
     <div class="steps">
       <div class="step">
@@ -220,8 +220,8 @@
           </svg>
         </div>
         <div class="step-num">01</div>
-        <h3>Discover</h3>
-        <p>Your heartbeat is your fingerprint. We find people whose rhythms resonate with yours — no algorithms, just biology.</p>
+        <h3>{m.how_step1_title()}</h3>
+        <p>{m.how_step1_desc()}</p>
       </div>
 
       <div class="step-connector" aria-hidden="true">
@@ -249,8 +249,8 @@
           </svg>
         </div>
         <div class="step-num">02</div>
-        <h3>Feel</h3>
-        <p>Send your actual heartbeat instead of a like. They'll feel your pulse — a moment of real intimacy before you even meet.</p>
+        <h3>{m.how_step2_title()}</h3>
+        <p>{m.how_step2_desc()}</p>
       </div>
 
       <div class="step-connector" aria-hidden="true">
@@ -278,16 +278,16 @@
           </svg>
         </div>
         <div class="step-num">03</div>
-        <h3>Connect</h3>
-        <p>When two hearts send each other a beat at the same moment — that's a HeartBit. A signal you can't fake. A match worth meeting.</p>
+        <h3>{m.how_step3_title()}</h3>
+        <p>{m.how_step3_desc()}</p>
       </div>
     </div>
   </section>
 
   <!-- ─── THE MOMENT ────────────────────────────────── -->
   <section class="moment">
-    <div class="section-label">The moment</div>
-    <h2 class="section-title">Two pulses. <em class="grad-text">One signal.</em></h2>
+    <div class="section-label">{m.moment_label()}</div>
+    <h2 class="section-title">{m.moment_title_pre()}<em class="grad-text">{m.moment_title_em()}</em></h2>
 
     <div class="phones-wrap">
       <!-- Phone A -->
@@ -295,8 +295,8 @@
         <div class="phone-shell">
           <div class="phone-notch"></div>
           <div class="phone-screen">
-            <div class="phone-name">Xin, 28</div>
-            <div class="phone-sub">2 km away</div>
+            <div class="phone-name">{m.moment_phone_name()}</div>
+            <div class="phone-sub">{m.moment_phone_distance()}</div>
             <div class="phone-wave">
               <svg width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
                 <defs>
@@ -310,7 +310,7 @@
               </svg>
             </div>
             <div class="phone-bpm">72 <span>BPM</span></div>
-            <div class="phone-status sending">Sending heartbeat…</div>
+            <div class="phone-status sending">{m.moment_status_sending()}</div>
           </div>
         </div>
       </div>
@@ -336,8 +336,8 @@
         <div class="phone-shell">
           <div class="phone-notch"></div>
           <div class="phone-screen">
-            <div class="phone-name">You</div>
-            <div class="phone-sub">waiting…</div>
+            <div class="phone-name">{m.moment_phone_you()}</div>
+            <div class="phone-sub">{m.moment_phone_waiting()}</div>
             <div class="phone-wave">
               <svg width="200" height="60" viewBox="0 0 200 60" preserveAspectRatio="none">
                 <defs>
@@ -351,20 +351,20 @@
               </svg>
             </div>
             <div class="phone-bpm">68 <span>BPM</span></div>
-            <div class="phone-status receiving">Receiving…</div>
+            <div class="phone-status receiving">{m.moment_status_receiving()}</div>
           </div>
         </div>
       </div>
     </div>
 
     <p class="moment-desc">
-      When Xin taps Send Heart, you feel their pulse in real time.<br />
-      No swiping. No algorithm. Just biology.
+      {m.moment_desc_line1()}<br />
+      {m.moment_desc_line2()}
     </p>
 
     {#if data.loggedIn}
       <a href={ctaHref} class="btn-cta btn-centered">
-        Find your match
+        {m.moment_find_match()}
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -391,7 +391,7 @@
         <a href="mailto:hello@what-if.io">{m.nav_contact()}</a>
         <LangSwitcher />
       </div>
-      <div class="footer-copy">HeartBits &copy; 2026</div>
+      <div class="footer-copy">{m.footer_copyright()}</div>
     </div>
   </footer>
 </div>
@@ -971,6 +971,7 @@
 
   .footer-links {
     display: flex;
+    align-items: center;
     gap: 24px;
   }
 

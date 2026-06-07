@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import { m } from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   const { data }: { data: PageData } = $props();
@@ -49,9 +50,9 @@
   });
 
   const STATUS_TEXT: Record<string, string> = {
-    operational: 'All Systems Operational',
-    degraded: 'Partial Degradation',
-    down: 'Active Incident',
+    operational: m.status_operational(),
+    degraded: m.status_degraded(),
+    down: m.status_down(),
   };
 
   const STATE_COLOR: Record<string, string> = {
@@ -62,10 +63,10 @@
   };
 
   const STATE_LABEL: Record<string, string> = {
-    operational: 'Operational',
-    degraded:    'Degraded',
-    down:        'Outage',
-    planned:     'Planned',
+    operational: m.status_state_operational(),
+    degraded:    m.status_state_degraded(),
+    down:        m.status_state_down(),
+    planned:     m.status_state_planned(),
   };
 
   const CARD_SPEED: Record<string, string> = {
@@ -82,9 +83,9 @@
   const resolvedIncidents = $derived((data.incidents ?? []).filter(i => i.resolved_at != null));
 
   function elapsedStr(s: number): string {
-    if (s < 5)  return 'just now';
-    if (s < 60) return `${s}s ago`;
-    return `${Math.round(s / 60)}m ago`;
+    if (s < 5)  return m.status_just_now();
+    if (s < 60) return m.status_seconds_ago({ count: s });
+    return m.status_minutes_ago({ count: Math.round(s / 60) });
   }
 
   function fmtDate(ms: number): string {
@@ -95,15 +96,15 @@
 
   function duration(start: number, end: number | null): string {
     const d = ((end ?? Date.now()) - start) / 1000;
-    if (d < 60)   return `${Math.round(d)}s`;
-    if (d < 3600) return `${Math.round(d / 60)}m`;
-    return `${(d / 3600).toFixed(1)}h`;
+    if (d < 60)   return m.status_seconds({ count: Math.round(d) });
+    if (d < 3600) return m.status_minutes({ count: Math.round(d / 60) });
+    return m.status_hours({ count: (d / 3600).toFixed(1) });
   }
 </script>
 
 <svelte:head>
-  <title>HeartBits — System Status</title>
-  <meta name="description" content="Real-time health for HeartBits services.">
+  <title>{m.status_title()}</title>
+  <meta name="description" content={m.status_meta_description()}>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
@@ -141,15 +142,15 @@
   <!-- ── HEADER ───────────────────────────────────────────────────────────── -->
   <header class="header">
     <div class="wrap">
-      <a href="/" class="brand" aria-label="HeartBits home">
+      <a href="/" class="brand" aria-label={m.status_home_aria()}>
         <HeartLogo size={26} />
         <span class="brand-name">HeartBits</span>
         <span class="brand-divider">/</span>
-        <span class="brand-page">Status</span>
+        <span class="brand-page">{m.status_page_label()}</span>
       </a>
       <div class="header-badge" style:--c={STATE_COLOR[overallState]}>
         <span class="badge-dot"></span>
-        <span>{opCount}/{liveCount} operational</span>
+        <span>{m.status_operational_count({ op: opCount, total: liveCount })}</span>
       </div>
     </div>
   </header>
@@ -158,7 +159,7 @@
     <div class="wrap">
 
       <!-- ── STATUS HERO ───────────────────────────────────────────────────── -->
-      <section class="hero" aria-label="Overall system status">
+      <section class="hero" aria-label={m.status_overall_aria()}>
         <div class="hero-ring" aria-hidden="true">
           <div class="ring ring-1"></div>
           <div class="ring ring-2"></div>
@@ -175,21 +176,21 @@
           {STATUS_TEXT[overallState]}
         </h1>
         <p class="hero-meta">
-          Checked {elapsedStr(elapsed)}
+          {m.status_checked({ time: elapsedStr(elapsed) })}
           <span class="meta-sep">·</span>
-          {data.services.filter(s => s.state !== 'planned').length} services monitored
+          {m.status_services_monitored({ count: data.services.filter(s => s.state !== 'planned').length })}
           <span class="meta-sep">·</span>
           {#if data.fromMonitor}
-            <span class="meta-monitor">● live monitoring</span>
+            <span class="meta-monitor">{m.status_live_monitoring()}</span>
           {:else}
-            <span class="meta-live">◌ live check</span>
+            <span class="meta-live">{m.status_live_check()}</span>
           {/if}
         </p>
       </section>
 
       <!-- ── SERVICES ──────────────────────────────────────────────────────── -->
-      <section class="services" aria-label="Service health">
-        <h2 class="section-label">Services</h2>
+      <section class="services" aria-label={m.status_services_aria()}>
+        <h2 class="section-label">{m.status_services()}</h2>
         <div class="svc-grid">
           {#each data.services as svc (svc.id)}
             <article class="svc-card" class:planned={svc.state === 'planned'}>
@@ -237,18 +238,18 @@
                     <span class="stat-num">
                       {svc.latencyMs ?? '—'}<span class="stat-unit">{svc.latencyMs != null ? 'ms' : ''}</span>
                     </span>
-                    <span class="stat-label">latency</span>
+                    <span class="stat-label">{m.status_latency()}</span>
                   </div>
                   <div class="svc-stat">
                     <span class="stat-num">
                       {svc.uptime?.toFixed(2) ?? '—'}<span class="stat-unit">{svc.uptime != null ? '%' : ''}</span>
                     </span>
-                    <span class="stat-label">30d uptime</span>
+                    <span class="stat-label">{m.status_uptime_30d()}</span>
                   </div>
                 </div>
 
               {:else}
-                <p class="planned-note">Pending deployment</p>
+                <p class="planned-note">{m.status_pending_deployment()}</p>
               {/if}
 
             </article>
@@ -257,19 +258,19 @@
       </section>
 
       <!-- ── 90-DAY HISTORY ─────────────────────────────────────────────────── -->
-      <section class="history" aria-label="90-day uptime history">
-        <h2 class="section-label">Uptime — 90 Days</h2>
+      <section class="history" aria-label={m.status_history_aria()}>
+        <h2 class="section-label">{m.status_uptime_90d()}</h2>
         <div class="hist-list">
           {#each data.services as svc (svc.id)}
             <div class="hist-row">
               <span class="hist-name">{svc.name}</span>
-              <div class="hist-bars" role="img" aria-label="{svc.name} uptime history">
+              <div class="hist-bars" role="img" aria-label={m.status_uptime_row_aria({ name: svc.name })}>
                 {#each svc.history as day, i}
                   <div
                     class="hist-bar bar-{day}"
                     class:recent={i >= 83}
                     style:animation-delay="{i * 5}ms"
-                    title="{day} — {90 - i}d ago"
+                    title={m.status_history_day_title({ day, days: 90 - i })}
                   ></div>
                 {/each}
               </div>
@@ -279,15 +280,15 @@
             </div>
           {/each}
           <div class="hist-axis">
-            <span>90 days ago</span>
-            <span>Today</span>
+            <span>{m.status_axis_90_days()}</span>
+            <span>{m.status_axis_today()}</span>
           </div>
         </div>
       </section>
 
       <!-- ── INCIDENTS ──────────────────────────────────────────────────────── -->
-      <section class="incidents" aria-label="Incident history">
-        <h2 class="section-label">Incidents — 90 Days</h2>
+      <section class="incidents" aria-label={m.status_incidents_aria()}>
+        <h2 class="section-label">{m.status_incidents_90d()}</h2>
 
         {#if openIncidents.length > 0}
           <div class="incidents-open">
@@ -295,11 +296,11 @@
               <div class="incident-active" style:--ic={STATE_COLOR[inc.severity]}>
                 <div class="inc-dot"></div>
                 <div class="inc-body">
-                  <div class="inc-title">{inc.message ?? `${inc.service} ${inc.severity}`}</div>
+                  <div class="inc-title">{inc.message ?? m.status_incident_default({ service: inc.service, severity: inc.severity })}</div>
                   <div class="inc-meta">
                     {fmtDate(inc.started_at)}
                     <span class="meta-sep">·</span>
-                    ongoing for {duration(inc.started_at, null)}
+                    {m.status_ongoing_for({ duration: duration(inc.started_at, null) })}
                   </div>
                 </div>
               </div>
@@ -313,14 +314,14 @@
               <div class="incident-row">
                 <div class="inc-severity-dot" style:background={STATE_COLOR[inc.severity]}></div>
                 <div class="inc-row-body">
-                  <span class="inc-row-title">{inc.message ?? `${inc.service} ${inc.severity}`}</span>
+                  <span class="inc-row-title">{inc.message ?? m.status_incident_default({ service: inc.service, severity: inc.severity })}</span>
                   <span class="inc-row-meta">
                     {fmtDate(inc.started_at)}
                     <span class="meta-sep">·</span>
-                    resolved after {duration(inc.started_at, inc.resolved_at)}
+                    {m.status_resolved_after({ duration: duration(inc.started_at, inc.resolved_at) })}
                   </span>
                 </div>
-                <span class="inc-resolved-badge">Resolved</span>
+                <span class="inc-resolved-badge">{m.status_resolved()}</span>
               </div>
             {/each}
           </div>
@@ -331,9 +332,9 @@
               <path d="M5.5 9L7.5 11L12.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             {#if data.fromMonitor}
-              No incidents reported in the last 90 days
+              {m.status_no_incidents()}
             {:else}
-              Incident history available once monitoring starts
+              {m.status_incident_history_pending()}
             {/if}
           </div>
         {/if}
@@ -349,9 +350,9 @@
       HeartBits
     </a>
     <span class="foot-sep">·</span>
-    <a href="/pitch" class="foot-link">About</a>
+    <a href="/pitch" class="foot-link">{m.status_footer_about()}</a>
     <span class="foot-sep">·</span>
-    <span class="foot-note">Refreshes on page load</span>
+    <span class="foot-note">{m.status_footer_note()}</span>
   </footer>
 
 </div>

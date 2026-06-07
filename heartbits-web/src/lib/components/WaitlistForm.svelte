@@ -46,7 +46,7 @@
       placeholder={m.waitlist_placeholder()}
       bind:value={email}
       autocomplete="email"
-      aria-label="Email address"
+      aria-label={m.waitlist_email_aria()}
     />
     <button class="wl-btn" type="submit" disabled={status === 'loading'}>
       {status === 'loading' ? m.waitlist_joining() : m.waitlist_cta()}

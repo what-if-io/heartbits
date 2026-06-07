@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
+  import { m } from '$lib/paraglide/messages.js';
 
   interface Person {
     id: string;
@@ -345,7 +346,7 @@
 </script>
 
 <!-- Cinematic fullscreen overlay -->
-<div class="match-overlay" role="dialog" aria-modal="true" aria-label="It's a match!">
+<div class="match-overlay" role="dialog" aria-modal="true" aria-label={m.match_overlay_aria()}>
   <!-- Deep black bg -->
   <div class="match-bg"></div>
 
@@ -374,7 +375,7 @@
             <span>{yourInitial}</span>
           </div>
         </div>
-        <p class="avatar-label">You</p>
+        <p class="avatar-label">{m.match_you()}</p>
         <p class="avatar-bpm">{yourBpm} <span>BPM</span></p>
       </div>
 
@@ -418,7 +419,7 @@
       ></canvas>
       {#if ecgSynced}
         <div class="sync-label" style="animation: fade-in-up 0.5s ease forwards">
-          ♥ syncing
+          {m.match_syncing()}
         </div>
       {/if}
     </div>
@@ -430,9 +431,9 @@
         style="opacity: {textProgress}; transform: translateY({(1 - textProgress) * 30}px)"
       >
         <h1 class="match-headline">
-          <em class="grad-text">It's a match</em>
+          <em class="grad-text">{m.match_headline()}</em>
         </h1>
-        <p class="match-subline">Your hearts found each other.</p>
+        <p class="match-subline">{m.match_subline()}</p>
       </div>
     {/if}
 
@@ -443,10 +444,10 @@
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M3 4C3 3.44 3.44 3 4 3H14C14.56 3 15 3.44 15 4V11C15 11.56 14.56 12 14 12H10L7 15V12H4C3.44 12 3 11.56 3 11V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
           </svg>
-          Send a message
+          {m.match_send_message()}
         </a>
         <button class="btn-keep" onclick={ondismiss}>
-          Keep discovering
+          {m.match_keep_discovering()}
         </button>
       </div>
     {/if}

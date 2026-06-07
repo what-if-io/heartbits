@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import { m } from '$lib/paraglide/messages.js';
 
   interface Props {
     data: { next: string };
@@ -119,8 +120,8 @@
 </script>
 
 <svelte:head>
-  <title>Sign in — HeartBits</title>
-  <meta name="description" content="Sign in to HeartBits — the dating app that puts your heart first." />
+  <title>{m.login_title()}</title>
+  <meta name="description" content={m.login_meta_description()} />
   <meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -151,12 +152,12 @@
     <!-- Headline -->
     <div class="copy">
       <h1 class="headline">
-        Your heart is<br />
-        <em class="grad-text">waiting.</em>
+        {m.login_headline_pre()}<br />
+        <em class="grad-text">{m.login_headline_em()}</em>
       </h1>
       <p class="tagline">
-        Sign in to discover people whose heartbeat<br />
-        resonates with yours.
+        {m.login_tagline_line1()}<br />
+        {m.login_tagline_line2()}
       </p>
     </div>
 
@@ -179,7 +180,7 @@
           </linearGradient>
         </defs>
       </svg>
-      <span class="bpm-value">72 BPM</span>
+      <span class="bpm-value">{m.login_bpm({ bpm: 72 })}</span>
     </div>
 
     <!-- Primary CTA — drives to the server GET /auth/login which starts PKCE flow -->
@@ -193,7 +194,7 @@
           stroke-linejoin="round"
         />
       </svg>
-      Continue with HeartBits account
+      {m.login_continue()}
       <svg class="btn-arrow" width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
@@ -201,9 +202,9 @@
 
     <!-- Register hint -->
     <p class="register-hint">
-      New to HeartBits?
+      {m.login_register_hint()}
       <a href={registerUrl} class="register-link" target="_blank" rel="noopener noreferrer">
-        Create an account
+        {m.login_register_link()}
       </a>
     </p>
 
@@ -213,7 +214,7 @@
         <circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.2"/>
         <path d="M5.5 5.5L9.5 7.5L5.5 9.5V5.5Z" fill="currentColor"/>
       </svg>
-      Try Demo
+      {m.login_try_demo()}
     </a>
 
     <!-- Divider -->
@@ -231,16 +232,16 @@
         />
         <path d="M5 7L6.5 8.5L9 5.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      <span>Secured with PKCE · Biometric data stays on your device</span>
+      <span>{m.login_security_note()}</span>
     </div>
 
     <!-- Footer nav -->
-    <nav class="footer-nav" aria-label="Legal">
-      <a href="/about">About</a>
+    <nav class="footer-nav" aria-label={m.login_nav_legal()}>
+      <a href="/about">{m.login_nav_about()}</a>
       <span aria-hidden="true">·</span>
-      <a href="/privacy">Privacy</a>
+      <a href="/privacy">{m.login_nav_privacy()}</a>
       <span aria-hidden="true">·</span>
-      <a href="/terms">Terms</a>
+      <a href="/terms">{m.login_nav_terms()}</a>
     </nav>
   </main>
 </div>

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Authenticated / private app surfaces — keep out of the index
+Disallow: /discover
+Disallow: /matches
+Disallow: /bond
+Disallow: /profile
+Disallow: /auth
+Disallow: /consent
+
+Sitemap: https://heartbits.what-if.io/sitemap.xml
