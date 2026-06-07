@@ -3,12 +3,17 @@ import { hasTestDb, adminSql } from '../../test/helpers'
 
 const d = hasTestDb ? describe : describe.skip
 
-function post(app: { handle: (r: Request) => Promise<Response> }, email: unknown, ip = '203.0.113.7') {
+function post(
+  app: { handle: (r: Request) => Promise<Response> },
+  email: unknown,
+  ip = '203.0.113.7',
+  adult: boolean | undefined = true
+) {
   return app.handle(
     new Request('http://localhost/api/v1/waitlist', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-forwarded-for': ip },
-      body: JSON.stringify({ email, source: 'test' })
+      body: JSON.stringify({ email, source: 'test', adult })
     })
   )
 }
@@ -58,6 +63,11 @@ d('POST /api/v1/waitlist', () => {
 
   test('invalid email → 400', async () => {
     const res = await post(app, 'not-an-email')
+    expect(res.status).toBe(400)
+  })
+
+  test('missing 18+ attestation → 400 (server-enforced, not just the checkbox)', async () => {
+    const res = await post(app, 'noage@wl.test', '203.0.113.7', false)
     expect(res.status).toBe(400)
   })
 

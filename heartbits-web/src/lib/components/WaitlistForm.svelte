@@ -17,6 +17,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: email.trim(),
+          adult: isAdult,
           source: 'landing',
           locale: typeof navigator !== 'undefined' ? navigator.language : undefined
         })
