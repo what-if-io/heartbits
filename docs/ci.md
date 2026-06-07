@@ -28,11 +28,20 @@ Deployment is **not** run from CI. The stack is deployed to the VM via `deploy/r
 ## Running checks locally
 
 ```bash
+make check   # API type-check (tsc) + web build — run before pushing
+```
+
+Or per component:
+
+```bash
 # web
 cd heartbits-web && bun install && bun run build
 # relay
 cd relay-server && npm ci && node --check server.js
 ```
+
+> Lint and unit-test gates (targeting high coverage) are planned but not yet
+> enforced in CI — see the testing roadmap.
 
 Replay a workflow locally with [act](https://github.com/nektos/act).
 

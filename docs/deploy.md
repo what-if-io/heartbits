@@ -33,8 +33,14 @@ VM=root@other-ip ./remote_do.sh
 ## Fresh VM — what do.sh does
 
 1. Installs Docker if missing (Ubuntu/Debian/RHEL/Rocky)
-2. Prompts for the four domains (skipped if already in `.env`)
-3. Generates all secrets and writes `.env` (skipped if `.env` already has `APP_DOMAIN`)
+2. Prompts for three domains — app, auth, relay — plus the ACME email (skipped if already in `.env`)
+3. Generates secrets (Postgres incl. worker, MinIO, Zitadel, session, field-encryption, room token) and writes `.env` (skipped if `.env` already has `APP_DOMAIN`)
+
+> **Manual `.env` additions for full functionality:** `do.sh` does not prompt for
+> `MEDIA_DOMAIN`, `API_DOMAIN`, `STATUS_DOMAIN`, the `SMTP_*` mail settings, or
+> `REGISTRATION_OPEN`/`REGISTRATION_ALLOWLIST`. Without `MEDIA_DOMAIN` + SMTP,
+> profile photos and transactional email won't work — add them to `.env` and
+> `docker compose up -d` (see the table below).
 4. `docker compose up -d` — starts the full stack
 5. Waits for Zitadel first-init to write `admin.pat` (up to 5 min)
 6. Runs `bootstrap.sh` — creates OIDC app, applies branding, writes `HEARTBITS_CLIENT_ID`
@@ -214,6 +220,7 @@ cd ~/deploy
 | `RELAY_DOMAIN` | your relay domain, e.g. `relay.heartbits.example.com` |
 | `ACME_EMAIL` | Let's Encrypt contact |
 | `POSTGRES_PASSWORD` | PostgreSQL password (generated) |
+| `WORKER_POSTGRES_PASSWORD` | Password for the BYPASSRLS worker role (generated) |
 | `MINIO_USER` | `heartbits` |
 | `MINIO_PASSWORD` | MinIO password (generated) |
 | `ZITADEL_MASTERKEY` | Exactly 32 hex chars (generated) |
@@ -224,3 +231,17 @@ cd ~/deploy
 | `STAGING_PASSWORD` | Optional gate password |
 | `HB_FIELD_ENCRYPTION_KEY` | 64 hex chars — API field encryption |
 | `ROOM_TOKEN` | WebSocket relay bearer token |
+| `MEDIA_DOMAIN` | Media CDN subdomain (MinIO via Caddy), e.g. `media.heartbits.example.com` — **required for photos** |
+| `API_DOMAIN` | Optional `api.` subdomain vhost (the app also serves `/api/*` same-origin) |
+| `STATUS_DOMAIN` | Optional `status.` subdomain for the status page |
+| `REGISTRATION_OPEN` | `true` = open signups; `false` (default) = invite-only (waitlist) |
+| `REGISTRATION_ALLOWLIST` | Comma-separated emails allowed to register when invite-only |
+| `SMTP_HOST` / `SMTP_PORT` | Mail server (transactional + Zitadel email) |
+| `SMTP_USER` / `SMTP_PASSWORD` | Mail credentials |
+| `SMTP_FROM` / `SMTP_FROM_NAME` | From address + display name |
+
+### Backups
+
+Nightly `pg_dumpall` + MinIO + monitor backups via `deploy/backup.sh`
+(`make backup`); restore with `deploy/restore.sh`. Set `BACKUP_REMOTE` for
+off-box copies. Full procedure: [`backup.md`](backup.md).

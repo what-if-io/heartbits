@@ -41,7 +41,7 @@ Full details: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 
 HeartBits is designed to run on a single VM with Docker Compose. All services — auth, relay, API, web, monitoring — start with one command.
 
-**Requirements:** a Linux VM (Ubuntu / Debian / RHEL / Rocky), Docker, and three subdomains pointed at it.
+**Requirements:** a Linux VM (Ubuntu / Debian / RHEL / Rocky), Docker, and three subdomains (app, auth, relay) pointed at it — plus an optional `media.` subdomain for profile photos.
 
 ```bash
 git clone https://github.com/what-if-io/heartbits

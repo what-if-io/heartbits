@@ -22,6 +22,11 @@ Thanks for your interest. This document covers how to get your environment runni
 - Xcode 16+ (iOS / watchOS, macOS only)
 - Android Studio (Android)
 
+From the repo root, `make help` lists convenience targets — e.g. `make install`
+(all deps), `make dev-web` / `make dev-api` / `make dev-relay`, `make check`
+(API type-check + web build), `make up` / `make down` (Docker stack), and
+`make backup`.
+
 ### Full stack (Docker)
 
 ```bash
@@ -71,7 +76,7 @@ cd relay-server && ROOM_TOKEN=dev node server.js
 - **TypeScript everywhere** — no `any` unless genuinely unavoidable, prefer `unknown` + narrowing.
 - **Svelte 5 runes** — use `$state`, `$derived`, `$props()`. No legacy Svelte 4 syntax.
 - **No comments explaining what the code does.** Add a comment only when the *why* would surprise a future reader (a hidden constraint, a workaround for a specific bug, a non-obvious invariant).
-- **No unused variables** — the API and web linters both error on them.
+- **No unused variables** — strict TypeScript; keep `make check` clean.
 - **Bun** for JS/TS tooling, not npm/yarn (except relay-server which uses Node.js).
 - **No new dependencies** without a good reason and discussion in the issue.
 
@@ -96,7 +101,9 @@ Migrations must be idempotent (`CREATE TABLE IF NOT EXISTS`, `ADD COLUMN IF NOT 
 - **One concern per PR.** A bug fix and a refactor in the same PR will be asked to split.
 - **Fill in the description.** What changed, why, how to test it manually.
 - **No force-pushing to `main`.**
-- CI runs on push — linting, type-check, and (where applicable) unit tests must pass.
+- **Run `make check` before pushing** (API type-check + web build). CI on push
+  builds the web and API, syntax-checks the relay, and runs CodeQL. Lint and
+  unit-test gates (targeting high coverage) are on the roadmap, not yet enforced.
 
 For mobile PRs (iOS, Android), include screenshots or a screen recording in the description.
 
