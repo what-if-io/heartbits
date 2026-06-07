@@ -3,12 +3,13 @@
   import { localizeHref } from '$lib/paraglide/runtime';
 
   let email = $state('');
+  let isAdult = $state(false);
   let status = $state<'idle' | 'loading' | 'done' | 'error'>('idle');
   let message = $state('');
 
   async function submit(e: SubmitEvent) {
     e.preventDefault();
-    if (status === 'loading' || !email.trim()) return;
+    if (status === 'loading' || !email.trim() || !isAdult) return;
     status = 'loading';
     try {
       const res = await fetch('/waitlist', {
@@ -52,6 +53,10 @@
     <button class="wl-btn" type="submit" disabled={status === 'loading'}>
       {status === 'loading' ? m.waitlist_joining() : m.waitlist_cta()}
     </button>
+    <label class="wl-age">
+      <input type="checkbox" required bind:checked={isAdult} />
+      <span>{m.waitlist_age_confirm()}</span>
+    </label>
   </form>
   {#if status === 'error'}<p class="wl-err">{message}</p>{/if}
   <p class="wl-legal">{m.waitlist_legal_pre()}<a href={localizeHref('/privacy')}>{m.waitlist_legal_link()}</a>.</p>
@@ -112,6 +117,22 @@
   .wl-btn:disabled { opacity: 0.6; cursor: default; transform: none; }
   .wl-done { color: #ff6b6b; font-size: 16px; font-weight: 500; }
   .wl-err { color: #ff8080; font-size: 13px; margin-top: 8px; width: 100%; }
+  .wl-age {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+  }
+  .wl-age input {
+    width: 16px;
+    height: 16px;
+    accent-color: #e81f8c;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
   .wl-legal { font-size: 12px; color: rgba(255, 255, 255, 0.28); margin: 2px 0 0; width: 100%; }
   .wl-legal a { color: rgba(255, 255, 255, 0.45); text-decoration: underline; }
   .wl-legal a:hover { color: rgba(255, 255, 255, 0.7); }

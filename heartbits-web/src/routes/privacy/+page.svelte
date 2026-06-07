@@ -73,6 +73,16 @@
     </ul>
     <p>{m.privacy_s9_body_pre()}<a href="mailto:privacy@what-if.io">privacy@what-if.io</a>{m.privacy_s9_body_post()}</p>
 
+    <h2>{m.privacy_cookies_title()}</h2>
+    <p>{m.privacy_cookies_intro()}</p>
+    <ul>
+      <li>{m.privacy_cookies_li1()}</li>
+      <li>{m.privacy_cookies_li2()}</li>
+      <li>{m.privacy_cookies_li3()}</li>
+      <li>{m.privacy_cookies_li4()}</li>
+      <li>{m.privacy_cookies_li5()}</li>
+    </ul>
+
     <h2>{m.privacy_s10_title()}</h2>
     <p>{m.privacy_s10_body()}</p>
 

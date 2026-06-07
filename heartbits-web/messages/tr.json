@@ -450,5 +450,19 @@
   "pitch_footer_copyright": "© 2026 HeartBits",
   "pitch_footer_privacy": "Gizlilik",
   "pitch_footer_terms": "Koşullar",
-  "pitch_footer_about": "Hakkında"
+  "pitch_footer_about": "Hakkında",
+  "home_title": "HeartBits — Bağı hisset.",
+  "home_meta_description": "HeartBits — kalbini ön planda tutan flört uygulaması. Gerçek kalp atışını eşleşmelerinle paylaş. Kaydırma yok, sadece biyoloji.",
+  "home_og_description": "Kalbini ön planda tutan flört uygulaması. Tam anlamıyla. Gerçek zamanlı kalp atışını eşleşmelerinle paylaş.",
+  "waitlist_age_confirm": "18 yaşında veya daha büyüğüm",
+  "privacy_cookies_title": "Çerezler",
+  "privacy_cookies_intro": "HeartBits yalnızca kesinlikle gerekli ve işlevsel çerezler kullanır — reklam veya üçüncü taraf takibi yoktur, bu yüzden onay banner'ı gerekmez. Kullandığımız çerezler:",
+  "privacy_cookies_li1": "Oturum — oturumunu açık tutar.",
+  "privacy_cookies_li2": "Giriş güvenliği — giriş akışını koruyan kısa ömürlü çerezler.",
+  "privacy_cookies_li3": "Önizleme erişimi — özel önizlemeye girdiğini hatırlar.",
+  "privacy_cookies_li4": "Kalp atışı onayı — canlı nabzını paylaşma tercihini hatırlar.",
+  "privacy_cookies_li5": "Dil — tercih ettiğin dili hatırlar.",
+  "cookie_notice_text": "Yalnızca temel çerezleri kullanıyoruz — takip yok.",
+  "cookie_notice_dismiss": "Anladım",
+  "cookie_notice_learn": "Gizlilik"
 }

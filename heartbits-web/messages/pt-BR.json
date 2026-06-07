@@ -450,5 +450,19 @@
   "pitch_footer_copyright": "© 2026 HeartBits",
   "pitch_footer_privacy": "Privacidade",
   "pitch_footer_terms": "Termos",
-  "pitch_footer_about": "Sobre"
+  "pitch_footer_about": "Sobre",
+  "home_title": "HeartBits — Sinta a conexão.",
+  "home_meta_description": "HeartBits — o app de relacionamentos que coloca seu coração em primeiro lugar. Compartilhe seus batimentos reais com seus matches. Sem swipes, só biologia.",
+  "home_og_description": "O app de relacionamentos que coloca seu coração em primeiro lugar. Literalmente. Compartilhe seus batimentos em tempo real com seus matches.",
+  "waitlist_age_confirm": "Tenho 18 anos ou mais",
+  "privacy_cookies_title": "Cookies",
+  "privacy_cookies_intro": "O HeartBits usa apenas cookies estritamente necessários e funcionais — sem publicidade ou rastreamento de terceiros, então nenhum banner de consentimento é necessário. Os cookies que usamos:",
+  "privacy_cookies_li1": "Sessão — mantém você conectado.",
+  "privacy_cookies_li2": "Segurança do login — cookies de curta duração que protegem o processo de login.",
+  "privacy_cookies_li3": "Acesso à prévia — lembra que você entrou na prévia privada.",
+  "privacy_cookies_li4": "Consentimento de batimentos — lembra sua escolha de compartilhar seus batimentos cardíacos ao vivo.",
+  "privacy_cookies_li5": "Idioma — lembra seu idioma preferido.",
+  "cookie_notice_text": "Usamos apenas cookies essenciais — sem rastreamento.",
+  "cookie_notice_dismiss": "Entendi",
+  "cookie_notice_learn": "Privacidade"
 }

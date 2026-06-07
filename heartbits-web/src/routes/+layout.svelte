@@ -2,6 +2,7 @@
   import '../app.css';
   import { page } from '$app/stores';
   import BottomNav from '$lib/components/BottomNav.svelte';
+  import CookieNotice from '$lib/components/CookieNotice.svelte';
   import { m } from '$lib/paraglide/messages.js';
   import { locales, localizeHref, deLocalizeUrl } from '$lib/paraglide/runtime';
 
@@ -56,6 +57,8 @@
 </svelte:head>
 
 {@render children()}
+
+<CookieNotice />
 
 {#if showDemoBanner}
   <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>

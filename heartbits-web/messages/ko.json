@@ -450,5 +450,19 @@
   "pitch_footer_copyright": "© 2026 HeartBits",
   "pitch_footer_privacy": "개인정보",
   "pitch_footer_terms": "약관",
-  "pitch_footer_about": "소개"
+  "pitch_footer_about": "소개",
+  "home_title": "HeartBits — 연결을 느껴보세요.",
+  "home_meta_description": "HeartBits — 당신의 마음을 가장 먼저 생각하는 데이팅 앱. 진짜 심장 박동을 매치와 공유하세요. 스와이프 없이, 오직 생체 반응으로.",
+  "home_og_description": "당신의 마음을 가장 먼저 생각하는 데이팅 앱. 말 그대로요. 실시간 심장 박동을 매치와 공유하세요.",
+  "waitlist_age_confirm": "저는 만 18세 이상입니다",
+  "privacy_cookies_title": "쿠키",
+  "privacy_cookies_intro": "HeartBits는 꼭 필요한 쿠키와 기능 쿠키만 사용합니다 — 광고나 제3자 추적이 없으므로 동의 배너가 필요하지 않습니다. 저희가 설정하는 쿠키:",
+  "privacy_cookies_li1": "세션 — 로그인 상태를 유지합니다.",
+  "privacy_cookies_li2": "로그인 보안 — 로그인 과정을 보호하는 짧은 수명의 쿠키입니다.",
+  "privacy_cookies_li3": "미리보기 접근 — 비공개 미리보기에 입장했음을 기억합니다.",
+  "privacy_cookies_li4": "심장 박동 동의 — 실시간 심박수를 공유하겠다는 선택을 기억합니다.",
+  "privacy_cookies_li5": "언어 — 선호하는 언어를 기억합니다.",
+  "cookie_notice_text": "필수 쿠키만 사용합니다 — 추적은 없습니다.",
+  "cookie_notice_dismiss": "확인",
+  "cookie_notice_learn": "개인정보"
 }

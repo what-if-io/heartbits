@@ -450,5 +450,19 @@
   "pitch_footer_copyright": "© 2026 HeartBits",
   "pitch_footer_privacy": "隐私",
   "pitch_footer_terms": "条款",
-  "pitch_footer_about": "关于"
+  "pitch_footer_about": "关于",
+  "home_title": "HeartBits — 感受心动连接。",
+  "home_meta_description": "HeartBits——把你的心放在第一位的约会应用。与你的配对分享真实的心跳。没有滑动，只有生物本能。",
+  "home_og_description": "把你的心放在第一位的约会应用。真的，字面意义上的。与你的配对实时分享你的心跳。",
+  "waitlist_age_confirm": "我已年满 18 岁",
+  "privacy_cookies_title": "Cookie",
+  "privacy_cookies_intro": "HeartBits 仅使用严格必要的功能性 Cookie——没有广告，也没有第三方追踪，因此无需同意横幅。我们设置的 Cookie：",
+  "privacy_cookies_li1": "会话——让你保持登录状态。",
+  "privacy_cookies_li2": "登录安全——保护登录流程的短期 Cookie。",
+  "privacy_cookies_li3": "预览访问——记住你已进入私密预览。",
+  "privacy_cookies_li4": "心跳授权——记住你分享实时心率的选择。",
+  "privacy_cookies_li5": "语言——记住你偏好的语言。",
+  "cookie_notice_text": "我们只使用必要的 Cookie——绝不追踪。",
+  "cookie_notice_dismiss": "知道了",
+  "cookie_notice_learn": "隐私"
 }
