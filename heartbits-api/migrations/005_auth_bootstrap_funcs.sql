@@ -31,6 +31,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = app, pg_temp
 AS $$
+#variable_conflict use_column
 DECLARE
   v_id      text;
   v_created boolean;

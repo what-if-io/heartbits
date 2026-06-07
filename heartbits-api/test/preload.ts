@@ -7,6 +7,7 @@ process.env.HB_FIELD_ENCRYPTION_KEY ||=
 process.env.ZITADEL_ISSUER ||= 'https://auth.test.local'
 process.env.ZITADEL_CLIENT_ID ||= 'test-client'
 process.env.ZITADEL_JWKS_URL ||= 'https://auth.test.local/.well-known/openid-configuration'
+process.env.REGISTRATION_OPEN ||= 'true' // allow /me/init in tests
 
 if (process.env.TEST_DATABASE_URL) process.env.DATABASE_URL = process.env.TEST_DATABASE_URL
 if (process.env.TEST_REDIS_URL) process.env.REDIS_URL = process.env.TEST_REDIS_URL
