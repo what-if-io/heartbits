@@ -983,7 +983,8 @@
   .footer-links {
     display: flex;
     align-items: center;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: 12px 20px;
   }
 
   .footer-links a {
