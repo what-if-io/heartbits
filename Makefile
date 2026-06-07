@@ -36,8 +36,8 @@ dev-monitor: ## Run the uptime monitor (:4000)
 build: ## Build the web app
 	cd heartbits-web && bun run build
 
-check: ## Type-check API + build web (CI-style gate)
-	cd heartbits-api && bunx tsc --noEmit
+check: ## Type-check + test API + build web (CI-style gate)
+	cd heartbits-api && bunx tsc --noEmit && bun test
 	cd heartbits-web && bun run build
 
 ## ── Docker stack (from deploy/) ────────────────────────────────────────────
