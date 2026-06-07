@@ -5,7 +5,16 @@
     en: 'English',
     es: 'Español',
     fr: 'Français',
-    de: 'Deutsch'
+    de: 'Deutsch',
+    it: 'Italiano',
+    'pt-BR': 'Português (BR)',
+    el: 'Ελληνικά',
+    zh: '中文',
+    ja: '日本語',
+    ko: '한국어',
+    ru: 'Русский',
+    tr: 'Türkçe',
+    ro: 'Română'
   };
 </script>
 

@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import { consent, grantConsent, withdrawConsent } from '$lib/stores/consent';
+  import { m } from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -12,7 +13,7 @@
 
   // Display name: HeartBits profile name → session name → fallback
   const displayName = $derived(
-    profile?.display_name ?? data.user?.name?.split(' ')[0] ?? 'You'
+    profile?.display_name ?? data.user?.name?.split(' ')[0] ?? m.profile_you()
   );
   const initial = $derived(displayName[0]?.toUpperCase() ?? 'Y');
   const displayAge = $derived(profile?.age ?? null);
@@ -58,6 +59,15 @@
     showEditSheet = true;
   }
 
+  function genderLabel(g: string): string {
+    switch (g) {
+      case 'man':       return m.profile_gender_man();
+      case 'woman':     return m.profile_gender_woman();
+      case 'nonbinary': return m.profile_gender_nonbinary();
+      default:          return m.profile_gender_other();
+    }
+  }
+
   function toggleSeeking(val: string) {
     if (fseeking.includes(val)) {
       fseeking = fseeking.filter((v) => v !== val);
@@ -82,7 +92,7 @@
   }
 
   function useLocation() {
-    if (!navigator.geolocation) { locationError = 'Geolocation not supported'; return; }
+    if (!navigator.geolocation) { locationError = m.profile_location_unsupported(); return; }
     locationLoading = true;
     locationError = '';
     navigator.geolocation.getCurrentPosition(
@@ -91,7 +101,7 @@
         locationLoading = false;
       },
       (err) => {
-        locationError = err.code === 1 ? 'Location access denied' : 'Could not get location';
+        locationError = err.code === 1 ? m.profile_location_denied() : m.profile_location_error();
         locationLoading = false;
       },
       { timeout: 10_000, maximumAge: 60_000 }
@@ -132,10 +142,10 @@
           goto('/profile', { invalidateAll: true });
         }, 900);
       } else {
-        saveError = result.error ?? 'Save failed';
+        saveError = result.error ?? m.profile_save_failed();
       }
     } catch {
-      saveError = 'Network error — please try again';
+      saveError = m.profile_network_error();
     } finally {
       saving = false;
     }
@@ -162,10 +172,10 @@
       if (res.ok && result.avatar_url) {
         uploadedAvatarUrl = result.avatar_url + '?v=' + Date.now(); // bust cache
       } else {
-        avatarError = result.error ?? 'Upload failed';
+        avatarError = result.error ?? m.profile_upload_failed();
       }
     } catch {
-      avatarError = 'Network error';
+      avatarError = m.profile_upload_network_error();
     } finally {
       avatarUploading = false;
       input.value = '';
@@ -218,8 +228,8 @@
 </script>
 
 <svelte:head>
-  <title>Profile — HeartBits</title>
-  <meta name="description" content="Manage your HeartBits profile and heartbeat sharing settings." />
+  <title>{m.profile_title()}</title>
+  <meta name="description" content={m.profile_meta_description()} />
   <meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -230,13 +240,13 @@
   <!-- Header -->
   <header class="page-header">
     <div class="header-inner">
-      <h1 class="header-title-text">Profile</h1>
+      <h1 class="header-title-text">{m.profile_heading()}</h1>
       {#if !data.isDemo}
-        <button class="edit-btn" onclick={openEditSheet} aria-label="Edit profile">
+        <button class="edit-btn" onclick={openEditSheet} aria-label={m.profile_edit_aria()}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M11.5 2.5L13.5 4.5L5 13H3V11L11.5 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" fill="none"/>
           </svg>
-          <span>Edit</span>
+          <span>{m.profile_edit()}</span>
         </button>
       {/if}
     </div>
@@ -253,21 +263,21 @@
         accept="image/jpeg,image/webp,image/png"
         class="avatar-file-input"
         onchange={onAvatarFileChange}
-        aria-label="Upload profile photo"
+        aria-label={m.profile_upload_photo_aria()}
       />
 
       <button
         class="avatar-ring-outer"
         class:uploading={avatarUploading}
         onclick={() => { if (!data.isDemo) fileInput?.click(); }}
-        aria-label="Change profile photo"
+        aria-label={m.profile_change_photo_aria()}
         type="button"
         style={data.isDemo ? 'cursor: default' : ''}
       >
         <div class="avatar-ring-inner">
           <div class="avatar">
             {#if avatarUrl}
-              <img src={avatarUrl} alt="{displayName}'s avatar" class="avatar-img" />
+              <img src={avatarUrl} alt={m.profile_avatar_alt({ name: displayName })} class="avatar-img" />
             {:else}
               <span>{initial}</span>
             {/if}
@@ -298,7 +308,7 @@
           {#if profile?.bio}
             {profile.bio}
           {:else}
-            Your heart is your identity.
+            {m.profile_tagline_default()}
           {/if}
         </p>
       </div>
@@ -306,7 +316,7 @@
       <div class="live-bpm-pill">
         <span class="live-dot"></span>
         <span class="live-val">{liveBpm}</span>
-        <span class="live-unit">BPM live</span>
+        <span class="live-unit">{m.profile_bpm_live()}</span>
       </div>
 
       <div class="avatar-wave">
@@ -316,7 +326,7 @@
 
     <!-- Stats -->
     <div class="stats-grid" class:visible={statsVisible}>
-      {#each [{ value: '—', label: 'Bonds', sub: 'mutual heartbeats' }, { value: '—', label: 'Hearts sent', sub: 'signals shared' }, { value: '—', label: 'Hearts felt', sub: 'received by you' }] as stat, i}
+      {#each [{ value: '—', label: m.profile_stat_bonds(), sub: m.profile_stat_bonds_sub() }, { value: '—', label: m.profile_stat_hearts_sent(), sub: m.profile_stat_hearts_sent_sub() }, { value: '—', label: m.profile_stat_hearts_felt(), sub: m.profile_stat_hearts_felt_sub() }] as stat, i}
         <div class="stat-card" style="animation-delay: {i * 80}ms">
           <div class="stat-val grad-text">{stat.value}</div>
           <div class="stat-label">{stat.label}</div>
@@ -340,15 +350,15 @@
             </svg>
           </div>
           <div>
-            <p class="section-title-text">Share my heartbeat</p>
-            <p class="section-desc">Let others feel your pulse while discovering</p>
+            <p class="section-title-text">{m.profile_share_title()}</p>
+            <p class="section-desc">{m.profile_share_desc()}</p>
           </div>
         </div>
         <button
           class="toggle"
           class:on={shareHeartbeat}
           onclick={() => { if (shareHeartbeat) showWithdrawConfirm = true; else grantConsent('1.0'); }}
-          aria-label="Toggle heartbeat sharing"
+          aria-label={m.profile_share_toggle_aria()}
           role="switch"
           aria-checked={shareHeartbeat}
         >
@@ -372,12 +382,12 @@
           </svg>
         </div>
         <div>
-          <p class="gdpr-title">Biometric data protected</p>
-          <p class="gdpr-badge">GDPR Article 9</p>
+          <p class="gdpr-title">{m.profile_gdpr_title()}</p>
+          <p class="gdpr-badge">{m.profile_gdpr_badge()}</p>
         </div>
       </div>
       <p class="gdpr-body">
-        Your heart rate data is classified as special category biometric data under GDPR Article 9. It is processed only with your explicit consent, never sold, and encrypted end-to-end.
+        {m.profile_gdpr_body()}
       </p>
       {#if $consent.hasConsented && $consent.consentDate}
         <div class="consent-status">
@@ -385,7 +395,7 @@
             <circle cx="6" cy="6" r="5" stroke="rgba(74,222,128,0.7)" stroke-width="1.2"/>
             <path d="M3.5 6L5 7.5L8.5 4" stroke="rgba(74,222,128,0.9)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span>Consented v{$consent.version} · {new Date($consent.consentDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+          <span>{m.profile_consented({ version: $consent.version, date: new Date($consent.consentDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) })}</span>
         </div>
       {:else}
         <div class="consent-status consent-status-none">
@@ -393,11 +403,11 @@
             <circle cx="6" cy="6" r="5" stroke="rgba(255,100,100,0.5)" stroke-width="1.2"/>
             <path d="M4 4L8 8M8 4L4 8" stroke="rgba(255,100,100,0.6)" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
-          <span>No consent given — heart rate sharing disabled</span>
+          <span>{m.profile_no_consent()}</span>
         </div>
       {/if}
       <a href="/privacy" class="gdpr-link">
-        Read our biometric data policy
+        {m.profile_gdpr_link()}
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -407,15 +417,15 @@
     <!-- Account actions / demo CTA -->
     {#if data.isDemo}
       <div class="section-card demo-cta-card">
-        <p class="demo-cta-lead">You're exploring in demo mode.</p>
-        <p class="demo-cta-sub">HeartBits is opening soon. Join the waitlist to set up your profile, share your heartbeat, and connect with others.</p>
+        <p class="demo-cta-lead">{m.profile_demo_lead()}</p>
+        <p class="demo-cta-sub">{m.profile_demo_sub()}</p>
         <a href="/" class="demo-cta-btn">
-          Join the waitlist
+          {m.profile_demo_join()}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <a href="/auth/demo-exit" class="demo-exit-link">Exit demo</a>
+        <a href="/auth/demo-exit" class="demo-exit-link">{m.profile_demo_exit()}</a>
       </div>
     {:else}
       <div class="section-card">
@@ -425,7 +435,7 @@
               <circle cx="9" cy="6" r="3.5" stroke="currentColor" stroke-width="1.3"/>
               <path d="M2 16C2 13.24 5.13 11 9 11C12.87 11 16 13.24 16 16" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
             </svg>
-            <span>Edit profile</span>
+            <span>{m.profile_action_edit()}</span>
             <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
@@ -436,7 +446,7 @@
               <path d="M7 3H3V15H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 6L15 9L12 12M7 9H15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            <span>Sign out</span>
+            <span>{m.profile_action_signout()}</span>
             <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
@@ -446,7 +456,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M7 4V14M11 4V14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
             </svg>
-            <span>{pausing ? 'Pausing…' : 'Pause account'}</span>
+            <span>{pausing ? m.profile_action_pausing() : m.profile_action_pause()}</span>
             <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
@@ -456,7 +466,7 @@
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M6 3H12M3 5H15L14 16H4L3 5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
             </svg>
-            <span>Delete account</span>
+            <span>{m.profile_action_delete()}</span>
             <svg class="row-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
@@ -465,7 +475,7 @@
       </div>
     {/if}
 
-    <p class="version-note">HeartBits v0.1.0 · Built with ♥</p>
+    <p class="version-note">{m.profile_version_note()}</p>
   </div>
 </div>
 
@@ -478,7 +488,7 @@
     onkeydown={(e) => { if (e.key === 'Escape') showEditSheet = false; }}
     role="dialog"
     aria-modal="true"
-    aria-label="Edit profile"
+    aria-label={m.profile_edit_heading()}
     tabindex="-1"
   >
     <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -487,8 +497,8 @@
       <div class="sheet-handle"></div>
 
       <div class="sheet-header">
-        <h2 class="sheet-title">Edit profile</h2>
-        <button class="sheet-close" onclick={() => showEditSheet = false} aria-label="Close">
+        <h2 class="sheet-title">{m.profile_edit_heading()}</h2>
+        <button class="sheet-close" onclick={() => showEditSheet = false} aria-label={m.profile_close()}>
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M4 4L14 14M14 4L4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
@@ -499,25 +509,25 @@
 
         <!-- Name -->
         <div class="field">
-          <label class="field-label" for="edit-name">Display name</label>
+          <label class="field-label" for="edit-name">{m.profile_field_name()}</label>
           <input
             id="edit-name"
             class="field-input"
             type="text"
             maxlength="50"
-            placeholder="How others see you"
+            placeholder={m.profile_field_name_placeholder()}
             bind:value={fname}
           />
         </div>
 
         <!-- Bio -->
         <div class="field">
-          <label class="field-label" for="edit-bio">About you</label>
+          <label class="field-label" for="edit-bio">{m.profile_field_bio()}</label>
           <textarea
             id="edit-bio"
             class="field-input field-textarea"
             maxlength="500"
-            placeholder="A few words about yourself…"
+            placeholder={m.profile_field_bio_placeholder()}
             rows="3"
             bind:value={fbio}
           ></textarea>
@@ -526,7 +536,7 @@
 
         <!-- Date of birth -->
         <div class="field">
-          <label class="field-label" for="edit-dob">Date of birth</label>
+          <label class="field-label" for="edit-dob">{m.profile_field_dob()}</label>
           <input
             id="edit-dob"
             class="field-input"
@@ -538,7 +548,7 @@
 
         <!-- Gender -->
         <div class="field">
-          <p class="field-label">I am</p>
+          <p class="field-label">{m.profile_field_iam()}</p>
           <div class="chip-row">
             {#each ['man','woman','nonbinary','other'] as g}
               <button
@@ -546,14 +556,14 @@
                 class:active={fgender === g}
                 onclick={() => fgender = fgender === g ? '' : g}
                 type="button"
-              >{g}</button>
+              >{genderLabel(g)}</button>
             {/each}
           </div>
         </div>
 
         <!-- Seeking -->
         <div class="field">
-          <p class="field-label">Open to meeting</p>
+          <p class="field-label">{m.profile_field_seeking()}</p>
           <div class="chip-row">
             {#each ['man','woman','nonbinary','other'] as g}
               <button
@@ -561,17 +571,17 @@
                 class:active={fseeking.includes(g)}
                 onclick={() => toggleSeeking(g)}
                 type="button"
-              >{g}</button>
+              >{genderLabel(g)}</button>
             {/each}
           </div>
         </div>
 
         <!-- Age range -->
         <div class="field">
-          <p class="field-label">Age range</p>
+          <p class="field-label">{m.profile_field_age_range()}</p>
           <div class="age-row">
             <div class="age-input-wrap">
-              <label class="age-sub" for="edit-age-min">Min</label>
+              <label class="age-sub" for="edit-age-min">{m.profile_age_min()}</label>
               <input
                 id="edit-age-min"
                 class="field-input age-input"
@@ -583,7 +593,7 @@
             </div>
             <span class="age-dash">–</span>
             <div class="age-input-wrap">
-              <label class="age-sub" for="edit-age-max">Max</label>
+              <label class="age-sub" for="edit-age-max">{m.profile_age_max()}</label>
               <input
                 id="edit-age-max"
                 class="field-input age-input"
@@ -598,13 +608,13 @@
 
         <!-- Location -->
         <div class="field">
-          <p class="field-label">Location</p>
+          <p class="field-label">{m.profile_field_location()}</p>
           <div class="location-row">
             <input
               class="field-input location-input"
               type="text"
               maxlength="6"
-              placeholder="geohash6"
+              placeholder={m.profile_location_placeholder()}
               bind:value={flocation}
               readonly
             />
@@ -623,13 +633,13 @@
                   <path d="M8 1V3M8 13V15M1 8H3M13 8H15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                 </svg>
               {/if}
-              Use my location
+              {m.profile_use_location()}
             </button>
           </div>
           {#if locationError}
             <p class="field-error">{locationError}</p>
           {:else if flocation}
-            <p class="field-hint">Stored as approximate zone — exact GPS never saved</p>
+            <p class="field-hint">{m.profile_location_hint()}</p>
           {/if}
         </div>
 
@@ -638,7 +648,7 @@
           <p class="save-error">{saveError}</p>
         {/if}
         {#if saveSuccess}
-          <p class="save-ok">Saved ✓</p>
+          <p class="save-ok">{m.profile_saved()}</p>
         {/if}
 
         <!-- Save button -->
@@ -648,7 +658,7 @@
           onclick={saveProfile}
           disabled={saving}
         >
-          {saving ? 'Saving…' : 'Save profile'}
+          {saving ? m.profile_saving() : m.profile_save()}
         </button>
 
       </div>
@@ -679,13 +689,13 @@
           </defs>
         </svg>
       </div>
-      <h3 class="withdraw-title">Withdraw consent?</h3>
+      <h3 class="withdraw-title">{m.profile_withdraw_title()}</h3>
       <p class="withdraw-body">
-        Withdrawing consent will <strong>immediately stop heart rate sharing</strong> with all your matches. You can re-enable it at any time.
+        {m.profile_withdraw_body_pre()}<strong>{m.profile_withdraw_body_strong()}</strong>{m.profile_withdraw_body_post()}
       </p>
       <div class="withdraw-actions">
-        <button class="withdraw-cancel" onclick={() => showWithdrawConfirm = false}>Keep sharing</button>
-        <button class="withdraw-confirm" onclick={() => { withdrawConsent(); showWithdrawConfirm = false; }}>Withdraw</button>
+        <button class="withdraw-cancel" onclick={() => showWithdrawConfirm = false}>{m.profile_keep_sharing()}</button>
+        <button class="withdraw-confirm" onclick={() => { withdrawConsent(); showWithdrawConfirm = false; }}>{m.profile_withdraw()}</button>
       </div>
     </div>
   </div>
@@ -703,14 +713,14 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div class="withdraw-panel" onclick={(e) => e.stopPropagation()}>
-      <h3 class="withdraw-title" style="color: rgba(255,80,80,0.9)">Delete account?</h3>
+      <h3 class="withdraw-title" style="color: rgba(255,80,80,0.9)">{m.profile_delete_title()}</h3>
       <p class="withdraw-body">
-        All your data will be permanently erased. Matches, bonds, and heartbeat history are gone forever. This cannot be undone.
+        {m.profile_delete_body()}
       </p>
       <div class="withdraw-actions">
-        <button class="withdraw-cancel" onclick={() => showDeleteConfirm = false}>Cancel</button>
+        <button class="withdraw-cancel" onclick={() => showDeleteConfirm = false}>{m.profile_cancel()}</button>
         <button class="withdraw-confirm" onclick={deleteAccount} disabled={deleting}>
-          {deleting ? 'Deleting…' : 'Delete forever'}
+          {deleting ? m.profile_deleting() : m.profile_delete_forever()}
         </button>
       </div>
     </div>

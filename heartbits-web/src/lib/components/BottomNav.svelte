@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { m } from '$lib/paraglide/messages.js';
 
   let currentPath = $derived($page.url.pathname);
 </script>
@@ -10,7 +11,7 @@
       <!-- Pulse / heartbeat icon -->
       <path d="M2 12H5L7 6L10 18L13 9L15 14L17 12H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span>Discover</span>
+    <span>{m.bottomnav_discover()}</span>
   </a>
 
   <a href="/matches" class="nav-item" class:active={currentPath.startsWith('/matches') || currentPath.startsWith('/bond')}>
@@ -18,7 +19,7 @@
       <!-- Heart icon -->
       <path d="M12 21C12 21 3 14.5 3 8.5C3 5.42 5.42 3 8.5 3C10.07 3 11.48 3.68 12 4.5C12.52 3.68 13.93 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
-    <span>Bonds</span>
+    <span>{m.bottomnav_bonds()}</span>
   </a>
 
   <a href="/profile" class="nav-item" class:active={currentPath.startsWith('/profile')}>
@@ -27,7 +28,7 @@
       <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
       <path d="M4 20C4 17.2 7.58 15 12 15C16.42 15 20 17.2 20 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
     </svg>
-    <span>Profile</span>
+    <span>{m.bottomnav_profile()}</span>
   </a>
 </nav>
 

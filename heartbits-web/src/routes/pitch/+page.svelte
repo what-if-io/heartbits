@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import { m } from '$lib/paraglide/messages.js';
 
   let visible = $state(false);
 
@@ -8,8 +9,8 @@
 </script>
 
 <svelte:head>
-  <title>HeartBits — Match by Heartbeat</title>
-  <meta name="description" content="HeartBits matches people whose heartbeat patterns naturally resonate — not algorithms, not swipe counts." />
+  <title>{m.pitch_title()}</title>
+  <meta name="description" content={m.pitch_meta_description()} />
 </svelte:head>
 
 <div class="pitch" class:visible>
@@ -28,12 +29,12 @@
       </div>
 
       <h1 class="hero-headline">
-        Dating that feels<br />
-        what words <em class="grad">can't.</em>
+        {m.pitch_hero_headline_line1()}<br />
+        {m.pitch_hero_headline_pre()}<em class="grad">{m.pitch_hero_headline_em()}</em>
       </h1>
       <p class="hero-sub">
-        Most apps match you on photos and prompts.<br />
-        HeartBits matches you on your heartbeat.
+        {m.pitch_hero_sub_line1()}<br />
+        {m.pitch_hero_sub_line2()}
       </p>
 
       <div class="hero-ctas">
@@ -41,9 +42,9 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M6 3.5L12.5 8L6 12.5V3.5Z" fill="white"/>
           </svg>
-          Try Demo
+          {m.pitch_try_demo()}
         </a>
-        <a href="/" class="cta-secondary">Join the Waitlist</a>
+        <a href="/" class="cta-secondary">{m.pitch_join_waitlist()}</a>
       </div>
 
       <div class="ecg-hero" aria-hidden="true">
@@ -70,8 +71,8 @@
   <!-- ── PROBLEM ───────────────────────────────────────────── -->
   <section class="section problem">
     <div class="section-inner">
-      <div class="section-label">The Problem</div>
-      <h2 class="section-title">Dating apps optimise for the wrong thing.</h2>
+      <div class="section-label">{m.pitch_problem_label()}</div>
+      <h2 class="section-title">{m.pitch_problem_title()}</h2>
       <div class="problem-grid">
         <div class="problem-card">
           <div class="prob-icon">
@@ -82,7 +83,7 @@
               <path d="M3 6L8 4L13 7L18 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.4"/>
             </svg>
           </div>
-          <p>Algorithms optimise for <strong>time-on-app</strong>, not genuine connection</p>
+          <p>{m.pitch_problem1_pre()}<strong>{m.pitch_problem1_strong()}</strong>{m.pitch_problem1_post()}</p>
         </div>
         <div class="problem-card">
           <div class="prob-icon">
@@ -92,7 +93,7 @@
               <circle cx="11" cy="11" r="1.2" fill="currentColor" opacity="0.6"/>
             </svg>
           </div>
-          <p>Photo-first feeds reward looks over <strong>chemistry</strong></p>
+          <p>{m.pitch_problem2_pre()}<strong>{m.pitch_problem2_strong()}</strong></p>
         </div>
         <div class="problem-card">
           <div class="prob-icon">
@@ -102,7 +103,7 @@
               <path d="M8 12L10 14L14 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
             </svg>
           </div>
-          <p>Real attraction is <strong>felt</strong> — milliseconds before thought</p>
+          <p>{m.pitch_problem3_pre()}<strong>{m.pitch_problem3_strong()}</strong>{m.pitch_problem3_post()}</p>
         </div>
       </div>
     </div>
@@ -111,17 +112,15 @@
   <!-- ── SOLUTION ──────────────────────────────────────────── -->
   <section class="section solution">
     <div class="section-inner">
-      <div class="section-label">The Solution</div>
-      <h2 class="section-title">Your heartbeat knows before you do.</h2>
+      <div class="section-label">{m.pitch_solution_label()}</div>
+      <h2 class="section-title">{m.pitch_solution_title()}</h2>
       <p class="section-body">
-        HeartBits reads your heart rate from Apple Watch or Android wearable and
-        finds people whose rhythms naturally complement yours — not swipe counts,
-        not bio keywords. Biology.
+        {m.pitch_solution_body()}
       </p>
       <div class="bpm-demo" aria-hidden="true">
         <div class="bpm-row">
           <span class="bpm-dot" style="background:#FF6B6B"></span>
-          <span class="bpm-name">You</span>
+          <span class="bpm-name">{m.pitch_bpm_you()}</span>
           <span class="bpm-val">72 BPM</span>
           <div class="bpm-bar"><div class="bpm-fill" style="width:72%;background:#FF6B6B"></div></div>
         </div>
@@ -129,11 +128,11 @@
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M7 12C7 12 1.5 8.5 1.5 5C1.5 3.07 3.07 1.5 5 1.5C5.95 1.5 6.81 1.87 7.44 2.5C8.07 1.87 8.93 1.5 9.88 1.5C11.81 1.5 13.38 3.07 13.38 5C13.38 8.5 7.88 12 7.88 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
           </svg>
-          resonance detected
+          {m.pitch_bpm_resonance()}
         </div>
         <div class="bpm-row">
           <span class="bpm-dot" style="background:#7B35DE"></span>
-          <span class="bpm-name">Xin</span>
+          <span class="bpm-name">{m.pitch_bpm_xin()}</span>
           <span class="bpm-val">71 BPM</span>
           <div class="bpm-bar"><div class="bpm-fill" style="width:71%;background:#7B35DE"></div></div>
         </div>
@@ -144,8 +143,8 @@
   <!-- ── FEATURES ──────────────────────────────────────────── -->
   <section class="section features">
     <div class="section-inner">
-      <div class="section-label">Features</div>
-      <h2 class="section-title">Built around your biology.</h2>
+      <div class="section-label">{m.pitch_features_label()}</div>
+      <h2 class="section-title">{m.pitch_features_title()}</h2>
       <div class="features-grid">
 
         <div class="feature-card">
@@ -156,8 +155,8 @@
               <path d="M5 11H7L8.5 8L10 13L11.5 10L12.5 11H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3 class="feature-title">Heartbeat Matching</h3>
-          <p class="feature-desc">Your biometric rhythm is your fingerprint. We surface people whose patterns resonate — not ranked by photo likes.</p>
+          <h3 class="feature-title">{m.pitch_feature1_title()}</h3>
+          <p class="feature-desc">{m.pitch_feature1_desc()}</p>
         </div>
 
         <div class="feature-card">
@@ -167,8 +166,8 @@
               <path d="M2 11H5L6.5 7L8.5 14.5L10 9L11.5 13L13 11H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3 class="feature-title">Live ECG Bond</h3>
-          <p class="feature-desc">When you match, share a real-time heartbeat channel. Watch your rhythms sync — the moment is always genuine.</p>
+          <h3 class="feature-title">{m.pitch_feature2_title()}</h3>
+          <p class="feature-desc">{m.pitch_feature2_desc()}</p>
         </div>
 
         <div class="feature-card">
@@ -178,8 +177,8 @@
               <path d="M8 11L10 13L14 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <h3 class="feature-title">Privacy by Design</h3>
-          <p class="feature-desc">Biometric data is processed on-device. You actively consent before any heartbeat is transmitted. Always.</p>
+          <h3 class="feature-title">{m.pitch_feature3_title()}</h3>
+          <p class="feature-desc">{m.pitch_feature3_desc()}</p>
         </div>
 
         <div class="feature-card">
@@ -191,8 +190,8 @@
               <path d="M2 8H4M18 8H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
             </svg>
           </div>
-          <h3 class="feature-title">Every Platform</h3>
-          <p class="feature-desc">Native Apple Watch + iPhone, Android Wear + phone, and full web. One experience across all your devices.</p>
+          <h3 class="feature-title">{m.pitch_feature4_title()}</h3>
+          <p class="feature-desc">{m.pitch_feature4_desc()}</p>
         </div>
 
       </div>
@@ -202,15 +201,15 @@
   <!-- ── LIVE SCREENS ──────────────────────────────────────── -->
   <section class="section screens-section">
     <div class="section-inner">
-      <div class="section-label">Try it live</div>
-      <h2 class="section-title">Explore every screen, no account needed.</h2>
+      <div class="section-label">{m.pitch_screens_label()}</div>
+      <h2 class="section-title">{m.pitch_screens_title()}</h2>
       <div class="screens-row">
         {#each [
-          { label: 'Discover', desc: 'Swipe profiles matched by heart rhythm', path: '/discover', color: '#FF6B6B',
+          { label: m.pitch_screen_discover_label(), desc: m.pitch_screen_discover_desc(), path: '/discover', color: '#FF6B6B',
             icon: `<path d="M11 18C11 18 3 13.5 3 8.5C3 6.02 5.02 4 7.5 4C8.95 4 10.23 4.68 11 5.73C11.77 4.68 13.05 4 14.5 4C16.98 4 19 6.02 19 8.5C19 13.5 11 18 11 18Z" stroke="currentColor" stroke-width="1.5" fill="none"/>` },
-          { label: 'Bond', desc: 'Watch your heartbeats sync in real time', path: '/bond/ela', color: '#E81F8C',
+          { label: m.pitch_screen_bond_label(), desc: m.pitch_screen_bond_desc(), path: '/bond/ela', color: '#E81F8C',
             icon: `<circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="1.5" stroke-opacity="0.3"/><path d="M3 11H5.5L7 7.5L9 14L10.5 9.5L12 12.5L13 11H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>` },
-          { label: 'Matches', desc: 'Your connections, BPM-sorted', path: '/matches', color: '#7B35DE',
+          { label: m.pitch_screen_matches_label(), desc: m.pitch_screen_matches_desc(), path: '/matches', color: '#7B35DE',
             icon: `<path d="M3 17C3 15.34 4.34 14 6 14H16C17.66 14 19 15.34 19 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>` },
         ] as s}
           <a href={s.path} class="screen-card" style="--c:{s.color}">
@@ -236,22 +235,22 @@
   <section class="section cta-section">
     <div class="section-inner cta-inner">
       <HeartLogo size={40} animated={visible} />
-      <h2 class="cta-headline">Ready to find your rhythm?</h2>
-      <p class="cta-sub">Private preview. Free to join.</p>
+      <h2 class="cta-headline">{m.pitch_cta_headline()}</h2>
+      <p class="cta-sub">{m.pitch_cta_sub()}</p>
       <div class="hero-ctas">
-        <a href="/auth/demo" class="cta-primary">Try Demo First</a>
-        <a href="/" class="cta-secondary">Join the Waitlist</a>
+        <a href="/auth/demo" class="cta-primary">{m.pitch_cta_try_demo()}</a>
+        <a href="/" class="cta-secondary">{m.pitch_join_waitlist()}</a>
       </div>
-      <p class="cta-platforms">iOS · Android · Web · Apple Watch · Wear OS</p>
+      <p class="cta-platforms">{m.pitch_cta_platforms()}</p>
     </div>
   </section>
 
   <!-- ── FOOTER ────────────────────────────────────────────── -->
   <footer class="pitch-footer">
-    <span>© 2026 HeartBits</span>
-    <a href="/privacy">Privacy</a>
-    <a href="/terms">Terms</a>
-    <a href="/about">About</a>
+    <span>{m.pitch_footer_copyright()}</span>
+    <a href="/privacy">{m.pitch_footer_privacy()}</a>
+    <a href="/terms">{m.pitch_footer_terms()}</a>
+    <a href="/about">{m.pitch_footer_about()}</a>
   </footer>
 
 </div>

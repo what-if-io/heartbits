@@ -1,5 +1,6 @@
 <script lang="ts">
   import HeartLogo from '$lib/components/HeartLogo.svelte';
+  import { m } from '$lib/paraglide/messages.js';
 
   let { onConsent, onDecline }: { onConsent: () => void; onDecline: () => void } = $props();
 
@@ -35,7 +36,7 @@
   onkeydown={blockKeydown}
   role="dialog"
   aria-modal="true"
-  aria-label="Biometric data consent required"
+  aria-label={m.consent_panel_aria()}
   tabindex="-1"
 >
   <div class="gate-panel">
@@ -51,23 +52,21 @@
     </div>
 
     <!-- ── HEADING ──────────────────────────────── -->
-    <h1 class="heading grad-text">Before your heart speaks</h1>
+    <h1 class="heading grad-text">{m.consent_heading()}</h1>
 
     <!-- ── BODY COPY ─────────────────────────────── -->
     <div class="body-copy">
       <p>
-        HeartBits measures and transmits your real-time heart rate to people you match with.
-        Heart rate is <strong>biometric data protected under GDPR Article 9</strong>.
+        {m.consent_body_intro_pre()}<strong>{m.consent_body_intro_strong()}</strong>{m.consent_body_intro_post()}
       </p>
-      <p>By continuing, you give <strong>explicit consent</strong> for HeartBits to:</p>
+      <p>{m.consent_body_explicit_pre()}<strong>{m.consent_body_explicit_strong()}</strong>{m.consent_body_explicit_post()}</p>
       <ul>
-        <li>Measure your heart rate via your device or wearable</li>
-        <li>Transmit your heart rate to your matched partner in real time</li>
-        <li>Store a record that you gave this consent (not your heart rate data — only that you agreed)</li>
+        <li>{m.consent_bullet_measure()}</li>
+        <li>{m.consent_bullet_transmit()}</li>
+        <li>{m.consent_bullet_store()}</li>
       </ul>
       <p class="withdrawal-note">
-        You can withdraw consent at any time from your profile. Withdrawing consent
-        <strong>immediately</strong> stops heart rate sharing.
+        {m.consent_withdrawal_pre()}<strong>{m.consent_withdrawal_strong()}</strong>{m.consent_withdrawal_post()}
       </p>
     </div>
 
@@ -79,7 +78,7 @@
           <input
             type="checkbox"
             bind:checked={checkedBiometric}
-            aria-label="I understand my heart rate is biometric data and I explicitly consent to it being shared with my matches in real time"
+            aria-label={m.consent_check_biometric_aria()}
           />
           <div class="check-box" class:checked={checkedBiometric} aria-hidden="true">
             {#if checkedBiometric}
@@ -90,8 +89,7 @@
           </div>
         </div>
         <span>
-          I understand my heart rate is biometric data and I explicitly consent to it being
-          shared with my matches in real time.
+          {m.consent_check_biometric()}
         </span>
       </label>
 
@@ -101,7 +99,7 @@
           <input
             type="checkbox"
             bind:checked={checkedAge}
-            aria-label="I am 18 or older and have read the Privacy Policy"
+            aria-label={m.consent_check_age_aria()}
           />
           <div class="check-box" class:checked={checkedAge} aria-hidden="true">
             {#if checkedAge}
@@ -112,8 +110,7 @@
           </div>
         </div>
         <span>
-          I am 18 or older and have read the
-          <a href="/privacy" onclick={(e) => e.stopPropagation()} target="_blank" rel="noopener">Privacy Policy</a>.
+          {m.consent_check_age_pre()}<a href="/privacy" onclick={(e) => e.stopPropagation()} target="_blank" rel="noopener">{m.consent_check_age_link()}</a>.
         </span>
       </label>
     </div>
@@ -126,16 +123,16 @@
       disabled={!canConsent}
       aria-disabled={!canConsent}
     >
-      I consent — feel the connection
+      {m.consent_accept()}
     </button>
 
     <!-- ── DECLINE LINK ─────────────────────────── -->
     <button class="btn-decline" onclick={onDecline}>
-      No thanks — I'll use HeartBits without heart rate sharing
+      {m.consent_decline()}
     </button>
 
     <!-- ── VERSION ──────────────────────────────── -->
-    <p class="version-line">Consent version 1.1 · GDPR Art. 9 · 2026-06-02</p>
+    <p class="version-line">{m.consent_version_line()}</p>
   </div>
 </div>
 

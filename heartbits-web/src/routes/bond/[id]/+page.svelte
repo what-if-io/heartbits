@@ -6,9 +6,10 @@
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { consent, grantConsent, checkConsent } from '$lib/stores/consent';
+  import { m } from '$lib/paraglide/messages.js';
 
   let id = $derived($page.params.id);
-  let partnerName = $derived(id ? id.charAt(0).toUpperCase() + id.slice(1) : 'Unknown');
+  let partnerName = $derived(id ? id.charAt(0).toUpperCase() + id.slice(1) : m.bond_unknown());
 
   // ── CONSENT GATE ────────────────────────────────────
   let showConsentGate = $state(false);
@@ -307,8 +308,8 @@
 </script>
 
 <svelte:head>
-  <title>{partnerName}'s heart — HeartBits</title>
-  <meta name="description" content="Feel {partnerName}'s heartbeat in real time on HeartBits." />
+  <title>{m.bond_title({ name: partnerName })}</title>
+  <meta name="description" content={m.bond_meta_description({ name: partnerName })} />
   <meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -335,7 +336,7 @@
       </div>
       <div class="partner-identity">
         <h2 class="partner-name">{partnerName}</h2>
-        <p class="partner-sub">their heart</p>
+        <p class="partner-sub">{m.bond_their_heart()}</p>
       </div>
       <div
         class="status-pill"
@@ -344,7 +345,7 @@
       >
         <div class="status-dot"></div>
         <span>
-          {connectionStatus === 'live' ? 'live' : connectionStatus === 'connecting' ? 'connecting…' : 'offline'}
+          {connectionStatus === 'live' ? m.bond_status_live() : connectionStatus === 'connecting' ? m.bond_status_connecting() : m.bond_status_offline()}
         </span>
       </div>
     </div>
@@ -370,10 +371,10 @@
             class:flatline={!connected}
             style="color: {connected ? partnerColor : 'rgba(255,255,255,0.2)'}"
           >
-            {connected ? displayBpmRounded : '--'}
+            {connected ? displayBpmRounded : m.bond_no_signal_value()}
           </div>
           <div class="bpm-label">
-            {connected ? 'their BPM' : 'no signal'}
+            {connected ? m.bond_their_bpm() : m.bond_no_signal()}
           </div>
         </div>
       </div>
@@ -381,7 +382,7 @@
       <!-- Sync indicator -->
       <div class="sync-badge" class:visible={syncVisible}>
         <span class="sync-heart">♥</span>
-        <span>In sync</span>
+        <span>{m.bond_in_sync()}</span>
       </div>
     </div>
 
@@ -435,10 +436,10 @@
     <!-- ── YOUR SECTION ─────────────────── -->
     <div class="your-section">
       <div class="your-header" style="width: {waveWidth}px">
-        <span class="your-label">your heart</span>
+        <span class="your-label">{m.bond_your_heart()}</span>
         <div class="your-bpm">
           <span class="your-bpm-num">{yourBpmRounded}</span>
-          <span class="your-bpm-unit">BPM</span>
+          <span class="your-bpm-unit">{m.bond_your_bpm_unit()}</span>
         </div>
       </div>
       <div class="your-waveform" style="width: {waveWidth}px; opacity: 0.45">
@@ -460,7 +461,7 @@
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
         <path d="M1.5 1.5H13.5V9.5H8L5 13V9.5H1.5V1.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
       </svg>
-      <span>Message {partnerName}</span>
+      <span>{m.bond_message_partner({ name: partnerName })}</span>
       {#if chatUnread > 0 && !chatOpen}
         <span class="chat-badge">{chatUnread}</span>
       {/if}
@@ -473,7 +474,7 @@
   <div class="chat-drawer" transition:slide={{duration: 220, axis: 'y'}}>
     <div class="chat-drawer-header">
       <span class="chat-partner-name">{partnerName}</span>
-      <button class="chat-close" onclick={() => chatOpen = false} aria-label="Close chat">
+      <button class="chat-close" onclick={() => chatOpen = false} aria-label={m.bond_close_chat()}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
@@ -481,7 +482,7 @@
     </div>
     <div class="chat-messages" bind:this={chatScrollEl}>
       {#if messages.length === 0}
-        <p class="chat-empty">No messages yet</p>
+        <p class="chat-empty">{m.bond_no_messages()}</p>
       {/if}
       {#each messages as msg (msg.id)}
         <div class="chat-msg" class:me={msg.from === 'me'} class:them={msg.from === 'them'}>
@@ -494,7 +495,7 @@
         type="text"
         bind:value={chatInput}
         onkeydown={handleChatKey}
-        placeholder="Say something…"
+        placeholder={m.bond_chat_placeholder()}
         class="chat-input"
         maxlength={500}
       />
