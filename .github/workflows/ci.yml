@@ -91,3 +91,13 @@ jobs:
           cache-dependency-path: relay-server/package-lock.json
       - run: npm ci
       - run: node --check server.js
+
+  docker:
+    name: docker — build images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t hb-api ./heartbits-api
+      - run: docker build -t hb-relay ./relay-server
+      - run: docker build -t hb-monitor ./heartbits-monitor
+      - run: docker build -t hb-web ./heartbits-web
