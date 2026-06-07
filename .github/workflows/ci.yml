@@ -32,9 +32,49 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bunx tsc --noEmit
-      - run: bun test
+      - run: bun test   # unit tests (integration tests self-skip without a DB)
       # Bundle the entrypoints — catches import/syntax errors without running
       - run: bun build src/index.ts src/worker.ts --target bun --outdir /tmp/api-build
+
+  api-integration:
+    name: api — integration tests (Postgres + Redis)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: heartbits-api
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: heartbits
+          POSTGRES_PASSWORD: heartbits
+          POSTGRES_DB: heartbits_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U heartbits" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      ADMIN_URL: postgres://heartbits:heartbits@localhost:5432/heartbits_test
+      TEST_DATABASE_URL: postgres://heartbits_api:password@localhost:5432/heartbits_test
+      TEST_ADMIN_DATABASE_URL: postgres://heartbits:heartbits@localhost:5432/heartbits_test
+      TEST_REDIS_URL: redis://localhost:6379/15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Install psql
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Apply migrations + set role passwords
+        run: |
+          for m in migrations/00*.sql; do psql "$ADMIN_URL" -v ON_ERROR_STOP=1 -f "$m"; done
+          psql "$ADMIN_URL" -c "ALTER ROLE heartbits_api PASSWORD 'password'; ALTER ROLE heartbits_worker PASSWORD 'password';"
+      - run: bun test
 
   relay:
     name: relay — syntax
