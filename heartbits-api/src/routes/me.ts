@@ -333,7 +333,7 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
 
         await tx.unsafe(
           `UPDATE app.profiles SET ${updates.join(', ')} WHERE id = $${paramIdx}`,
-          values,
+          values as Parameters<typeof tx.unsafe>[1],
         )
 
         // Audit log
