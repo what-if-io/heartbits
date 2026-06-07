@@ -19,11 +19,9 @@
   "nav_terms": "약관",
   "nav_status": "상태",
   "nav_contact": "문의하기",
-
   "hero_start_feeling": "느끼기 시작하기",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "진짜 심장박동. 진짜 사람. 진짜 순간.",
-
   "how_label": "이용 방법",
   "how_title_pre": "세 번의 심장박동으로, ",
   "how_title_em": "영원히.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "‘좋아요’ 대신 진짜 심장박동을 보내보세요. 상대는 당신의 맥박을 느낄 거예요 — 만나기도 전에 찾아오는, 진짜 친밀한 순간이죠.",
   "how_step3_title": "이어짐",
   "how_step3_desc": "두 마음이 같은 순간에 서로에게 박동을 보낼 때 — 그게 바로 HeartBit이에요. 꾸며낼 수 없는 신호. 만날 가치가 있는 인연이죠.",
-
   "moment_label": "그 순간",
   "moment_title_pre": "두 개의 맥박. ",
   "moment_title_em": "하나의 신호.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "신이 ‘하트 보내기’를 누르면, 당신은 그 맥박을 실시간으로 느끼게 돼요.",
   "moment_desc_line2": "스와이프도, 알고리즘도 없어요. 오직 생명 그 자체만.",
   "moment_find_match": "당신의 인연 찾기",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "데모",
   "demo_exploring": "데모 모드로 HeartBits를 둘러보는 중",
   "demo_join_waitlist": "대기자 명단에 등록하기 →",
-
   "discover_title": "발견 — HeartBits",
   "discover_meta_description": "당신의 심장박동과 공명하는 사람을 발견해 보세요.",
   "discover_someone": "누군가",
@@ -75,7 +69,6 @@
   "discover_close": "닫기",
   "discover_live_heart_rate": "실시간 심박수",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "내 인연 — HeartBits",
   "matches_meta_description": "당신에게 심장박동을 보내준 사람들 — 당신의 HeartBits 매치.",
   "matches_someone": "누군가",
@@ -93,7 +86,6 @@
   "matches_offline": "오프라인",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "실시간 심장박동은 2초마다 업데이트돼요",
-
   "bond_unknown": "알 수 없음",
   "bond_title": "{name}의 심장박동 — HeartBits",
   "bond_meta_description": "HeartBits에서 {name}의 심장박동을 실시간으로 느껴보세요.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "채팅 닫기",
   "bond_no_messages": "아직 메시지가 없어요",
   "bond_chat_placeholder": "무언가 말을 건네보세요…",
-
   "profile_title": "프로필 — HeartBits",
   "profile_meta_description": "HeartBits 프로필과 심장박동 공유 설정을 관리하세요.",
   "profile_you": "나",
@@ -189,7 +180,6 @@
   "profile_cancel": "취소",
   "profile_delete_forever": "영구 삭제",
   "profile_deleting": "삭제 중…",
-
   "consent_panel_aria": "생체 데이터 동의가 필요해요",
   "consent_heading": "당신의 심장이 말을 건네기 전에",
   "consent_body_intro_pre": "HeartBits는 당신의 실시간 심박수를 측정해 매치된 사람에게 전송해요. 심박수는 ",
@@ -212,7 +202,6 @@
   "consent_accept": "동의합니다 — 이어짐을 느껴보세요",
   "consent_decline": "괜찮아요 — 심박수 공유 없이 HeartBits를 사용할게요",
   "consent_version_line": "동의 버전 1.1 · GDPR 제9조 · 2026-06-02",
-
   "match_overlay_aria": "매치됐어요!",
   "match_you": "나",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "두 사람의 마음이 서로를 찾았어요.",
   "match_send_message": "메시지 보내기",
   "match_keep_discovering": "계속 발견하기",
-
   "bottomnav_discover": "발견",
   "bottomnav_bonds": "인연",
   "bottomnav_profile": "프로필",
-
   "login_title": "로그인 — HeartBits",
   "login_meta_description": "HeartBits에 로그인하세요 — 당신의 마음을 가장 먼저 생각하는 데이팅 앱.",
   "login_headline_pre": "당신의 마음이",
@@ -242,7 +229,6 @@
   "login_nav_about": "소개",
   "login_nav_privacy": "개인정보",
   "login_nav_terms": "약관",
-
   "status_title": "HeartBits — 시스템 상태",
   "status_meta_description": "HeartBits 서비스의 실시간 상태.",
   "status_operational": "모든 시스템 정상 작동 중",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "모니터링이 시작되면 장애 이력을 볼 수 있어요",
   "status_footer_about": "소개",
   "status_footer_note": "페이지를 불러올 때 새로고침돼요",
-
   "about_title": "소개 — HeartBits",
   "about_meta_description": "HeartBits는 진짜 사람과의 이어짐 — 당신의 실제 심장박동 — 을 중심으로 만든 데이팅 앱이에요.",
   "about_back": "← 뒤로",
@@ -299,7 +284,6 @@
   "about_team_heading": "팀",
   "about_team_para": "우리는 기술이 인간적인 순간을 줄이는 게 아니라 더 많이 만들 수 있다는 생각에 사로잡힌 작은 팀이에요.",
   "about_questions_pre": "궁금한 점이 있나요? ",
-
   "privacy_title": "개인정보 처리방침 — HeartBits",
   "privacy_meta_description": "HeartBits 개인정보 처리방침 — 생체 데이터와 개인 데이터를 어떻게 다루는지 안내해요.",
   "privacy_back": "← 뒤로",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "이 방침을 업데이트할 수 있으며, 중요한 변경 사항은 시행 전에 앱 내 또는 이메일로 안내해요.",
   "privacy_s14_title": "14. 문의",
   "privacy_s14_body_pre": "개인정보 문의 및 데이터 권리 요청: ",
-
   "terms_title": "서비스 약관 — HeartBits",
   "terms_meta_description": "HeartBits 서비스 약관.",
   "terms_back": "← 뒤로",
@@ -399,7 +382,6 @@
   "terms_s11_body": "이 약관은 법률 충돌 규칙과 관계없이 운영자의 관할 구역 법률의 적용을 받아요. 이 약관의 어떤 내용도 당신의 거주 국가 법률에 따라 당신이 가질 수 있는 강행적 소비자 보호 권리에 영향을 주지 않아요.",
   "terms_s12_title": "12. 문의",
   "terms_s12_body_pre": "이 약관에 관한 질문: ",
-
   "pitch_title": "HeartBits — 심장박동으로 매치",
   "pitch_meta_description": "HeartBits는 심장박동 패턴이 자연스럽게 공명하는 사람들을 매치해요 — 알고리즘도, 스와이프 횟수도 아니에요.",
   "pitch_hero_headline_line1": "말로는",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "로그인 보안 — 로그인 과정을 보호하는 짧은 수명의 쿠키입니다.",
   "privacy_cookies_li3": "미리보기 접근 — 비공개 미리보기에 입장했음을 기억합니다.",
   "privacy_cookies_li4": "심장 박동 동의 — 실시간 심박수를 공유하겠다는 선택을 기억합니다.",
-  "privacy_cookies_li5": "언어 — 선호하는 언어를 기억합니다.",
-  "cookie_notice_text": "필수 쿠키만 사용합니다 — 추적은 없습니다.",
-  "cookie_notice_dismiss": "확인",
-  "cookie_notice_learn": "개인정보"
+  "privacy_cookies_li5": "언어 — 선호하는 언어를 기억합니다."
 }

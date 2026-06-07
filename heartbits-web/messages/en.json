@@ -19,11 +19,9 @@
   "nav_terms": "Terms",
   "nav_status": "Status",
   "nav_contact": "Contact",
-
   "hero_start_feeling": "Start feeling",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Real heartbeats. Real people. Real moments.",
-
   "how_label": "How it works",
   "how_title_pre": "Three heartbeats to ",
   "how_title_em": "forever.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Send your actual heartbeat instead of a like. They'll feel your pulse — a moment of real intimacy before you even meet.",
   "how_step3_title": "Connect",
   "how_step3_desc": "When two hearts send each other a beat at the same moment — that's a HeartBit. A signal you can't fake. A match worth meeting.",
-
   "moment_label": "The moment",
   "moment_title_pre": "Two pulses. ",
   "moment_title_em": "One signal.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "When Xin taps Send Heart, you feel their pulse in real time.",
   "moment_desc_line2": "No swiping. No algorithm. Just biology.",
   "moment_find_match": "Find your match",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "Exploring HeartBits in demo mode",
   "demo_join_waitlist": "Join the waitlist →",
-
   "discover_title": "Discover — HeartBits",
   "discover_meta_description": "Discover people whose heartbeat resonates with yours.",
   "discover_someone": "Someone",
@@ -75,7 +69,6 @@
   "discover_close": "Close",
   "discover_live_heart_rate": "live heart rate",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Your Bonds — HeartBits",
   "matches_meta_description": "Your HeartBits matches — people who sent you their heartbeat.",
   "matches_someone": "Someone",
@@ -93,7 +86,6 @@
   "matches_offline": "offline",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Live heartbeats update every 2 seconds",
-
   "bond_unknown": "Unknown",
   "bond_title": "{name}'s heart — HeartBits",
   "bond_meta_description": "Feel {name}'s heartbeat in real time on HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Close chat",
   "bond_no_messages": "No messages yet",
   "bond_chat_placeholder": "Say something…",
-
   "profile_title": "Profile — HeartBits",
   "profile_meta_description": "Manage your HeartBits profile and heartbeat sharing settings.",
   "profile_you": "You",
@@ -189,7 +180,6 @@
   "profile_cancel": "Cancel",
   "profile_delete_forever": "Delete forever",
   "profile_deleting": "Deleting…",
-
   "consent_panel_aria": "Biometric data consent required",
   "consent_heading": "Before your heart speaks",
   "consent_body_intro_pre": "HeartBits measures and transmits your real-time heart rate to people you match with. Heart rate is ",
@@ -212,7 +202,6 @@
   "consent_accept": "I consent — feel the connection",
   "consent_decline": "No thanks — I'll use HeartBits without heart rate sharing",
   "consent_version_line": "Consent version 1.1 · GDPR Art. 9 · 2026-06-02",
-
   "match_overlay_aria": "It's a match!",
   "match_you": "You",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Your hearts found each other.",
   "match_send_message": "Send a message",
   "match_keep_discovering": "Keep discovering",
-
   "bottomnav_discover": "Discover",
   "bottomnav_bonds": "Bonds",
   "bottomnav_profile": "Profile",
-
   "login_title": "Sign in — HeartBits",
   "login_meta_description": "Sign in to HeartBits — the dating app that puts your heart first.",
   "login_headline_pre": "Your heart is",
@@ -242,7 +229,6 @@
   "login_nav_about": "About",
   "login_nav_privacy": "Privacy",
   "login_nav_terms": "Terms",
-
   "status_title": "HeartBits — System Status",
   "status_meta_description": "Real-time health for HeartBits services.",
   "status_operational": "All Systems Operational",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "Incident history available once monitoring starts",
   "status_footer_about": "About",
   "status_footer_note": "Refreshes on page load",
-
   "about_title": "About — HeartBits",
   "about_meta_description": "HeartBits is a dating app built around real human connection — your actual heartbeat.",
   "about_back": "← Back",
@@ -299,7 +284,6 @@
   "about_team_heading": "The team",
   "about_team_para": "We're a small team obsessed with the idea that technology can create more human moments, not fewer.",
   "about_questions_pre": "Questions? ",
-
   "privacy_title": "Privacy Policy — HeartBits",
   "privacy_meta_description": "HeartBits privacy policy — how we handle your biometric and personal data.",
   "privacy_back": "← Back",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "We may update this policy; material changes will be announced in-app or by email before they take effect.",
   "privacy_s14_title": "14. Contact",
   "privacy_s14_body_pre": "Privacy enquiries and data-rights requests: ",
-
   "terms_title": "Terms of Service — HeartBits",
   "terms_meta_description": "HeartBits terms of service.",
   "terms_back": "← Back",
@@ -399,7 +382,6 @@
   "terms_s11_body": "These Terms are governed by the laws of the operator's jurisdiction, without regard to conflict-of-law rules. Nothing in these Terms affects mandatory consumer-protection rights you may have under the law of your country of residence.",
   "terms_s12_title": "12. Contact",
   "terms_s12_body_pre": "Questions about these Terms: ",
-
   "pitch_title": "HeartBits — Match by Heartbeat",
   "pitch_meta_description": "HeartBits matches people whose heartbeat patterns naturally resonate — not algorithms, not swipe counts.",
   "pitch_hero_headline_line1": "Dating that feels",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Sign-in security — short-lived cookies that protect the login flow.",
   "privacy_cookies_li3": "Preview access — remembers you've entered the private preview.",
   "privacy_cookies_li4": "Heartbeat consent — remembers your choice to share your live heart rate.",
-  "privacy_cookies_li5": "Language — remembers your preferred language.",
-  "cookie_notice_text": "We use only essential cookies — no tracking.",
-  "cookie_notice_dismiss": "Got it",
-  "cookie_notice_learn": "Privacy"
+  "privacy_cookies_li5": "Language — remembers your preferred language."
 }

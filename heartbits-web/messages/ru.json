@@ -19,11 +19,9 @@
   "nav_terms": "Условия",
   "nav_status": "Статус",
   "nav_contact": "Контакты",
-
   "hero_start_feeling": "Начни чувствовать",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Настоящие сердца. Настоящие люди. Настоящие моменты.",
-
   "how_label": "Как это работает",
   "how_title_pre": "Три удара сердца до ",
   "how_title_em": "навсегда.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Отправь настоящее сердцебиение вместо лайка. Они почувствуют твой пульс — мгновение настоящей близости ещё до встречи.",
   "how_step3_title": "Свяжись",
   "how_step3_desc": "Когда два сердца посылают друг другу удар в один и тот же момент — это HeartBit. Сигнал, который невозможно подделать. Совпадение, ради которого стоит встретиться.",
-
   "moment_label": "Момент",
   "moment_title_pre": "Два пульса. ",
   "moment_title_em": "Один сигнал.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Когда Xin нажимает «Отправить сердце», ты чувствуешь её пульс в реальном времени.",
   "moment_desc_line2": "Никаких свайпов. Никаких алгоритмов. Только биология.",
   "moment_find_match": "Найди свою пару",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Демо",
   "demo_exploring": "Исследуешь HeartBits в демо-режиме",
   "demo_join_waitlist": "Записаться в лист ожидания →",
-
   "discover_title": "Открытие — HeartBits",
   "discover_meta_description": "Открой людей, чьё сердцебиение резонирует с твоим.",
   "discover_someone": "Кто-то",
@@ -75,7 +69,6 @@
   "discover_close": "Закрыть",
   "discover_live_heart_rate": "живой пульс",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Твои связи — HeartBits",
   "matches_meta_description": "Твои совпадения в HeartBits — люди, отправившие тебе своё сердцебиение.",
   "matches_someone": "Кто-то",
@@ -93,7 +86,6 @@
   "matches_offline": "не в сети",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Живое сердцебиение обновляется каждые 2 секунды",
-
   "bond_unknown": "Неизвестно",
   "bond_title": "Сердце {name} — HeartBits",
   "bond_meta_description": "Почувствуй сердцебиение {name} в реальном времени в HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Закрыть чат",
   "bond_no_messages": "Сообщений пока нет",
   "bond_chat_placeholder": "Скажи что-нибудь…",
-
   "profile_title": "Профиль — HeartBits",
   "profile_meta_description": "Управляй своим профилем HeartBits и настройками обмена сердцебиением.",
   "profile_you": "Ты",
@@ -189,7 +180,6 @@
   "profile_cancel": "Отмена",
   "profile_delete_forever": "Удалить навсегда",
   "profile_deleting": "Удаляем…",
-
   "consent_panel_aria": "Требуется согласие на обработку биометрических данных",
   "consent_heading": "Прежде чем заговорит твоё сердце",
   "consent_body_intro_pre": "HeartBits измеряет и передаёт твой пульс в реальном времени людям, с которыми у тебя совпадение. Пульс — это ",
@@ -212,7 +202,6 @@
   "consent_accept": "Я согласен — почувствуй связь",
   "consent_decline": "Нет, спасибо — я буду пользоваться HeartBits без обмена пульсом",
   "consent_version_line": "Версия согласия 1.1 · GDPR Ст. 9 · 2026-06-02",
-
   "match_overlay_aria": "Это совпадение!",
   "match_you": "Ты",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Ваши сердца нашли друг друга.",
   "match_send_message": "Отправить сообщение",
   "match_keep_discovering": "Продолжить открывать",
-
   "bottomnav_discover": "Открытие",
   "bottomnav_bonds": "Связи",
   "bottomnav_profile": "Профиль",
-
   "login_title": "Вход — HeartBits",
   "login_meta_description": "Войди в HeartBits — приложение для знакомств, которое ставит твоё сердце на первое место.",
   "login_headline_pre": "Твоё сердце",
@@ -242,7 +229,6 @@
   "login_nav_about": "О нас",
   "login_nav_privacy": "Конфиденциальность",
   "login_nav_terms": "Условия",
-
   "status_title": "HeartBits — Статус системы",
   "status_meta_description": "Состояние сервисов HeartBits в реальном времени.",
   "status_operational": "Все системы работают",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "История инцидентов появится после запуска мониторинга",
   "status_footer_about": "О нас",
   "status_footer_note": "Обновляется при загрузке страницы",
-
   "about_title": "О нас — HeartBits",
   "about_meta_description": "HeartBits — приложение для знакомств, построенное вокруг настоящей человеческой связи — твоего сердцебиения.",
   "about_back": "← Назад",
@@ -299,7 +284,6 @@
   "about_team_heading": "Команда",
   "about_team_para": "Мы — небольшая команда, одержимая идеей, что технологии могут создавать больше человеческих моментов, а не меньше.",
   "about_questions_pre": "Вопросы? ",
-
   "privacy_title": "Политика конфиденциальности — HeartBits",
   "privacy_meta_description": "Политика конфиденциальности HeartBits — как мы обращаемся с твоими биометрическими и персональными данными.",
   "privacy_back": "← Назад",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Мы можем обновлять эту политику; о существенных изменениях будет объявлено в приложении или по email до их вступления в силу.",
   "privacy_s14_title": "14. Контакты",
   "privacy_s14_body_pre": "Запросы по конфиденциальности и правам на данные: ",
-
   "terms_title": "Условия использования — HeartBits",
   "terms_meta_description": "Условия использования HeartBits.",
   "terms_back": "← Назад",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Эти Условия регулируются законами юрисдикции оператора, без учёта норм о коллизии законов. Ничто в этих Условиях не затрагивает обязательные права потребителя, которые могут быть у тебя согласно закону страны твоего проживания.",
   "terms_s12_title": "12. Контакты",
   "terms_s12_body_pre": "Вопросы об этих Условиях: ",
-
   "pitch_title": "HeartBits — Совпадение по сердцебиению",
   "pitch_meta_description": "HeartBits подбирает людей, чьи паттерны сердцебиения естественно резонируют — не алгоритмы, не количество свайпов.",
   "pitch_hero_headline_line1": "Знакомства, которые чувствуют",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Безопасность входа — недолговечные файлы cookie, защищающие процесс входа.",
   "privacy_cookies_li3": "Доступ к превью — запоминает, что ты вошёл в закрытое превью.",
   "privacy_cookies_li4": "Согласие на сердцебиение — запоминает твой выбор делиться пульсом в реальном времени.",
-  "privacy_cookies_li5": "Язык — запоминает твой предпочитаемый язык.",
-  "cookie_notice_text": "Мы используем только необходимые файлы cookie — без отслеживания.",
-  "cookie_notice_dismiss": "Понятно",
-  "cookie_notice_learn": "Конфиденциальность"
+  "privacy_cookies_li5": "Язык — запоминает твой предпочитаемый язык."
 }

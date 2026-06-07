@@ -19,11 +19,9 @@
   "nav_terms": "Termini",
   "nav_status": "Stato",
   "nav_contact": "Contatti",
-
   "hero_start_feeling": "Inizia a sentire",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Battiti veri. Persone vere. Momenti veri.",
-
   "how_label": "Come funziona",
   "how_title_pre": "Tre battiti verso il ",
   "how_title_em": "per sempre.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Invia il tuo battito vero invece di un «mi piace». Sentiranno il tuo polso — un istante di vera intimità prima ancora di incontrarvi.",
   "how_step3_title": "Connettiti",
   "how_step3_desc": "Quando due cuori si inviano un battito nello stesso momento — quello è un HeartBit. Un segnale che non puoi fingere. Un incontro che vale la pena vivere.",
-
   "moment_label": "Il momento",
   "moment_title_pre": "Due battiti. ",
   "moment_title_em": "Un solo segnale.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Quando Xin tocca Invia Cuore, senti il suo polso in tempo reale.",
   "moment_desc_line2": "Niente swipe. Niente algoritmo. Solo biologia.",
   "moment_find_match": "Trova la tua affinità",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "Stai esplorando HeartBits in modalità demo",
   "demo_join_waitlist": "Unisciti alla lista →",
-
   "discover_title": "Scopri — HeartBits",
   "discover_meta_description": "Scopri persone il cui battito risuona con il tuo.",
   "discover_someone": "Qualcuno",
@@ -75,7 +69,6 @@
   "discover_close": "Chiudi",
   "discover_live_heart_rate": "battito cardiaco in diretta",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "I tuoi Legami — HeartBits",
   "matches_meta_description": "Le tue affinità HeartBits — persone che ti hanno inviato il loro battito.",
   "matches_someone": "Qualcuno",
@@ -93,7 +86,6 @@
   "matches_offline": "offline",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "I battiti in diretta si aggiornano ogni 2 secondi",
-
   "bond_unknown": "Sconosciuto",
   "bond_title": "Il cuore di {name} — HeartBits",
   "bond_meta_description": "Senti il battito di {name} in tempo reale su HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Chiudi chat",
   "bond_no_messages": "Ancora nessun messaggio",
   "bond_chat_placeholder": "Dì qualcosa…",
-
   "profile_title": "Profilo — HeartBits",
   "profile_meta_description": "Gestisci il tuo profilo HeartBits e le impostazioni di condivisione del battito.",
   "profile_you": "Tu",
@@ -189,7 +180,6 @@
   "profile_cancel": "Annulla",
   "profile_delete_forever": "Elimina per sempre",
   "profile_deleting": "Eliminazione…",
-
   "consent_panel_aria": "Consenso ai dati biometrici richiesto",
   "consent_heading": "Prima che il tuo cuore parli",
   "consent_body_intro_pre": "HeartBits misura e trasmette il tuo battito cardiaco in tempo reale alle persone con cui crei un match. Il battito cardiaco è un ",
@@ -212,7 +202,6 @@
   "consent_accept": "Acconsento — senti la connessione",
   "consent_decline": "No grazie — userò HeartBits senza condividere il battito",
   "consent_version_line": "Versione del consenso 1.1 · GDPR Art. 9 · 2026-06-02",
-
   "match_overlay_aria": "È un match!",
   "match_you": "Tu",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "I vostri cuori si sono trovati.",
   "match_send_message": "Invia un messaggio",
   "match_keep_discovering": "Continua a scoprire",
-
   "bottomnav_discover": "Scopri",
   "bottomnav_bonds": "Legami",
   "bottomnav_profile": "Profilo",
-
   "login_title": "Accedi — HeartBits",
   "login_meta_description": "Accedi a HeartBits — l'app di incontri che mette il tuo cuore al primo posto.",
   "login_headline_pre": "Il tuo cuore",
@@ -242,7 +229,6 @@
   "login_nav_about": "Chi siamo",
   "login_nav_privacy": "Privacy",
   "login_nav_terms": "Termini",
-
   "status_title": "HeartBits — Stato del Sistema",
   "status_meta_description": "Stato in tempo reale dei servizi HeartBits.",
   "status_operational": "Tutti i Sistemi Operativi",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "La cronologia degli incidenti sarà disponibile all'avvio del monitoraggio",
   "status_footer_about": "Chi siamo",
   "status_footer_note": "Si aggiorna al caricamento della pagina",
-
   "about_title": "Chi siamo — HeartBits",
   "about_meta_description": "HeartBits è un'app di incontri costruita attorno a una vera connessione umana — il tuo battito cardiaco.",
   "about_back": "← Indietro",
@@ -299,7 +284,6 @@
   "about_team_heading": "Il team",
   "about_team_para": "Siamo un piccolo team ossessionato dall'idea che la tecnologia possa creare più momenti umani, non meno.",
   "about_questions_pre": "Domande? ",
-
   "privacy_title": "Informativa sulla Privacy — HeartBits",
   "privacy_meta_description": "Informativa sulla privacy di HeartBits — come trattiamo i tuoi dati biometrici e personali.",
   "privacy_back": "← Indietro",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Possiamo aggiornare questa informativa; le modifiche rilevanti saranno annunciate nell'app o via email prima della loro entrata in vigore.",
   "privacy_s14_title": "14. Contatti",
   "privacy_s14_body_pre": "Richieste sulla privacy e sull'esercizio dei diritti sui dati: ",
-
   "terms_title": "Termini di Servizio — HeartBits",
   "terms_meta_description": "Termini di servizio di HeartBits.",
   "terms_back": "← Indietro",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Questi Termini sono regolati dalle leggi della giurisdizione del gestore, senza riguardo alle norme sui conflitti di legge. Nulla in questi Termini pregiudica i diritti imperativi di tutela del consumatore di cui puoi godere ai sensi della legge del tuo Paese di residenza.",
   "terms_s12_title": "12. Contatti",
   "terms_s12_body_pre": "Domande su questi Termini: ",
-
   "pitch_title": "HeartBits — Match dal Battito",
   "pitch_meta_description": "HeartBits unisce le persone i cui schemi di battito risuonano naturalmente — niente algoritmi, niente conteggi di swipe.",
   "pitch_hero_headline_line1": "Incontri che sentono",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Sicurezza dell'accesso — cookie di breve durata che proteggono la procedura di login.",
   "privacy_cookies_li3": "Accesso all'anteprima — ricorda che sei entrato nell'anteprima privata.",
   "privacy_cookies_li4": "Consenso al battito — ricorda la tua scelta di condividere la frequenza cardiaca in tempo reale.",
-  "privacy_cookies_li5": "Lingua — ricorda la tua lingua preferita.",
-  "cookie_notice_text": "Usiamo solo cookie essenziali — nessun tracciamento.",
-  "cookie_notice_dismiss": "Ho capito",
-  "cookie_notice_learn": "Privacy"
+  "privacy_cookies_li5": "Lingua — ricorda la tua lingua preferita."
 }
