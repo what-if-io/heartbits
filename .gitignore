@@ -1,4 +1,10 @@
 .local/
+
+# Local environment / secrets (deploy/.env holds generated passwords, JWT & Zitadel keys)
+.env
+.env.*
+!.env.example
+
 relay-server/node_modules/
 *.xcuserstate
 xcuserdata/

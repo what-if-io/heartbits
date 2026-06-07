@@ -41,23 +41,21 @@ self.addEventListener('fetch', (event) => {
   async function respond() {
     const cache = await caches.open(CACHE)
 
-    // For pre-cached assets: serve from cache immediately (cache-first)
+    // Pre-cached build/static assets (hashed, immutable filenames): cache-first.
     if (ASSETS.includes(url.pathname)) {
-      const cachedResponse = await cache.match(event.request)
+      const cachedResponse = await cache.match(url.pathname)
       if (cachedResponse) return cachedResponse
     }
 
-    // For everything else: try network, cache successful responses, fall back to cache
+    // Everything else — navigations, SSR HTML, API/JSON — is network-only and is
+    // deliberately NOT cached. These responses can contain authenticated, per-user
+    // content (profiles, matches, messages) that must not persist on the device
+    // after logout (privacy) or be served stale.
     try {
-      const response = await fetch(event.request)
-      if (response.status === 200) {
-        // Clone before consuming — response body can only be read once
-        cache.put(event.request, response.clone())
-      }
-      return response
+      return await fetch(event.request)
     } catch {
-      // Network failed — serve from cache if available, otherwise return offline stub
-      const cachedResponse = await cache.match(event.request)
+      // Offline fallback: pre-cached assets only.
+      const cachedResponse = await cache.match(url.pathname)
       if (cachedResponse) return cachedResponse
       return new Response('Offline — HeartBits requires a connection for live heartbeats.', {
         status: 503,

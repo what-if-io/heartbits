@@ -246,6 +246,7 @@ else
     echo "Generating secrets..."
 
     POSTGRES_PASSWORD="$(_gen_hex 24)"
+    WORKER_POSTGRES_PASSWORD="$(_gen_hex 24)"
     MINIO_PASSWORD="$(_gen_hex 16)"
     # ZITADEL_MASTERKEY must be exactly 32 characters
     ZITADEL_MASTERKEY="$(_gen_hex 16)"
@@ -267,6 +268,8 @@ ACME_EMAIL=${ACME_EMAIL}
 
 # ── Database ──────────────────────────────────────────────────────────────────
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+# Password for the BYPASSRLS background-worker role (notifications, GDPR delete).
+WORKER_POSTGRES_PASSWORD=${WORKER_POSTGRES_PASSWORD}
 
 # ── MinIO media storage ───────────────────────────────────────────────────────
 MINIO_USER=heartbits
