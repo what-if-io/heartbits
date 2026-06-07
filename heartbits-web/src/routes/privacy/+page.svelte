@@ -1,5 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 </script>
 
 <svelte:head>
@@ -10,7 +11,7 @@
 
 <div class="page">
   <div class="inner">
-    <a href="/" class="back">{m.privacy_back()}</a>
+    <a href={localizeHref('/')} class="back">{m.privacy_back()}</a>
     <h1>{m.privacy_heading()}</h1>
     <p class="meta">{m.privacy_meta()}</p>
 

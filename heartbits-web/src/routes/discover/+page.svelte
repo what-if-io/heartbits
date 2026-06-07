@@ -6,6 +6,7 @@
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { grantConsent, checkConsent } from '$lib/stores/consent';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   interface Person {
@@ -88,7 +89,7 @@
   function handleConsentDecline() {
     showConsentGate = false;
     pendingHeartAction = false;
-    goto('/discover');
+    goto(localizeHref('/discover'));
   }
 
   // Match reveal modal
@@ -347,7 +348,7 @@
       </div>
       <h2 class="done-title">{m.discover_done_title()}</h2>
       <p class="done-sub">{m.discover_done_sub_line1()}<br />{m.discover_done_sub_line2()}</p>
-      <a href="/matches" class="btn-primary">{m.discover_see_bonds()}</a>
+      <a href={localizeHref('/matches')} class="btn-primary">{m.discover_see_bonds()}</a>
     </div>
 
   {:else if person}

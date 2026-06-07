@@ -4,6 +4,7 @@
   import WaitlistForm from '$lib/components/WaitlistForm.svelte';
   import LangSwitcher from '$lib/components/LangSwitcher.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     data: import('./$types').PageData;
@@ -163,7 +164,7 @@
 
       {#if data.loggedIn}
         <div class="cta-group">
-          <a href={ctaHref} class="btn-cta">
+          <a href={localizeHref(ctaHref)} class="btn-cta">
             {m.hero_start_feeling()}
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 8H13M9 4L13 8L9 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -176,7 +177,7 @@
           <WaitlistForm />
           <p class="cta-note">{m.waitlist_note()}</p>
           <div class="cta-secondary">
-            <a href="/auth/demo" class="link-soft">{m.try_demo()}</a>
+            <a href={localizeHref('/auth/demo')} class="link-soft">{m.try_demo()}</a>
             <span class="dot-sep">·</span>
             <a href="#how" class="link-soft">{m.how_it_works()}</a>
           </div>
@@ -387,11 +388,12 @@
         <span>HeartBits</span>
       </div>
       <div class="footer-links">
-        <a href="/about">{m.nav_about()}</a>
-        <a href="/privacy">{m.nav_privacy()}</a>
-        <a href="/terms">{m.nav_terms()}</a>
-        <a href="/status">{m.nav_status()}</a>
+        <a href={localizeHref('/about')}>{m.nav_about()}</a>
+        <a href={localizeHref('/privacy')}>{m.nav_privacy()}</a>
+        <a href={localizeHref('/terms')}>{m.nav_terms()}</a>
+        <a href={localizeHref('/status')}>{m.nav_status()}</a>
         <a href="mailto:hello@what-if.io">{m.nav_contact()}</a>
+        <a href="https://github.com/what-if-io/heartbits" target="_blank" rel="noopener noreferrer">GitHub</a>
         <LangSwitcher />
       </div>
       <div class="footer-copy">{m.footer_copyright()}</div>

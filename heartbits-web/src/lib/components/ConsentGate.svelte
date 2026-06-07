@@ -1,6 +1,7 @@
 <script lang="ts">
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let { onConsent, onDecline }: { onConsent: () => void; onDecline: () => void } = $props();
 
@@ -110,7 +111,7 @@
           </div>
         </div>
         <span>
-          {m.consent_check_age_pre()}<a href="/privacy" onclick={(e) => e.stopPropagation()} target="_blank" rel="noopener">{m.consent_check_age_link()}</a>.
+          {m.consent_check_age_pre()}<a href={localizeHref('/privacy')} onclick={(e) => e.stopPropagation()} target="_blank" rel="noopener">{m.consent_check_age_link()}</a>.
         </span>
       </label>
     </div>

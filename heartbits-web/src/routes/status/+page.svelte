@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   const { data }: { data: PageData } = $props();
@@ -142,7 +143,7 @@
   <!-- ── HEADER ───────────────────────────────────────────────────────────── -->
   <header class="header">
     <div class="wrap">
-      <a href="/" class="brand" aria-label={m.status_home_aria()}>
+      <a href={localizeHref('/')} class="brand" aria-label={m.status_home_aria()}>
         <HeartLogo size={26} />
         <span class="brand-name">HeartBits</span>
         <span class="brand-divider">/</span>
@@ -345,12 +346,12 @@
 
   <!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
   <footer class="footer">
-    <a href="/" class="footer-brand">
+    <a href={localizeHref('/')} class="footer-brand">
       <HeartLogo size={16} />
       HeartBits
     </a>
     <span class="foot-sep">·</span>
-    <a href="/pitch" class="foot-link">{m.status_footer_about()}</a>
+    <a href={localizeHref('/pitch')} class="foot-link">{m.status_footer_about()}</a>
     <span class="foot-sep">·</span>
     <span class="foot-note">{m.status_footer_note()}</span>
   </footer>

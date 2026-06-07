@@ -4,6 +4,7 @@
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import { consent, grantConsent, withdrawConsent } from '$lib/stores/consent';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -139,7 +140,7 @@
         setTimeout(() => {
           showEditSheet = false;
           // Reload page data to reflect saved changes
-          goto('/profile', { invalidateAll: true });
+          goto(localizeHref('/profile'), { invalidateAll: true });
         }, 900);
       } else {
         saveError = result.error ?? m.profile_save_failed();
@@ -406,7 +407,7 @@
           <span>{m.profile_no_consent()}</span>
         </div>
       {/if}
-      <a href="/privacy" class="gdpr-link">
+      <a href={localizeHref('/privacy')} class="gdpr-link">
         {m.profile_gdpr_link()}
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <path d="M2 6H10M7 3L10 6L7 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
@@ -419,13 +420,13 @@
       <div class="section-card demo-cta-card">
         <p class="demo-cta-lead">{m.profile_demo_lead()}</p>
         <p class="demo-cta-sub">{m.profile_demo_sub()}</p>
-        <a href="/" class="demo-cta-btn">
+        <a href={localizeHref('/')} class="demo-cta-btn">
           {m.profile_demo_join()}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
             <path d="M3 7H11M8 4L11 7L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        <a href="/auth/demo-exit" class="demo-exit-link">{m.profile_demo_exit()}</a>
+        <a href={localizeHref('/auth/demo-exit')} class="demo-exit-link">{m.profile_demo_exit()}</a>
       </div>
     {:else}
       <div class="section-card">
@@ -441,7 +442,7 @@
             </svg>
           </button>
           <div class="action-divider"></div>
-          <a href="/auth/logout" class="action-row">
+          <a href={localizeHref('/auth/logout')} class="action-row">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path d="M7 3H3V15H7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M12 6L15 9L12 12M7 9H15" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>

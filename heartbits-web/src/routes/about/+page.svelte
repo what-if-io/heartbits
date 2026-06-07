@@ -1,5 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 </script>
 
 <svelte:head>
@@ -10,7 +11,7 @@
 
 <div class="page">
   <div class="inner">
-    <a href="/" class="back">{m.about_back()}</a>
+    <a href={localizeHref('/')} class="back">{m.about_back()}</a>
     <h1>{m.about_heading_pre()}<em>{m.about_heading_em()}</em></h1>
     <p class="lead">{m.about_lead()}</p>
     <p>{m.about_para1()}</p>

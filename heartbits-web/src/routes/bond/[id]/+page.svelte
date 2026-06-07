@@ -7,6 +7,7 @@
   import ConsentGate from '$lib/components/ConsentGate.svelte';
   import { consent, grantConsent, checkConsent } from '$lib/stores/consent';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let id = $derived($page.params.id);
   let partnerName = $derived(id ? id.charAt(0).toUpperCase() + id.slice(1) : m.bond_unknown());
@@ -21,7 +22,7 @@
   }
 
   function handleDecline() {
-    goto('/discover');
+    goto(localizeHref('/discover'));
   }
 
   // ── BPM STATE ───────────────────────────────────────────

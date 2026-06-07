@@ -3,6 +3,7 @@
   import EcgWaveform from '$lib/components/EcgWaveform.svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { PageData } from './$types';
 
   interface Match {
@@ -178,13 +179,13 @@
         </div>
         <p class="empty-title">{m.matches_empty_title()}</p>
         <p class="empty-sub">{m.matches_empty_sub()}</p>
-        <a href="/discover" class="btn-discover">{m.matches_start_discovering()}</a>
+        <a href={localizeHref('/discover')} class="btn-discover">{m.matches_start_discovering()}</a>
       </div>
     {:else}
       <!-- ── MATCH LIST ───────────────────── -->
       <div class="match-list">
         {#each matches as match (match.id)}
-          <a href="/bond/{match.id}" class="match-card">
+          <a href={localizeHref(`/bond/${match.id}`)} class="match-card">
             <!-- Pulsing gradient border -->
             <div
               class="card-border-glow"

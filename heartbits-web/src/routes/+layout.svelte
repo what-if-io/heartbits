@@ -61,7 +61,7 @@
   <div class="demo-banner" style:bottom={showNav ? 'var(--nav-h, 72px)' : '0'}>
     <span class="demo-pill">{m.demo_pill()}</span>
     <span class="demo-text">{m.demo_exploring()}</span>
-    <a href="/" class="demo-cta">{m.demo_join_waitlist()}</a>
+    <a href={localizeHref('/')} class="demo-cta">{m.demo_join_waitlist()}</a>
   </div>
 {/if}
 

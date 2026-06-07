@@ -1,12 +1,13 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let currentPath = $derived($page.url.pathname);
 </script>
 
 <nav class="bottom-nav">
-  <a href="/discover" class="nav-item" class:active={currentPath.startsWith('/discover')}>
+  <a href={localizeHref('/discover')} class="nav-item" class:active={currentPath.startsWith('/discover')}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Pulse / heartbeat icon -->
       <path d="M2 12H5L7 6L10 18L13 9L15 14L17 12H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -14,7 +15,7 @@
     <span>{m.bottomnav_discover()}</span>
   </a>
 
-  <a href="/matches" class="nav-item" class:active={currentPath.startsWith('/matches') || currentPath.startsWith('/bond')}>
+  <a href={localizeHref('/matches')} class="nav-item" class:active={currentPath.startsWith('/matches') || currentPath.startsWith('/bond')}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Heart icon -->
       <path d="M12 21C12 21 3 14.5 3 8.5C3 5.42 5.42 3 8.5 3C10.07 3 11.48 3.68 12 4.5C12.52 3.68 13.93 3 15.5 3C18.58 3 21 5.42 21 8.5C21 14.5 12 21 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -22,7 +23,7 @@
     <span>{m.bottomnav_bonds()}</span>
   </a>
 
-  <a href="/profile" class="nav-item" class:active={currentPath.startsWith('/profile')}>
+  <a href={localizeHref('/profile')} class="nav-item" class:active={currentPath.startsWith('/profile')}>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <!-- Person icon -->
       <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
