@@ -1,5 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let email = $state('');
   let status = $state<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -53,7 +54,7 @@
     </button>
   </form>
   {#if status === 'error'}<p class="wl-err">{message}</p>{/if}
-  <p class="wl-legal">{m.waitlist_legal_pre()}<a href="/privacy">{m.waitlist_legal_link()}</a>.</p>
+  <p class="wl-legal">{m.waitlist_legal_pre()}<a href={localizeHref('/privacy')}>{m.waitlist_legal_link()}</a>.</p>
 {/if}
 </div>
 

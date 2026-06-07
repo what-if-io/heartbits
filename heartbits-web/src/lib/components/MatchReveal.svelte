@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Person {
     id: string;
@@ -440,7 +441,7 @@
     <!-- ── BUTTONS ── -->
     {#if showButtons}
       <div class="match-buttons" in:fly={{ y: 16, duration: 500 }}>
-        <a href="/bond/{person.id}" class="btn-message">
+        <a href={localizeHref(`/bond/${person.id}`)} class="btn-message">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M3 4C3 3.44 3.44 3 4 3H14C14.56 3 15 3.44 15 4V11C15 11.56 14.56 12 14 12H10L7 15V12H4C3.44 12 3 11.56 3 11V4Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/>
           </svg>

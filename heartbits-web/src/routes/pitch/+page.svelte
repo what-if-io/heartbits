@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   let visible = $state(false);
 
@@ -38,13 +39,13 @@
       </p>
 
       <div class="hero-ctas">
-        <a href="/auth/demo" class="cta-primary">
+        <a href={localizeHref('/auth/demo')} class="cta-primary">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M6 3.5L12.5 8L6 12.5V3.5Z" fill="white"/>
           </svg>
           {m.pitch_try_demo()}
         </a>
-        <a href="/" class="cta-secondary">{m.pitch_join_waitlist()}</a>
+        <a href={localizeHref('/')} class="cta-secondary">{m.pitch_join_waitlist()}</a>
       </div>
 
       <div class="ecg-hero" aria-hidden="true">
@@ -212,7 +213,7 @@
           { label: m.pitch_screen_matches_label(), desc: m.pitch_screen_matches_desc(), path: '/matches', color: '#7B35DE',
             icon: `<path d="M3 17C3 15.34 4.34 14 6 14H16C17.66 14 19 15.34 19 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="11" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>` },
         ] as s}
-          <a href={s.path} class="screen-card" style="--c:{s.color}">
+          <a href={localizeHref(s.path)} class="screen-card" style="--c:{s.color}">
             <div class="screen-icon" style="color:{s.color}">
               <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
                 {@html s.icon}
@@ -238,8 +239,8 @@
       <h2 class="cta-headline">{m.pitch_cta_headline()}</h2>
       <p class="cta-sub">{m.pitch_cta_sub()}</p>
       <div class="hero-ctas">
-        <a href="/auth/demo" class="cta-primary">{m.pitch_cta_try_demo()}</a>
-        <a href="/" class="cta-secondary">{m.pitch_join_waitlist()}</a>
+        <a href={localizeHref('/auth/demo')} class="cta-primary">{m.pitch_cta_try_demo()}</a>
+        <a href={localizeHref('/')} class="cta-secondary">{m.pitch_join_waitlist()}</a>
       </div>
       <p class="cta-platforms">{m.pitch_cta_platforms()}</p>
     </div>
@@ -248,9 +249,9 @@
   <!-- ── FOOTER ────────────────────────────────────────────── -->
   <footer class="pitch-footer">
     <span>{m.pitch_footer_copyright()}</span>
-    <a href="/privacy">{m.pitch_footer_privacy()}</a>
-    <a href="/terms">{m.pitch_footer_terms()}</a>
-    <a href="/about">{m.pitch_footer_about()}</a>
+    <a href={localizeHref('/privacy')}>{m.pitch_footer_privacy()}</a>
+    <a href={localizeHref('/terms')}>{m.pitch_footer_terms()}</a>
+    <a href={localizeHref('/about')}>{m.pitch_footer_about()}</a>
   </footer>
 
 </div>

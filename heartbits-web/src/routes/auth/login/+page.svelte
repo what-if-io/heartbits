@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import HeartLogo from '$lib/components/HeartLogo.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   interface Props {
     data: { next: string };
@@ -184,7 +185,7 @@
     </div>
 
     <!-- Primary CTA — drives to the server GET /auth/login which starts PKCE flow -->
-    <a href={loginHref} class="btn-primary" role="button">
+    <a href={localizeHref(loginHref)} class="btn-primary" role="button">
       <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path
           d="M10 17.5C10 17.5 2.5 12.5 2.5 7.5C2.5 5.29 4.29 3.5 6.5 3.5C7.74 3.5 8.84 4.07 9.5 5C10.16 4.07 11.26 3.5 12.5 3.5C14.71 3.5 16.5 5.29 16.5 7.5C16.5 12.5 10 17.5 10 17.5Z"
@@ -209,7 +210,7 @@
     </p>
 
     <!-- Demo mode -->
-    <a href="/auth/demo" class="btn-demo" role="button">
+    <a href={localizeHref('/auth/demo')} class="btn-demo" role="button">
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
         <circle cx="7.5" cy="7.5" r="6" stroke="currentColor" stroke-width="1.2"/>
         <path d="M5.5 5.5L9.5 7.5L5.5 9.5V5.5Z" fill="currentColor"/>
@@ -237,11 +238,11 @@
 
     <!-- Footer nav -->
     <nav class="footer-nav" aria-label={m.login_nav_legal()}>
-      <a href="/about">{m.login_nav_about()}</a>
+      <a href={localizeHref('/about')}>{m.login_nav_about()}</a>
       <span aria-hidden="true">·</span>
-      <a href="/privacy">{m.login_nav_privacy()}</a>
+      <a href={localizeHref('/privacy')}>{m.login_nav_privacy()}</a>
       <span aria-hidden="true">·</span>
-      <a href="/terms">{m.login_nav_terms()}</a>
+      <a href={localizeHref('/terms')}>{m.login_nav_terms()}</a>
     </nav>
   </main>
 </div>
