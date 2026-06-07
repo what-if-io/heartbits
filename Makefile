@@ -4,7 +4,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help install install-web install-api install-relay install-monitor \
         dev-web dev-api dev-relay dev-monitor build check \
-        up down logs migrate backup deploy-check
+        test-db test-integration up down logs migrate backup
 
 help: ## Show available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -36,9 +36,23 @@ dev-monitor: ## Run the uptime monitor (:4000)
 build: ## Build the web app
 	cd heartbits-web && bun run build
 
-check: ## Type-check + test API + build web (CI-style gate)
+check: ## Type-check + test API + build web (CI-style gate; no DB needed)
 	cd heartbits-api && bunx tsc --noEmit && bun test
 	cd heartbits-web && bun run build
+
+## ── Integration tests (need the local hb-postgres + hb-redis containers) ────
+test-db: ## (Re)create + migrate the local heartbits_test database
+	docker exec hb-postgres psql -U heartbits -d postgres -tAc "DROP DATABASE IF EXISTS heartbits_test"
+	docker exec hb-postgres psql -U heartbits -d postgres -tAc "CREATE DATABASE heartbits_test"
+	for m in heartbits-api/migrations/00*.sql; do docker exec -i hb-postgres psql -q -v ON_ERROR_STOP=1 -U heartbits -d heartbits_test < "$$m"; done
+	docker exec hb-postgres psql -U heartbits -d heartbits_test -c "ALTER ROLE heartbits_api PASSWORD 'password'; ALTER ROLE heartbits_worker PASSWORD 'password';"
+
+test-integration: ## Run API unit + integration tests against heartbits_test
+	cd heartbits-api && \
+	  TEST_DATABASE_URL='postgres://heartbits_api:password@localhost:5432/heartbits_test' \
+	  TEST_ADMIN_DATABASE_URL='postgres://heartbits:heartbits@localhost:5432/heartbits_test' \
+	  TEST_REDIS_URL='redis://localhost:6379/15' \
+	  bun test
 
 ## ── Docker stack (from deploy/) ────────────────────────────────────────────
 up: ## Start the full stack
