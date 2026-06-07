@@ -34,6 +34,7 @@
   }
 </script>
 
+<div class="wl-root">
 {#if status === 'done'}
   <p class="wl-done">♥ {message}</p>
 {:else}
@@ -54,14 +55,24 @@
   {#if status === 'error'}<p class="wl-err">{message}</p>{/if}
   <p class="wl-legal">{m.waitlist_legal_pre()}<a href="/privacy">{m.waitlist_legal_link()}</a>.</p>
 {/if}
+</div>
 
 <style>
+  /* Single column root so the form + legal note stack regardless of how the
+     parent lays the component out (the bottom-CTA parent is a flex row). */
+  .wl-root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: 460px;
+  }
   .wl-form {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     width: 100%;
-    max-width: 460px;
   }
   .wl-input {
     flex: 1 1 200px;
