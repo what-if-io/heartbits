@@ -41,10 +41,17 @@ export const waitlistRoute = new Elysia().post(
     }
     const emailNorm = email.toLowerCase()
 
+    // 18+ attestation — required for a dating product. Enforced server-side, not
+    // just by the client checkbox.
+    if (body.adult !== true) {
+      set.status = 400
+      return { error: 'You must confirm you are 18 or older.' }
+    }
+
     // Idempotent insert — dedup on the normalised email
     const inserted = await sql<{ id: string }[]>`
-      INSERT INTO app.waitlist (email, email_norm, locale, source)
-      VALUES (${email}, ${emailNorm}, ${body.locale ?? null}, ${body.source ?? 'web'})
+      INSERT INTO app.waitlist (email, email_norm, locale, source, age_confirmed)
+      VALUES (${email}, ${emailNorm}, ${body.locale ?? null}, ${body.source ?? 'web'}, true)
       ON CONFLICT (email_norm) DO NOTHING
       RETURNING id
     `
@@ -68,6 +75,7 @@ export const waitlistRoute = new Elysia().post(
       email: t.String({ maxLength: 254 }),
       locale: t.Optional(t.String({ maxLength: 16 })),
       source: t.Optional(t.String({ maxLength: 32 })),
+      adult: t.Optional(t.Boolean()),
     }),
     detail: { summary: 'Join the pre-launch waitlist', tags: ['waitlist'] },
   },
