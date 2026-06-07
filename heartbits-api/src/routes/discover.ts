@@ -155,12 +155,12 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
             -- Gender filter: only show profiles whose gender is in our seeking list
             -- (empty/unset seeking → seekingFilter is null → no filter applied)
             AND (
-              ${seekingFilter} IS NULL
-              OR p.gender = ANY(${seekingFilter ?? []})
+              ${seekingFilter}::text[] IS NULL
+              OR p.gender = ANY(${seekingFilter}::text[])
             )
             -- Location filter: first 4 chars of geohash (≈160km box)
             AND (
-              ${geohashPrefix} IS NULL
+              ${geohashPrefix}::text IS NULL
               OR p.location_geohash6 IS NULL
               OR LEFT(p.location_geohash6, 4) = ${geohashPrefix ?? ''}
             )

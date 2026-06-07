@@ -102,10 +102,11 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
       // Block re-init of a deleted account. The row is kept (soft-delete) until
       // the 30-day GDPR hard-delete, but the identity must not be resurrected —
       // pause is the reversible path, delete is final.
-      const existing = await sql<{ deleted_at: Date | null }[]>`
-        SELECT deleted_at FROM app.users WHERE zitadel_sub = ${sub} LIMIT 1
+      // Bypass RLS for the pre-context lookup (see migration 005).
+      const existing = await sql<{ id: string; deleted: boolean }[]>`
+        SELECT id, deleted FROM app.user_lookup(${sub})
       `
-      if (existing[0]?.deleted_at) {
+      if (existing[0]?.deleted) {
         set.status = 403
         return {
           error: 'account_deleted',
@@ -135,31 +136,17 @@ export const meRoutes = new Elysia({ prefix: '/api/v1' })
         }
       }
 
-      // Upsert user row. ON CONFLICT clears paused_at — logging back in
-      // reactivates a paused account with all data intact.
+      // Bootstrap the user + profile via a SECURITY DEFINER function — this
+      // runs before any RLS user context exists (see migration 005). Reactivates
+      // a paused account and ensures a profile row.
       const [user] = await sql<{ id: string; created: boolean }[]>`
-        WITH ins AS (
-          INSERT INTO app.users (id, zitadel_sub, created_at, last_seen_at)
-          VALUES (gen_random_uuid(), ${sub}, NOW(), NOW())
-          ON CONFLICT (zitadel_sub) DO UPDATE
-            SET last_seen_at = NOW(), paused_at = NULL
-          RETURNING id,
-            (xmax = 0) AS created
-        )
-        SELECT id, created FROM ins
+        SELECT id, created FROM app.init_user(${sub})
       `
 
       if (!user) {
         set.status = 500
         return { error: 'Failed to initialise user' }
       }
-
-      // Upsert profile row (no PII set yet — client calls PATCH to fill in)
-      await sql`
-        INSERT INTO app.profiles (id)
-        VALUES (${user.id})
-        ON CONFLICT (id) DO NOTHING
-      `
 
       set.status = user.created ? 201 : 200
       return {

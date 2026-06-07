@@ -90,14 +90,13 @@ async function getJwks(): Promise<ReturnType<typeof createRemoteJWKSet>> {
  * Returns null if not found or user is soft-deleted.
  */
 async function findUserBySub(sub: string): Promise<{ id: string } | null> {
-  const rows = await sql<{ id: string }[]>`
-    SELECT id
-    FROM app.users
-    WHERE zitadel_sub = ${sub}
-      AND deleted_at IS NULL
-    LIMIT 1
+  // Bypass RLS via a SECURITY DEFINER function — this runs before any user
+  // context exists (it's what establishes it). See migration 005.
+  const rows = await sql<{ id: string; deleted: boolean }[]>`
+    SELECT id, deleted FROM app.user_lookup(${sub})
   `
-  return rows[0] ?? null
+  const u = rows[0]
+  return u && !u.deleted ? { id: u.id } : null
 }
 
 // ---------------------------------------------------------------------------
