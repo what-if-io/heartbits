@@ -84,31 +84,21 @@ bootstrap.sh is idempotent: exits early if `HEARTBITS_CLIENT_ID` is already set.
 
 ## Deploying code changes
 
-### heartbits-web
+Each service now builds a **Docker image** from its `Dockerfile` (no install-at-boot).
+Deploy = sync the source, then rebuild + recreate that service:
 
 ```bash
-# Local — rebuild
-cd ~/Projects/Heartbits/heartbits-web
-bun run build
-
-# Sync and restart (bun install runs inside the container on start)
-rsync -avz --delete ~/Projects/Heartbits/heartbits-web/ root@YOUR_SERVER_IP:~/deploy/../heartbits-web/
-ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-web'
+# Example: web (same pattern for heartbits-api / heartbits-worker / relay-server / heartbits-monitor)
+rsync -avz --delete --exclude node_modules --exclude .env \
+  ~/Projects/Heartbits/heartbits-web/ root@YOUR_SERVER_IP:~/heartbits-web/
+ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose up -d --build heartbits-web'
 ```
 
-### heartbits-api
-
-```bash
-rsync -avz ~/Projects/Heartbits/heartbits-api/ root@YOUR_SERVER_IP:~/deploy/../heartbits-api/
-ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-api'
-```
-
-### relay-server
-
-```bash
-rsync -avz ~/Projects/Heartbits/relay-server/ root@YOUR_SERVER_IP:~/deploy/../relay-server/
-ssh root@YOUR_SERVER_IP 'cd ~/deploy && docker compose restart heartbits-relay'
-```
+- `heartbits-api` and `heartbits-worker` share one image (`heartbits-api/Dockerfile`) —
+  rebuild both with `docker compose up -d --build heartbits-api heartbits-worker`.
+- For a fuller rollout: `docker compose up -d --build` (rebuilds everything that changed).
+- **Better (recommended for prod):** build images in CI and push to a registry, then
+  `docker compose pull && up -d` on the VM — avoids building on the app server.
 
 ### Deploy config only (Caddyfile, compose.yml)
 

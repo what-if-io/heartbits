@@ -163,12 +163,8 @@ services:
 
   # ── HeartBits API ─────────────────────────────────────────────────────────
   heartbits-api:
-    image: oven/bun:1-alpine
-    working_dir: /app
-    volumes:
-      - ../heartbits-api:/app
-      - heartbits-api-modules:/app/node_modules
-    command: sh -c "bun install --frozen-lockfile && bun run src/index.ts"
+    build:
+      context: ../heartbits-api
     environment:
       # Connect as the scoped, non-owner role so Row-Level Security is enforced.
       # (The superuser/owner bypasses RLS — see migrations/004_force_rls.sql.)
@@ -200,12 +196,9 @@ services:
 
   # ── HeartBits background worker ──────────────────────────────────────────
   heartbits-worker:
-    image: oven/bun:1-alpine
-    working_dir: /app
-    volumes:
-      - ../heartbits-api:/app
-      - heartbits-api-modules:/app/node_modules
-    command: sh -c "bun install --frozen-lockfile && bun run src/worker.ts"
+    build:
+      context: ../heartbits-api
+    command: ["bun", "run", "src/worker.ts"]
     environment:
       # RLS-bound pool (per-user media deletion). WORKER_DATABASE_URL is the
       # BYPASSRLS pool for cross-user sweeps. See migrations/004_force_rls.sql.
@@ -231,12 +224,8 @@ services:
 
   # ── HeartBits WebSocket relay ─────────────────────────────────────────────
   heartbits-relay:
-    image: node:22-alpine
-    working_dir: /app
-    volumes:
-      - ../relay-server:/app
-      - heartbits-relay-modules:/app/node_modules
-    command: sh -c "npm ci --omit=dev && node server.js"
+    build:
+      context: ../relay-server
     environment:
       ROOM_TOKEN:       ${ROOM_TOKEN}
       REDIS_URL:        redis://redis:6379
@@ -251,12 +240,8 @@ services:
 
   # ── HeartBits web app ─────────────────────────────────────────────────────
   heartbits-web:
-    image: oven/bun:1-alpine
-    working_dir: /app
-    volumes:
-      - ../heartbits-web:/app
-      - heartbits-web-modules:/app/node_modules
-    command: sh -c "bun install --frozen-lockfile && bun run build && bun run build/index.js"
+    build:
+      context: ../heartbits-web
     environment:
       PORT:                     "3000"
       ORIGIN:                   https://${APP_DOMAIN}
@@ -276,12 +261,10 @@ services:
 
   # ── Uptime monitor ─────────────────────────────────────────────────────────
   heartbits-monitor:
-    image: oven/bun:1-alpine
-    working_dir: /app
+    build:
+      context: ../heartbits-monitor
     volumes:
-      - ../heartbits-monitor:/app:ro
       - monitor_data:/data
-    command: bun run monitor.ts
     environment:
       PORT:      "4000"
       DB_PATH:   /data/heartbits.db
@@ -311,6 +294,3 @@ volumes:
   caddy_config:
   minio_data:
   monitor_data:
-  heartbits-api-modules:
-  heartbits-relay-modules:
-  heartbits-web-modules:
