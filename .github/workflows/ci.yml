@@ -22,7 +22,7 @@ jobs:
       - run: bun run build
 
   api:
-    name: api — deps + bundle
+    name: api — typecheck + test + bundle
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -31,6 +31,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+      - run: bunx tsc --noEmit
+      - run: bun test
       # Bundle the entrypoints — catches import/syntax errors without running
       - run: bun build src/index.ts src/worker.ts --target bun --outdir /tmp/api-build
 
