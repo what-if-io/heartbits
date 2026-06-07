@@ -28,19 +28,45 @@
 </label>
 
 <style>
-  .lang select {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 100px;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 13px;
-    padding: 6px 12px;
-    cursor: pointer;
-    transition: color 0.2s ease, border-color 0.2s ease;
+  /* Ghost dropdown that matches the footer nav links (13px / 0.3 → 0.6),
+     with a custom chevron, so it sits inline on the same baseline. */
+  .lang {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
   }
-  .lang select:hover {
-    color: rgba(255, 255, 255, 0.8);
-    border-color: rgba(255, 255, 255, 0.25);
+  .lang select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0 15px 0 0;
+    margin: 0;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+  .lang select:hover { color: rgba(255, 255, 255, 0.6); }
+  .lang::after {
+    content: '';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.3);
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+    transition: border-color 0.2s ease;
+  }
+  .lang:hover::after {
+    border-right-color: rgba(255, 255, 255, 0.6);
+    border-bottom-color: rgba(255, 255, 255, 0.6);
   }
   .lang option {
     background: #0e0e1a;

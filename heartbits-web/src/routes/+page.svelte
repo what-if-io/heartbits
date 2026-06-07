@@ -971,6 +971,7 @@
 
   .footer-links {
     display: flex;
+    align-items: center;
     gap: 24px;
   }
 
