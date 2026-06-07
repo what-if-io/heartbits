@@ -3,6 +3,7 @@
   import { page } from '$app/stores';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { m } from '$lib/paraglide/messages.js';
+  import { locales, localizeHref, deLocalizeUrl } from '$lib/paraglide/runtime';
 
   interface Props {
     children: import('svelte').Snippet;
@@ -11,8 +12,17 @@
 
   let { children, data }: Props = $props();
 
-  // Self-referencing canonical (SSR-correct, query/hash stripped) for every page.
+  // Locale-stripped route path (e.g. /es/about → /about) for nav logic + hreflang.
+  let basePath = $derived(deLocalizeUrl($page.url).pathname);
+  // Self-referencing canonical (the localized URL, query/hash stripped).
   let canonical = $derived(`${$page.url.origin}${$page.url.pathname}`);
+  // hreflang alternates: one localized URL per locale (+ x-default → base).
+  let alternates = $derived(
+    locales.map((l) => ({
+      hreflang: l,
+      href: `${$page.url.origin}${localizeHref(basePath, { locale: l })}`
+    }))
+  );
 
   const NO_NAV_PREFIXES = ['/', '/auth/', '/about', '/privacy', '/terms', '/pitch'];
 
@@ -20,13 +30,13 @@
     (!!data.user || !!data.isDemo) &&
       !NO_NAV_PREFIXES.some((p) =>
         p === '/'
-          ? $page.url.pathname === '/'
-          : $page.url.pathname.startsWith(p)
+          ? basePath === '/'
+          : basePath.startsWith(p)
       )
   );
 
   let showDemoBanner = $derived(
-    data.isDemo && !$page.url.pathname.startsWith('/auth')
+    data.isDemo && !basePath.startsWith('/auth')
   );
 
   $effect(() => {
@@ -39,6 +49,10 @@
 
 <svelte:head>
   <link rel="canonical" href={canonical} />
+  {#each alternates as alt}
+    <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+  {/each}
+  <link rel="alternate" hreflang="x-default" href={`${$page.url.origin}${basePath}`} />
 </svelte:head>
 
 {@render children()}

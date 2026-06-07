@@ -127,6 +127,9 @@
 </svelte:head>
 
 <div class="landing">
+  <!-- Discoverable language switch at the top (footer has one too) -->
+  <div class="lang-top"><LangSwitcher /></div>
+
   <!-- ─── HERO ─────────────────────────────────────── -->
   <section class="hero">
     <!-- Background noise texture overlay -->
@@ -401,6 +404,13 @@
   .landing {
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+  }
+  .lang-top {
+    position: absolute;
+    top: 22px;
+    right: 24px;
+    z-index: 20;
   }
 
   /* ── HERO ────────────────────────────────────────── */
