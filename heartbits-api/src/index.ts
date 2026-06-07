@@ -108,11 +108,11 @@ const app = new Elysia()
 
     // Auth errors thrown by authPlugin have set.status = 401 already
     if (set.status === 401) {
-      return { error: error.message ?? 'Unauthorized' }
+      return { error: (error instanceof Error ? error.message : null) ?? 'Unauthorized' }
     }
 
     if (set.status === 429) {
-      return { error: error.message ?? 'Rate limit exceeded' }
+      return { error: (error instanceof Error ? error.message : null) ?? 'Rate limit exceeded' }
     }
 
     // Unexpected errors

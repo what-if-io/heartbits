@@ -28,13 +28,13 @@ export const sql = postgres(process.env['DATABASE_URL'], {
  */
 export async function withUser<T>(
   userId: string,
-  fn: (sql: postgres.Sql) => Promise<T>,
+  fn: (sql: postgres.TransactionSql) => Promise<T>,
 ): Promise<T> {
   return sql.begin(async (tx) => {
     // SET LOCAL is transaction-scoped — safe even with a pooled connection
     await tx`SELECT set_config('app.current_user_id', ${userId}, true)`
     return fn(tx)
-  })
+  }) as Promise<T>
 }
 
 /**
