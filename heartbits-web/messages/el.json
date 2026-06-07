@@ -19,11 +19,9 @@
   "nav_terms": "Όροι",
   "nav_status": "Κατάσταση",
   "nav_contact": "Επικοινωνία",
-
   "hero_start_feeling": "Άρχισε να νιώθεις",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Αληθινοί χτύποι. Αληθινοί άνθρωποι. Αληθινές στιγμές.",
-
   "how_label": "Πώς λειτουργεί",
   "how_title_pre": "Τρεις χτύποι μέχρι το ",
   "how_title_em": "για πάντα.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Στείλε τον πραγματικό σου χτύπο αντί για ένα like. Θα νιώσουν τον παλμό σου — μια στιγμή αληθινής οικειότητας πριν καν συναντηθείτε.",
   "how_step3_title": "Συνδέσου",
   "how_step3_desc": "Όταν δύο καρδιές στέλνουν η μία στην άλλη έναν χτύπο την ίδια στιγμή — αυτό είναι ένα HeartBit. Ένα σήμα που δεν μπορείς να προσποιηθείς. Ένα ταίρι που αξίζει να γνωρίσεις.",
-
   "moment_label": "Η στιγμή",
   "moment_title_pre": "Δύο παλμοί. ",
   "moment_title_em": "Ένα σήμα.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Όταν η Xin πατήσει Στείλε Καρδιά, νιώθεις τον παλμό της σε πραγματικό χρόνο.",
   "moment_desc_line2": "Χωρίς swipe. Χωρίς αλγόριθμο. Μόνο βιολογία.",
   "moment_find_match": "Βρες το ταίρι σου",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "Εξερευνάς το HeartBits σε λειτουργία demo",
   "demo_join_waitlist": "Μπες στη λίστα αναμονής →",
-
   "discover_title": "Ανακάλυψη — HeartBits",
   "discover_meta_description": "Ανακάλυψε ανθρώπους που ο χτύπος τους συντονίζεται με τον δικό σου.",
   "discover_someone": "Κάποιος",
@@ -75,7 +69,6 @@
   "discover_close": "Κλείσιμο",
   "discover_live_heart_rate": "ζωντανός καρδιακός ρυθμός",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Οι δεσμοί σου — HeartBits",
   "matches_meta_description": "Τα ταίρια σου στο HeartBits — άνθρωποι που σου έστειλαν τον χτύπο τους.",
   "matches_someone": "Κάποιος",
@@ -93,7 +86,6 @@
   "matches_offline": "εκτός σύνδεσης",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Οι ζωντανοί χτύποι ανανεώνονται κάθε 2 δευτερόλεπτα",
-
   "bond_unknown": "Άγνωστος",
   "bond_title": "Η καρδιά του/της {name} — HeartBits",
   "bond_meta_description": "Νιώσε τον χτύπο του/της {name} σε πραγματικό χρόνο στο HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Κλείσε τη συνομιλία",
   "bond_no_messages": "Κανένα μήνυμα ακόμη",
   "bond_chat_placeholder": "Πες κάτι…",
-
   "profile_title": "Προφίλ — HeartBits",
   "profile_meta_description": "Διαχειρίσου το προφίλ σου στο HeartBits και τις ρυθμίσεις κοινής χρήσης του χτύπου σου.",
   "profile_you": "Εσύ",
@@ -189,7 +180,6 @@
   "profile_cancel": "Άκυρο",
   "profile_delete_forever": "Διαγραφή για πάντα",
   "profile_deleting": "Διαγραφή…",
-
   "consent_panel_aria": "Απαιτείται συγκατάθεση για βιομετρικά δεδομένα",
   "consent_heading": "Πριν μιλήσει η καρδιά σου",
   "consent_body_intro_pre": "Το HeartBits μετρά και μεταδίδει τον καρδιακό σου ρυθμό σε πραγματικό χρόνο στους ανθρώπους με τους οποίους ταιριάζεις. Ο καρδιακός ρυθμός είναι ",
@@ -212,7 +202,6 @@
   "consent_accept": "Συναινώ — νιώσε τη σύνδεση",
   "consent_decline": "Όχι ευχαριστώ — θα χρησιμοποιήσω το HeartBits χωρίς κοινή χρήση καρδιακού ρυθμού",
   "consent_version_line": "Έκδοση συγκατάθεσης 1.1 · GDPR Άρθρο 9 · 2026-06-02",
-
   "match_overlay_aria": "Είναι ταίρι!",
   "match_you": "Εσύ",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Οι καρδιές σας βρήκαν η μία την άλλη.",
   "match_send_message": "Στείλε μήνυμα",
   "match_keep_discovering": "Συνέχισε να ανακαλύπτεις",
-
   "bottomnav_discover": "Ανακάλυψη",
   "bottomnav_bonds": "Δεσμοί",
   "bottomnav_profile": "Προφίλ",
-
   "login_title": "Σύνδεση — HeartBits",
   "login_meta_description": "Συνδέσου στο HeartBits — η εφαρμογή γνωριμιών που βάζει την καρδιά σου πρώτη.",
   "login_headline_pre": "Η καρδιά σου",
@@ -242,7 +229,6 @@
   "login_nav_about": "Σχετικά",
   "login_nav_privacy": "Απόρρητο",
   "login_nav_terms": "Όροι",
-
   "status_title": "HeartBits — Κατάσταση Συστήματος",
   "status_meta_description": "Υγεία υπηρεσιών HeartBits σε πραγματικό χρόνο.",
   "status_operational": "Όλα τα Συστήματα Λειτουργούν",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "Το ιστορικό περιστατικών θα είναι διαθέσιμο μόλις ξεκινήσει η παρακολούθηση",
   "status_footer_about": "Σχετικά",
   "status_footer_note": "Ανανεώνεται κατά τη φόρτωση της σελίδας",
-
   "about_title": "Σχετικά — HeartBits",
   "about_meta_description": "Το HeartBits είναι μια εφαρμογή γνωριμιών χτισμένη γύρω από την αληθινή ανθρώπινη σύνδεση — τον πραγματικό σου χτύπο.",
   "about_back": "← Πίσω",
@@ -299,7 +284,6 @@
   "about_team_heading": "Η ομάδα",
   "about_team_para": "Είμαστε μια μικρή ομάδα εμμονική με την ιδέα ότι η τεχνολογία μπορεί να δημιουργήσει περισσότερες ανθρώπινες στιγμές, όχι λιγότερες.",
   "about_questions_pre": "Ερωτήσεις; ",
-
   "privacy_title": "Πολιτική Απορρήτου — HeartBits",
   "privacy_meta_description": "Πολιτική απορρήτου HeartBits — πώς διαχειριζόμαστε τα βιομετρικά και προσωπικά σου δεδομένα.",
   "privacy_back": "← Πίσω",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Ενδέχεται να ενημερώσουμε αυτή την πολιτική· οι ουσιώδεις αλλαγές θα ανακοινώνονται εντός της εφαρμογής ή μέσω email πριν τεθούν σε ισχύ.",
   "privacy_s14_title": "14. Επικοινωνία",
   "privacy_s14_body_pre": "Ερωτήματα απορρήτου και αιτήματα δικαιωμάτων δεδομένων: ",
-
   "terms_title": "Όροι Χρήσης — HeartBits",
   "terms_meta_description": "Όροι χρήσης HeartBits.",
   "terms_back": "← Πίσω",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Αυτοί οι Όροι διέπονται από τους νόμους της δικαιοδοσίας του φορέα εκμετάλλευσης, χωρίς να λαμβάνονται υπόψη οι κανόνες σύγκρουσης νόμων. Τίποτα σε αυτούς τους Όρους δεν επηρεάζει τα υποχρεωτικά δικαιώματα προστασίας καταναλωτή που ενδέχεται να έχεις βάσει του νόμου της χώρας διαμονής σου.",
   "terms_s12_title": "12. Επικοινωνία",
   "terms_s12_body_pre": "Ερωτήσεις σχετικά με αυτούς τους Όρους: ",
-
   "pitch_title": "HeartBits — Ταίριασμα με τον Χτύπο",
   "pitch_meta_description": "Το HeartBits ταιριάζει ανθρώπους που τα μοτίβα του χτύπου τους συντονίζονται φυσικά — όχι αλγόριθμοι, όχι μετρήσεις swipe.",
   "pitch_hero_headline_line1": "Γνωριμίες που νιώθουν",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Ασφάλεια σύνδεσης — cookies σύντομης διάρκειας που προστατεύουν τη διαδικασία σύνδεσης.",
   "privacy_cookies_li3": "Πρόσβαση προεπισκόπησης — θυμάται ότι έχεις μπει στην ιδιωτική προεπισκόπηση.",
   "privacy_cookies_li4": "Συγκατάθεση καρδιακού παλμού — θυμάται την επιλογή σου να μοιραστείς τον ζωντανό καρδιακό σου παλμό.",
-  "privacy_cookies_li5": "Γλώσσα — θυμάται την προτιμώμενη γλώσσα σου.",
-  "cookie_notice_text": "Χρησιμοποιούμε μόνο απαραίτητα cookies — χωρίς παρακολούθηση.",
-  "cookie_notice_dismiss": "Το κατάλαβα",
-  "cookie_notice_learn": "Απόρρητο"
+  "privacy_cookies_li5": "Γλώσσα — θυμάται την προτιμώμενη γλώσσα σου."
 }

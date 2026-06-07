@@ -19,11 +19,9 @@
   "nav_terms": "条款",
   "nav_status": "状态",
   "nav_contact": "联系我们",
-
   "hero_start_feeling": "开始感受",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "真实的心跳。真实的人。真实的瞬间。",
-
   "how_label": "运作方式",
   "how_title_pre": "三次心跳，遇见",
   "how_title_em": "永远。",
@@ -33,7 +31,6 @@
   "how_step2_desc": "用真实的心跳代替一个赞。对方能感受到你的脉搏——在相见之前，先有一刻真正的亲密。",
   "how_step3_title": "心连",
   "how_step3_desc": "当两颗心在同一刻向彼此送出一次心跳——那就是 HeartBit。一个无法伪装的信号。一段值得相遇的缘分。",
-
   "moment_label": "那一刻",
   "moment_title_pre": "两次脉动。",
   "moment_title_em": "一个信号。",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "当欣轻点「送出心跳」，你会实时感受到她的脉搏。",
   "moment_desc_line2": "没有左右滑动。没有算法。只有生命本身。",
   "moment_find_match": "找到你的那个人",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "演示",
   "demo_exploring": "正在以演示模式体验 HeartBits",
   "demo_join_waitlist": "加入等候名单 →",
-
   "discover_title": "发现 — HeartBits",
   "discover_meta_description": "发现那些心跳与你共鸣的人。",
   "discover_someone": "某个人",
@@ -75,7 +69,6 @@
   "discover_close": "关闭",
   "discover_live_heart_rate": "实时心率",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "你的心连 — HeartBits",
   "matches_meta_description": "你的 HeartBits 配对——那些向你送出心跳的人。",
   "matches_someone": "某个人",
@@ -93,7 +86,6 @@
   "matches_offline": "离线",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "实时心跳每 2 秒更新一次",
-
   "bond_unknown": "未知",
   "bond_title": "{name} 的心跳 — HeartBits",
   "bond_meta_description": "在 HeartBits 上实时感受 {name} 的心跳。",
@@ -111,7 +103,6 @@
   "bond_close_chat": "关闭聊天",
   "bond_no_messages": "还没有消息",
   "bond_chat_placeholder": "说点什么吧…",
-
   "profile_title": "个人资料 — HeartBits",
   "profile_meta_description": "管理你的 HeartBits 个人资料与心跳分享设置。",
   "profile_you": "你",
@@ -189,7 +180,6 @@
   "profile_cancel": "取消",
   "profile_delete_forever": "永久删除",
   "profile_deleting": "删除中…",
-
   "consent_panel_aria": "需要生物特征数据的同意",
   "consent_heading": "在你的心跳开口之前",
   "consent_body_intro_pre": "HeartBits 会测量你的实时心率，并将其传送给与你配对的人。心率属于",
@@ -212,7 +202,6 @@
   "consent_accept": "我同意——去感受这份心动",
   "consent_decline": "不用了——我会在不分享心率的情况下使用 HeartBits",
   "consent_version_line": "同意版本 1.1 · GDPR 第 9 条 · 2026-06-02",
-
   "match_overlay_aria": "配对成功！",
   "match_you": "你",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "你们的心，找到了彼此。",
   "match_send_message": "发条消息",
   "match_keep_discovering": "继续发现",
-
   "bottomnav_discover": "发现",
   "bottomnav_bonds": "心连",
   "bottomnav_profile": "我的",
-
   "login_title": "登录 — HeartBits",
   "login_meta_description": "登录 HeartBits——把你的心放在第一位的约会软件。",
   "login_headline_pre": "你的心，正在",
@@ -242,7 +229,6 @@
   "login_nav_about": "关于",
   "login_nav_privacy": "隐私",
   "login_nav_terms": "条款",
-
   "status_title": "HeartBits — 系统状态",
   "status_meta_description": "HeartBits 各项服务的实时运行状况。",
   "status_operational": "所有系统正常运行",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "监控启动后即可查看故障历史",
   "status_footer_about": "关于",
   "status_footer_note": "在页面加载时刷新",
-
   "about_title": "关于 — HeartBits",
   "about_meta_description": "HeartBits 是一款围绕真实人际连接打造的约会软件——以你真实的心跳为核心。",
   "about_back": "← 返回",
@@ -299,7 +284,6 @@
   "about_team_heading": "我们的团队",
   "about_team_para": "我们是一支小小的团队，痴迷于一个信念：科技可以创造更多人性的瞬间，而不是更少。",
   "about_questions_pre": "有疑问？",
-
   "privacy_title": "隐私政策 — HeartBits",
   "privacy_meta_description": "HeartBits 隐私政策——我们如何处理你的生物特征数据和个人数据。",
   "privacy_back": "← 返回",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "我们可能会更新本政策；重大变更将在生效前于应用内或通过电子邮件公布。",
   "privacy_s14_title": "14. 联系我们",
   "privacy_s14_body_pre": "隐私咨询及数据权利请求：",
-
   "terms_title": "服务条款 — HeartBits",
   "terms_meta_description": "HeartBits 服务条款。",
   "terms_back": "← 返回",
@@ -399,7 +382,6 @@
   "terms_s11_body": "本条款受运营者所在司法管辖区的法律管辖，不考虑法律冲突规则。本条款中的任何内容均不影响你依据居住国法律所享有的强制性消费者保护权利。",
   "terms_s12_title": "12. 联系我们",
   "terms_s12_body_pre": "关于本条款的疑问：",
-
   "pitch_title": "HeartBits — 以心跳相配",
   "pitch_meta_description": "HeartBits 让心跳节律自然共鸣的人相遇——不靠算法，不看滑动次数。",
   "pitch_hero_headline_line1": "这场约会，能感受到",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "登录安全——保护登录流程的短期 Cookie。",
   "privacy_cookies_li3": "预览访问——记住你已进入私密预览。",
   "privacy_cookies_li4": "心跳授权——记住你分享实时心率的选择。",
-  "privacy_cookies_li5": "语言——记住你偏好的语言。",
-  "cookie_notice_text": "我们只使用必要的 Cookie——绝不追踪。",
-  "cookie_notice_dismiss": "知道了",
-  "cookie_notice_learn": "隐私"
+  "privacy_cookies_li5": "语言——记住你偏好的语言。"
 }

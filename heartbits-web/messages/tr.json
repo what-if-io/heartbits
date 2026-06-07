@@ -19,11 +19,9 @@
   "nav_terms": "Koşullar",
   "nav_status": "Durum",
   "nav_contact": "İletişim",
-
   "hero_start_feeling": "Hissetmeye başla",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Gerçek kalp atışları. Gerçek insanlar. Gerçek anlar.",
-
   "how_label": "Nasıl çalışır",
   "how_title_pre": "Sonsuza kadar için ",
   "how_title_em": "üç kalp atışı.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Beğeni yerine gerçek kalp atışını gönder. Nabzını hissedecekler — daha tanışmadan önce gerçek bir yakınlık anı.",
   "how_step3_title": "Bağlan",
   "how_step3_desc": "İki kalp aynı anda birbirine bir atış gönderdiğinde — işte bu bir HeartBit. Taklit edilemeyecek bir sinyal. Tanışmaya değer bir eşleşme.",
-
   "moment_label": "An",
   "moment_title_pre": "İki nabız. ",
   "moment_title_em": "Tek sinyal.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Xin Kalp Gönder'e dokunduğunda, nabzını gerçek zamanlı hissedersin.",
   "moment_desc_line2": "Kaydırma yok. Algoritma yok. Sadece biyoloji.",
   "moment_find_match": "Eşini bul",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "HeartBits'i demo modunda keşfediyorsun",
   "demo_join_waitlist": "Bekleme listesine katıl →",
-
   "discover_title": "Keşfet — HeartBits",
   "discover_meta_description": "Kalp atışı seninkiyle uyum sağlayan insanları keşfet.",
   "discover_someone": "Biri",
@@ -75,7 +69,6 @@
   "discover_close": "Kapat",
   "discover_live_heart_rate": "canlı nabız",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Bağların — HeartBits",
   "matches_meta_description": "HeartBits eşleşmelerin — sana kalp atışını gönderen insanlar.",
   "matches_someone": "Biri",
@@ -93,7 +86,6 @@
   "matches_offline": "çevrimdışı",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Canlı kalp atışları her 2 saniyede bir güncellenir",
-
   "bond_unknown": "Bilinmiyor",
   "bond_title": "{name} adlı kişinin kalbi — HeartBits",
   "bond_meta_description": "HeartBits'te {name} adlı kişinin kalp atışını gerçek zamanlı hisset.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Sohbeti kapat",
   "bond_no_messages": "Henüz mesaj yok",
   "bond_chat_placeholder": "Bir şeyler söyle…",
-
   "profile_title": "Profil — HeartBits",
   "profile_meta_description": "HeartBits profilini ve kalp atışı paylaşım ayarlarını yönet.",
   "profile_you": "Sen",
@@ -189,7 +180,6 @@
   "profile_cancel": "İptal",
   "profile_delete_forever": "Sonsuza dek sil",
   "profile_deleting": "Siliniyor…",
-
   "consent_panel_aria": "Biyometrik veri rızası gerekli",
   "consent_heading": "Kalbin konuşmadan önce",
   "consent_body_intro_pre": "HeartBits, gerçek zamanlı nabzını ölçer ve eşleştiğin kişilere iletir. Nabız, ",
@@ -212,7 +202,6 @@
   "consent_accept": "Rıza gösteriyorum — bağı hisset",
   "consent_decline": "Hayır, teşekkürler — HeartBits'i nabız paylaşımı olmadan kullanacağım",
   "consent_version_line": "Rıza sürümü 1.1 · GDPR Madde 9 · 2026-06-02",
-
   "match_overlay_aria": "Bu bir eşleşme!",
   "match_you": "Sen",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Kalpleriniz birbirini buldu.",
   "match_send_message": "Mesaj gönder",
   "match_keep_discovering": "Keşfetmeye devam et",
-
   "bottomnav_discover": "Keşfet",
   "bottomnav_bonds": "Bağlar",
   "bottomnav_profile": "Profil",
-
   "login_title": "Giriş yap — HeartBits",
   "login_meta_description": "HeartBits'e giriş yap — kalbini ilk sıraya koyan tanışma uygulaması.",
   "login_headline_pre": "Kalbin",
@@ -242,7 +229,6 @@
   "login_nav_about": "Hakkında",
   "login_nav_privacy": "Gizlilik",
   "login_nav_terms": "Koşullar",
-
   "status_title": "HeartBits — Sistem Durumu",
   "status_meta_description": "HeartBits servisleri için gerçek zamanlı sağlık.",
   "status_operational": "Tüm Sistemler Çalışıyor",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "İzleme başladığında olay geçmişi görüntülenebilecek",
   "status_footer_about": "Hakkında",
   "status_footer_note": "Sayfa yüklendiğinde yenilenir",
-
   "about_title": "Hakkında — HeartBits",
   "about_meta_description": "HeartBits, gerçek insani bağ — yani gerçek kalp atışın — etrafında kurulmuş bir tanışma uygulamasıdır.",
   "about_back": "← Geri",
@@ -299,7 +284,6 @@
   "about_team_heading": "Ekip",
   "about_team_para": "Teknolojinin daha az değil, daha çok insani an yaratabileceği fikrine takıntılı küçük bir ekibiz.",
   "about_questions_pre": "Sorular mı var? ",
-
   "privacy_title": "Gizlilik Politikası — HeartBits",
   "privacy_meta_description": "HeartBits gizlilik politikası — biyometrik ve kişisel verilerini nasıl ele aldığımız.",
   "privacy_back": "← Geri",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Bu politikayı güncelleyebiliriz; önemli değişiklikler yürürlüğe girmeden önce uygulama içinde veya e-posta ile duyurulacaktır.",
   "privacy_s14_title": "14. İletişim",
   "privacy_s14_body_pre": "Gizlilik soruları ve veri hakları talepleri: ",
-
   "terms_title": "Hizmet Koşulları — HeartBits",
   "terms_meta_description": "HeartBits hizmet koşulları.",
   "terms_back": "← Geri",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Bu Koşullar, kanunlar ihtilafı kurallarına bakılmaksızın işletenin yargı yetkisindeki kanunlara tabidir. Bu Koşullardaki hiçbir şey, ikamet ettiğin ülkenin kanunu uyarınca sahip olabileceğin zorunlu tüketici koruma haklarını etkilemez.",
   "terms_s12_title": "12. İletişim",
   "terms_s12_body_pre": "Bu Koşullarla ilgili sorular: ",
-
   "pitch_title": "HeartBits — Kalp Atışıyla Eşleş",
   "pitch_meta_description": "HeartBits, kalp atışı desenleri doğal olarak uyum sağlayan insanları eşleştirir — algoritma değil, kaydırma sayısı değil.",
   "pitch_hero_headline_line1": "Kelimelerin",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Giriş güvenliği — giriş akışını koruyan kısa ömürlü çerezler.",
   "privacy_cookies_li3": "Önizleme erişimi — özel önizlemeye girdiğini hatırlar.",
   "privacy_cookies_li4": "Kalp atışı onayı — canlı nabzını paylaşma tercihini hatırlar.",
-  "privacy_cookies_li5": "Dil — tercih ettiğin dili hatırlar.",
-  "cookie_notice_text": "Yalnızca temel çerezleri kullanıyoruz — takip yok.",
-  "cookie_notice_dismiss": "Anladım",
-  "cookie_notice_learn": "Gizlilik"
+  "privacy_cookies_li5": "Dil — tercih ettiğin dili hatırlar."
 }

@@ -19,11 +19,9 @@
   "nav_terms": "AGB",
   "nav_status": "Status",
   "nav_contact": "Kontakt",
-
   "hero_start_feeling": "Fang an zu fühlen",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Echte Herzschläge. Echte Menschen. Echte Momente.",
-
   "how_label": "So funktioniert's",
   "how_title_pre": "Drei Herzschläge bis zur ",
   "how_title_em": "Ewigkeit.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Schick deinen echten Herzschlag statt eines Likes. Sie spüren deinen Puls — ein Moment echter Nähe, noch bevor ihr euch trefft.",
   "how_step3_title": "Verbinden",
   "how_step3_desc": "Wenn zwei Herzen sich im selben Moment einen Schlag schicken — das ist ein HeartBit. Ein Signal, das man nicht vortäuschen kann. Ein Match, das ein Treffen wert ist.",
-
   "moment_label": "Der Moment",
   "moment_title_pre": "Zwei Pulse. ",
   "moment_title_em": "Ein Signal.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Wenn Xin auf Herz senden tippt, spürst du ihren Puls in Echtzeit.",
   "moment_desc_line2": "Kein Swipen. Kein Algorithmus. Nur Biologie.",
   "moment_find_match": "Finde dein Match",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "Du erkundest HeartBits im Demo-Modus",
   "demo_join_waitlist": "Auf die Warteliste →",
-
   "discover_title": "Entdecken — HeartBits",
   "discover_meta_description": "Entdecke Menschen, deren Herzschlag mit deinem in Resonanz steht.",
   "discover_someone": "Jemand",
@@ -75,7 +69,6 @@
   "discover_close": "Schließen",
   "discover_live_heart_rate": "Live-Herzfrequenz",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Deine Bindungen — HeartBits",
   "matches_meta_description": "Deine HeartBits-Matches — Menschen, die dir ihren Herzschlag geschickt haben.",
   "matches_someone": "Jemand",
@@ -93,7 +86,6 @@
   "matches_offline": "offline",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Live-Herzschläge aktualisieren sich alle 2 Sekunden",
-
   "bond_unknown": "Unbekannt",
   "bond_title": "{name}s Herz — HeartBits",
   "bond_meta_description": "Spüre {name}s Herzschlag in Echtzeit auf HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Chat schließen",
   "bond_no_messages": "Noch keine Nachrichten",
   "bond_chat_placeholder": "Sag etwas…",
-
   "profile_title": "Profil — HeartBits",
   "profile_meta_description": "Verwalte dein HeartBits-Profil und deine Einstellungen zum Teilen des Herzschlags.",
   "profile_you": "Du",
@@ -189,7 +180,6 @@
   "profile_cancel": "Abbrechen",
   "profile_delete_forever": "Für immer löschen",
   "profile_deleting": "Wird gelöscht…",
-
   "consent_panel_aria": "Einwilligung in biometrische Daten erforderlich",
   "consent_heading": "Bevor dein Herz spricht",
   "consent_body_intro_pre": "HeartBits misst deine Herzfrequenz und übermittelt sie in Echtzeit an Menschen, mit denen du matchst. Die Herzfrequenz ist ",
@@ -212,7 +202,6 @@
   "consent_accept": "Ich willige ein — spür die Verbindung",
   "consent_decline": "Nein danke — ich nutze HeartBits ohne Teilen der Herzfrequenz",
   "consent_version_line": "Einwilligungsversion 1.1 · DSGVO Art. 9 · 2026-06-02",
-
   "match_overlay_aria": "Es ist ein Match!",
   "match_you": "Du",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Eure Herzen haben sich gefunden.",
   "match_send_message": "Eine Nachricht senden",
   "match_keep_discovering": "Weiter entdecken",
-
   "bottomnav_discover": "Entdecken",
   "bottomnav_bonds": "Bindungen",
   "bottomnav_profile": "Profil",
-
   "login_title": "Anmelden — HeartBits",
   "login_meta_description": "Melde dich bei HeartBits an — der Dating-App, die dein Herz an die erste Stelle setzt.",
   "login_headline_pre": "Dein Herz",
@@ -242,7 +229,6 @@
   "login_nav_about": "Über uns",
   "login_nav_privacy": "Datenschutz",
   "login_nav_terms": "AGB",
-
   "status_title": "HeartBits — Systemstatus",
   "status_meta_description": "Echtzeit-Zustand der HeartBits-Dienste.",
   "status_operational": "Alle Systeme betriebsbereit",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "Vorfallverlauf verfügbar, sobald die Überwachung beginnt",
   "status_footer_about": "Über uns",
   "status_footer_note": "Aktualisiert beim Laden der Seite",
-
   "about_title": "Über uns — HeartBits",
   "about_meta_description": "HeartBits ist eine Dating-App, die auf echter menschlicher Verbindung aufbaut — deinem tatsächlichen Herzschlag.",
   "about_back": "← Zurück",
@@ -299,7 +284,6 @@
   "about_team_heading": "Das Team",
   "about_team_para": "Wir sind ein kleines Team, besessen von der Idee, dass Technik mehr menschliche Momente schaffen kann, nicht weniger.",
   "about_questions_pre": "Fragen? ",
-
   "privacy_title": "Datenschutzerklärung — HeartBits",
   "privacy_meta_description": "HeartBits-Datenschutzerklärung — wie wir mit deinen biometrischen und personenbezogenen Daten umgehen.",
   "privacy_back": "← Zurück",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Wir können diese Erklärung aktualisieren; wesentliche Änderungen werden vor ihrem Inkrafttreten in der App oder per E-Mail angekündigt.",
   "privacy_s14_title": "14. Kontakt",
   "privacy_s14_body_pre": "Datenschutzanfragen und Anträge zu Datenrechten: ",
-
   "terms_title": "Nutzungsbedingungen — HeartBits",
   "terms_meta_description": "HeartBits-Nutzungsbedingungen.",
   "terms_back": "← Zurück",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Diese Bedingungen unterliegen dem Recht der Gerichtsbarkeit des Betreibers, ohne Rücksicht auf Kollisionsnormen. Nichts in diesen Bedingungen berührt zwingende Verbraucherschutzrechte, die dir nach dem Recht deines Wohnsitzlandes zustehen können.",
   "terms_s12_title": "12. Kontakt",
   "terms_s12_body_pre": "Fragen zu diesen Bedingungen: ",
-
   "pitch_title": "HeartBits — Match per Herzschlag",
   "pitch_meta_description": "HeartBits matcht Menschen, deren Herzschlagmuster natürlich in Resonanz stehen — keine Algorithmen, keine Swipe-Zahlen.",
   "pitch_hero_headline_line1": "Dating, das fühlt,",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Anmeldesicherheit — kurzlebige Cookies, die den Login-Vorgang schützen.",
   "privacy_cookies_li3": "Vorschau-Zugang — merkt sich, dass du die private Vorschau betreten hast.",
   "privacy_cookies_li4": "Herzschlag-Einwilligung — merkt sich deine Entscheidung, deine Live-Herzfrequenz zu teilen.",
-  "privacy_cookies_li5": "Sprache — merkt sich deine bevorzugte Sprache.",
-  "cookie_notice_text": "Wir verwenden nur essenzielle Cookies — kein Tracking.",
-  "cookie_notice_dismiss": "Verstanden",
-  "cookie_notice_learn": "Datenschutz"
+  "privacy_cookies_li5": "Sprache — merkt sich deine bevorzugte Sprache."
 }

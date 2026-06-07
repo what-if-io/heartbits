@@ -19,11 +19,9 @@
   "nav_terms": "Conditions",
   "nav_status": "Statut",
   "nav_contact": "Contact",
-
   "hero_start_feeling": "Commencez à ressentir",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "De vrais battements. De vraies personnes. De vrais moments.",
-
   "how_label": "Comment ça marche",
   "how_title_pre": "Trois battements vers l'",
   "how_title_em": "infini.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Envoyez votre vrai battement de cœur au lieu d'un « j'aime ». L'autre sentira votre pouls — un instant d'intimité réelle, avant même de vous rencontrer.",
   "how_step3_title": "Connectez",
   "how_step3_desc": "Quand deux cœurs s'envoient un battement au même instant — c'est un HeartBit. Un signal impossible à feindre. Une rencontre qui vaut la peine.",
-
   "moment_label": "L'instant",
   "moment_title_pre": "Deux pouls. ",
   "moment_title_em": "Un seul signal.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Quand Xin appuie sur Envoyer un cœur, vous sentez son pouls en temps réel.",
   "moment_desc_line2": "Pas de balayage. Pas d'algorithme. Juste de la biologie.",
   "moment_find_match": "Trouvez votre affinité",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Démo",
   "demo_exploring": "Exploration de HeartBits en mode démo",
   "demo_join_waitlist": "Rejoindre la liste →",
-
   "discover_title": "Découvrir — HeartBits",
   "discover_meta_description": "Découvrez des personnes dont le battement de cœur résonne avec le vôtre.",
   "discover_someone": "Quelqu'un",
@@ -75,7 +69,6 @@
   "discover_close": "Fermer",
   "discover_live_heart_rate": "rythme cardiaque en direct",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Vos Liens — HeartBits",
   "matches_meta_description": "Vos affinités HeartBits — les personnes qui vous ont envoyé leur battement de cœur.",
   "matches_someone": "Quelqu'un",
@@ -93,7 +86,6 @@
   "matches_offline": "hors ligne",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Les battements en direct se mettent à jour toutes les 2 secondes",
-
   "bond_unknown": "Inconnu",
   "bond_title": "Le cœur de {name} — HeartBits",
   "bond_meta_description": "Ressentez le battement de cœur de {name} en temps réel sur HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Fermer la conversation",
   "bond_no_messages": "Aucun message pour l'instant",
   "bond_chat_placeholder": "Dites quelque chose…",
-
   "profile_title": "Profil — HeartBits",
   "profile_meta_description": "Gérez votre profil HeartBits et vos paramètres de partage de battement de cœur.",
   "profile_you": "Vous",
@@ -189,7 +180,6 @@
   "profile_cancel": "Annuler",
   "profile_delete_forever": "Supprimer définitivement",
   "profile_deleting": "Suppression…",
-
   "consent_panel_aria": "Consentement aux données biométriques requis",
   "consent_heading": "Avant que votre cœur ne parle",
   "consent_body_intro_pre": "HeartBits mesure et transmet votre rythme cardiaque en temps réel aux personnes avec qui vous matchez. Le rythme cardiaque est une ",
@@ -212,7 +202,6 @@
   "consent_accept": "Je consens — ressentir la connexion",
   "consent_decline": "Non merci — j'utiliserai HeartBits sans partage du rythme cardiaque",
   "consent_version_line": "Version du consentement 1.1 · RGPD Art. 9 · 2026-06-02",
-
   "match_overlay_aria": "C'est un match !",
   "match_you": "Vous",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Vos cœurs se sont trouvés.",
   "match_send_message": "Envoyer un message",
   "match_keep_discovering": "Continuer à découvrir",
-
   "bottomnav_discover": "Découvrir",
   "bottomnav_bonds": "Liens",
   "bottomnav_profile": "Profil",
-
   "login_title": "Connexion — HeartBits",
   "login_meta_description": "Connectez-vous à HeartBits — l'application de rencontres qui fait passer votre cœur en premier.",
   "login_headline_pre": "Votre cœur",
@@ -242,7 +229,6 @@
   "login_nav_about": "À propos",
   "login_nav_privacy": "Confidentialité",
   "login_nav_terms": "Conditions",
-
   "status_title": "HeartBits — État du Système",
   "status_meta_description": "État en temps réel des services HeartBits.",
   "status_operational": "Tous les Systèmes Opérationnels",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "L'historique des incidents sera disponible une fois la surveillance lancée",
   "status_footer_about": "À propos",
   "status_footer_note": "Actualisé au chargement de la page",
-
   "about_title": "À propos — HeartBits",
   "about_meta_description": "HeartBits est une application de rencontres bâtie autour d'une vraie connexion humaine — votre battement de cœur lui-même.",
   "about_back": "← Retour",
@@ -299,7 +284,6 @@
   "about_team_heading": "L'équipe",
   "about_team_para": "Nous sommes une petite équipe obsédée par l'idée que la technologie peut créer plus de moments humains, pas moins.",
   "about_questions_pre": "Des questions ? ",
-
   "privacy_title": "Politique de Confidentialité — HeartBits",
   "privacy_meta_description": "Politique de confidentialité de HeartBits — comment nous traitons vos données biométriques et personnelles.",
   "privacy_back": "← Retour",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Nous pouvons mettre à jour cette politique ; les changements importants seront annoncés dans l'application ou par e-mail avant leur entrée en vigueur.",
   "privacy_s14_title": "14. Contact",
   "privacy_s14_body_pre": "Demandes de confidentialité et exercice des droits sur les données : ",
-
   "terms_title": "Conditions d'Utilisation — HeartBits",
   "terms_meta_description": "Conditions d'utilisation de HeartBits.",
   "terms_back": "← Retour",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Ces Conditions sont régies par le droit de la juridiction de l'exploitant, sans égard aux règles de conflit de lois. Rien dans ces Conditions n'affecte les droits impératifs de protection des consommateurs dont vous pourriez bénéficier en vertu du droit de votre pays de résidence.",
   "terms_s12_title": "12. Contact",
   "terms_s12_body_pre": "Questions sur ces Conditions : ",
-
   "pitch_title": "HeartBits — Le Match par le Battement de Cœur",
   "pitch_meta_description": "HeartBits met en relation les personnes dont les battements de cœur résonnent naturellement — sans algorithmes, sans compter les balayages.",
   "pitch_hero_headline_line1": "Des rencontres qui ressentent",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Sécurité de la connexion — cookies de courte durée qui protègent le processus de connexion.",
   "privacy_cookies_li3": "Accès à l'aperçu — retient que vous avez accédé à l'aperçu privé.",
   "privacy_cookies_li4": "Consentement aux battements de cœur — retient votre choix de partager votre rythme cardiaque en direct.",
-  "privacy_cookies_li5": "Langue — retient votre langue préférée.",
-  "cookie_notice_text": "Nous n'utilisons que des cookies essentiels — aucun traçage.",
-  "cookie_notice_dismiss": "J'ai compris",
-  "cookie_notice_learn": "Confidentialité"
+  "privacy_cookies_li5": "Langue — retient votre langue préférée."
 }

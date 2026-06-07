@@ -19,11 +19,9 @@
   "nav_terms": "Términos",
   "nav_status": "Estado",
   "nav_contact": "Contacto",
-
   "hero_start_feeling": "Empieza a sentir",
   "hero_bpm": "{bpm} BPM",
   "hero_trust": "Latidos reales. Personas reales. Momentos reales.",
-
   "how_label": "Cómo funciona",
   "how_title_pre": "Tres latidos hacia el ",
   "how_title_em": "para siempre.",
@@ -33,7 +31,6 @@
   "how_step2_desc": "Envía tu latido de verdad en lugar de un «me gusta». Sentirán tu pulso — un instante de intimidad real antes incluso de conoceros.",
   "how_step3_title": "Conecta",
   "how_step3_desc": "Cuando dos corazones se envían un latido en el mismo instante — eso es un HeartBit. Una señal que no se puede fingir. Una conexión que merece conocerse.",
-
   "moment_label": "El momento",
   "moment_title_pre": "Dos pulsos. ",
   "moment_title_em": "Una señal.",
@@ -46,13 +43,10 @@
   "moment_desc_line1": "Cuando Xin toca Enviar Corazón, sientes su pulso en tiempo real.",
   "moment_desc_line2": "Sin deslizar. Sin algoritmo. Solo biología.",
   "moment_find_match": "Encuentra tu conexión",
-
   "footer_copyright": "HeartBits © 2026",
-
   "demo_pill": "Demo",
   "demo_exploring": "Explorando HeartBits en modo demo",
   "demo_join_waitlist": "Únete a la lista →",
-
   "discover_title": "Descubre — HeartBits",
   "discover_meta_description": "Descubre a personas cuyo latido resuena con el tuyo.",
   "discover_someone": "Alguien",
@@ -75,7 +69,6 @@
   "discover_close": "Cerrar",
   "discover_live_heart_rate": "ritmo cardíaco en vivo",
   "discover_sheet_bpm": "{bpm} BPM",
-
   "matches_title": "Tus Vínculos — HeartBits",
   "matches_meta_description": "Tus conexiones de HeartBits — personas que te enviaron su latido.",
   "matches_someone": "Alguien",
@@ -93,7 +86,6 @@
   "matches_offline": "desconectado",
   "matches_bpm_unit": "bpm",
   "matches_uptime_note": "Los latidos en vivo se actualizan cada 2 segundos",
-
   "bond_unknown": "Desconocido",
   "bond_title": "El corazón de {name} — HeartBits",
   "bond_meta_description": "Siente el latido de {name} en tiempo real en HeartBits.",
@@ -111,7 +103,6 @@
   "bond_close_chat": "Cerrar chat",
   "bond_no_messages": "Aún no hay mensajes",
   "bond_chat_placeholder": "Di algo…",
-
   "profile_title": "Perfil — HeartBits",
   "profile_meta_description": "Gestiona tu perfil de HeartBits y los ajustes para compartir tu latido.",
   "profile_you": "Tú",
@@ -189,7 +180,6 @@
   "profile_cancel": "Cancelar",
   "profile_delete_forever": "Eliminar para siempre",
   "profile_deleting": "Eliminando…",
-
   "consent_panel_aria": "Se requiere consentimiento de datos biométricos",
   "consent_heading": "Antes de que hable tu corazón",
   "consent_body_intro_pre": "HeartBits mide y transmite tu ritmo cardíaco en tiempo real a las personas con las que conectas. El ritmo cardíaco es ",
@@ -212,7 +202,6 @@
   "consent_accept": "Doy mi consentimiento — siente la conexión",
   "consent_decline": "No, gracias — usaré HeartBits sin compartir mi ritmo cardíaco",
   "consent_version_line": "Versión del consentimiento 1.1 · RGPD Art. 9 · 2026-06-02",
-
   "match_overlay_aria": "¡Es una conexión!",
   "match_you": "Tú",
   "match_bpm": "{bpm} BPM",
@@ -221,11 +210,9 @@
   "match_subline": "Vuestros corazones se encontraron.",
   "match_send_message": "Enviar un mensaje",
   "match_keep_discovering": "Seguir descubriendo",
-
   "bottomnav_discover": "Descubre",
   "bottomnav_bonds": "Vínculos",
   "bottomnav_profile": "Perfil",
-
   "login_title": "Iniciar sesión — HeartBits",
   "login_meta_description": "Inicia sesión en HeartBits — la app de citas que pone tu corazón primero.",
   "login_headline_pre": "Tu corazón está",
@@ -242,7 +229,6 @@
   "login_nav_about": "Acerca de",
   "login_nav_privacy": "Privacidad",
   "login_nav_terms": "Términos",
-
   "status_title": "HeartBits — Estado del Sistema",
   "status_meta_description": "Estado en tiempo real de los servicios de HeartBits.",
   "status_operational": "Todos los Sistemas Operativos",
@@ -287,7 +273,6 @@
   "status_incident_history_pending": "El historial de incidencias estará disponible cuando empiece la monitorización",
   "status_footer_about": "Acerca de",
   "status_footer_note": "Se actualiza al cargar la página",
-
   "about_title": "Acerca de — HeartBits",
   "about_meta_description": "HeartBits es una app de citas construida en torno a la conexión humana real — tu propio latido.",
   "about_back": "← Volver",
@@ -299,7 +284,6 @@
   "about_team_heading": "El equipo",
   "about_team_para": "Somos un equipo pequeño obsesionado con la idea de que la tecnología puede crear más momentos humanos, no menos.",
   "about_questions_pre": "¿Preguntas? ",
-
   "privacy_title": "Política de Privacidad — HeartBits",
   "privacy_meta_description": "Política de privacidad de HeartBits — cómo tratamos tus datos biométricos y personales.",
   "privacy_back": "← Volver",
@@ -357,7 +341,6 @@
   "privacy_s13_body": "Podemos actualizar esta política; los cambios sustanciales se anunciarán en la app o por correo antes de que entren en vigor.",
   "privacy_s14_title": "14. Contacto",
   "privacy_s14_body_pre": "Consultas de privacidad y solicitudes de derechos sobre los datos: ",
-
   "terms_title": "Términos del Servicio — HeartBits",
   "terms_meta_description": "Términos del servicio de HeartBits.",
   "terms_back": "← Volver",
@@ -399,7 +382,6 @@
   "terms_s11_body": "Estos Términos se rigen por las leyes de la jurisdicción del operador, sin tener en cuenta las normas de conflicto de leyes. Nada en estos Términos afecta a los derechos imperativos de protección al consumidor que puedas tener según la ley de tu país de residencia.",
   "terms_s12_title": "12. Contacto",
   "terms_s12_body_pre": "Preguntas sobre estos Términos: ",
-
   "pitch_title": "HeartBits — Conecta por el Latido",
   "pitch_meta_description": "HeartBits conecta a personas cuyos patrones de latido resuenan de forma natural — sin algoritmos, sin contar deslizamientos.",
   "pitch_hero_headline_line1": "Citas que sienten",
@@ -461,8 +443,5 @@
   "privacy_cookies_li2": "Seguridad del inicio de sesión: cookies de corta duración que protegen el proceso de acceso.",
   "privacy_cookies_li3": "Acceso a la vista previa: recuerda que has entrado en la vista previa privada.",
   "privacy_cookies_li4": "Consentimiento del latido: recuerda tu decisión de compartir tu ritmo cardíaco en directo.",
-  "privacy_cookies_li5": "Idioma: recuerda tu idioma preferido.",
-  "cookie_notice_text": "Usamos solo cookies esenciales: sin rastreo.",
-  "cookie_notice_dismiss": "Entendido",
-  "cookie_notice_learn": "Privacidad"
+  "privacy_cookies_li5": "Idioma: recuerda tu idioma preferido."
 }
