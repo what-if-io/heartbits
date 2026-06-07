@@ -120,11 +120,10 @@
 </script>
 
 <svelte:head>
-  <title>HeartBits — Feel the connection.</title>
-  <meta name="description" content="HeartBits — the dating app that puts your heart first. Share your real heartbeat with your matches. No swipes, just biology." />
-  <meta property="og:title" content="HeartBits — Feel the connection." />
-  <meta property="og:description" content="The dating app that puts your heart first. Literally. Share your real-time heartbeat with your matches." />
-  <meta property="og:url" content={typeof window !== 'undefined' ? window.location.origin : ''} />
+  <title>{m.home_title()}</title>
+  <meta name="description" content={m.home_meta_description()} />
+  <meta property="og:title" content={m.home_title()} />
+  <meta property="og:description" content={m.home_og_description()} />
 </svelte:head>
 
 <div class="landing">

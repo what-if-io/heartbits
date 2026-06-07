@@ -1,8 +1,9 @@
 import type { RequestHandler } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { clearSessionCookieAttrs } from '$lib/server/auth';
+import { localizeHref, extractLocaleFromUrl } from '$lib/paraglide/runtime';
 
-export const GET: RequestHandler = async ({ cookies }) => {
+export const GET: RequestHandler = async ({ cookies, url }) => {
   const attrs = clearSessionCookieAttrs();
   cookies.set(attrs.name, attrs.value, {
     httpOnly: attrs.httpOnly,
@@ -11,5 +12,6 @@ export const GET: RequestHandler = async ({ cookies }) => {
     path: attrs.path,
     maxAge: attrs.maxAge
   });
-  throw redirect(302, '/');
+  const locale = extractLocaleFromUrl(url);
+  throw redirect(302, locale ? localizeHref('/', { locale }) : '/');
 };

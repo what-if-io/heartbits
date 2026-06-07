@@ -450,5 +450,19 @@
   "pitch_footer_copyright": "© 2026 HeartBits",
   "pitch_footer_privacy": "プライバシー",
   "pitch_footer_terms": "規約",
-  "pitch_footer_about": "概要"
+  "pitch_footer_about": "概要",
+  "home_title": "HeartBits — つながりを感じよう。",
+  "home_meta_description": "HeartBits — あなたの心を一番に考えるデートアプリ。本物の鼓動をマッチした相手と共有。スワイプではなく、生体反応で。",
+  "home_og_description": "あなたの心を一番に考えるデートアプリ。文字どおりに。リアルタイムの鼓動をマッチした相手と共有しよう。",
+  "waitlist_age_confirm": "私は18歳以上です",
+  "privacy_cookies_title": "Cookie",
+  "privacy_cookies_intro": "HeartBitsは、厳密に必要なCookieと機能的なCookieのみを使用します。広告や第三者によるトラッキングは行わないため、同意バナーは必要ありません。当社が使用するCookie：",
+  "privacy_cookies_li1": "セッション — ログイン状態を維持します。",
+  "privacy_cookies_li2": "ログインのセキュリティ — ログイン処理を保護する短期間のCookieです。",
+  "privacy_cookies_li3": "プレビューへのアクセス — 限定プレビューに入ったことを記憶します。",
+  "privacy_cookies_li4": "鼓動の同意 — リアルタイムの心拍を共有するという選択を記憶します。",
+  "privacy_cookies_li5": "言語 — お好みの言語を記憶します。",
+  "cookie_notice_text": "必要不可欠なCookieのみを使用します — トラッキングはありません。",
+  "cookie_notice_dismiss": "了解",
+  "cookie_notice_learn": "プライバシー"
 }
