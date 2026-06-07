@@ -11,6 +11,9 @@
 
   let { children, data }: Props = $props();
 
+  // Self-referencing canonical (SSR-correct, query/hash stripped) for every page.
+  let canonical = $derived(`${$page.url.origin}${$page.url.pathname}`);
+
   const NO_NAV_PREFIXES = ['/', '/auth/', '/about', '/privacy', '/terms', '/pitch'];
 
   let showNav = $derived(
@@ -33,6 +36,10 @@
     );
   });
 </script>
+
+<svelte:head>
+  <link rel="canonical" href={canonical} />
+</svelte:head>
 
 {@render children()}
 
