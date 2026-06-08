@@ -24,13 +24,14 @@ export const GET: RequestHandler = async ({ params, cookies }) => {
     });
 
     if (res.ok) {
-      const bond = await res.json() as { room_id: string; partner_id: string };
+      const bond = await res.json() as { room_id: string; partner_id: string; match_id: string };
       const baseWss = toWss(RELAY_URL).replace(/\/$/, '');
       return json({
         demo:      false,
         relayUrl:  `${baseWss}/${bond.room_id}`,
         token:     session.accessToken,
         partnerId: bond.partner_id,
+        matchId:   bond.match_id,
       });
     }
   } catch {

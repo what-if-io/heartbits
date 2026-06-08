@@ -185,23 +185,73 @@
   let ws: WebSocket | null = null;
 
   // ── CHAT ──────────────────────────────────────────────
-  interface ChatMsg { id: number; from: 'me' | 'them'; text: string; }
+  interface ChatMsg { id: string; mine: boolean; body: string | null; sent_at: string; deleted: boolean; edited: boolean; }
   let messages = $state<ChatMsg[]>([]);
   let chatOpen = $state(false);
   let chatUnread = $state(0);
   let chatInput = $state('');
   let chatScrollEl: HTMLDivElement;
-  let msgId = 0;
+  let matchId: string | null = null;
+  let isDemo = false;
+  let localId = 0;
 
-  function sendChat() {
+  function scrollChat() {
+    setTimeout(() => chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }), 30);
+  }
+
+  async function loadHistory() {
+    if (!matchId) return;
+    try {
+      const res = await fetch(`/chat-api/matches/${matchId}/messages?limit=50`);
+      if (!res.ok) return;
+      const data = await res.json() as { messages: ChatMsg[] };
+      messages = data.messages;
+      scrollChat();
+    } catch { /* keep whatever we have */ }
+  }
+
+  async function markRead() {
+    if (!matchId) return;
+    try { await fetch(`/chat-api/matches/${matchId}/read`, { method: 'POST' }); } catch { /* non-fatal */ }
+  }
+
+  async function sendChat() {
     const text = chatInput.trim();
     if (!text) return;
-    messages = [...messages, { id: ++msgId, from: 'me', text }];
     chatInput = '';
-    if (ws?.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: 'chat', text }));
+
+    if (isDemo || !matchId) {
+      // Demo / no backend — ephemeral, relay-only
+      messages = [...messages, { id: `local-${++localId}`, mine: true, body: text, sent_at: new Date().toISOString(), deleted: false, edited: false }];
+      if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'chat', text }));
+      scrollChat();
+      return;
     }
-    setTimeout(() => { chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }); }, 30);
+
+    try {
+      const res = await fetch(`/chat-api/matches/${matchId}/messages`, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ body: text })
+      });
+      if (res.ok) {
+        const msg = await res.json() as ChatMsg;
+        messages = [...messages, msg];
+        // Push to the partner in real time (they persist via their own load/dedup by id)
+        if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'chat', message: msg }));
+        scrollChat();
+      }
+    } catch { /* surfaced via no-append; user can retry */ }
+  }
+
+  function receiveChat(d: { message?: ChatMsg; text?: string }) {
+    const incoming: ChatMsg | null = d.message?.id
+      ? { ...d.message, mine: false }
+      : typeof d.text === 'string'
+        ? { id: `r-${++localId}`, mine: false, body: d.text, sent_at: new Date().toISOString(), deleted: false, edited: false }
+        : null;
+    if (!incoming || messages.some((mm) => mm.id === incoming.id)) return;
+    messages = [...messages, incoming];
+    if (!chatOpen) chatUnread++; else markRead();
+    scrollChat();
   }
 
   function handleChatKey(e: KeyboardEvent) {
@@ -230,7 +280,9 @@
     try {
       wsTimeout = setTimeout(() => { if (!connected) startSimulation(); }, 4000);
       const res = await fetch(`/bond/${bondId}/connect`);
-      const cfg = await res.json() as { demo: boolean; relayUrl?: string | null; token?: string | null };
+      const cfg = await res.json() as { demo: boolean; relayUrl?: string | null; token?: string | null; matchId?: string };
+      isDemo = cfg.demo;
+      if (cfg.matchId) { matchId = cfg.matchId; loadHistory(); }
       if (cfg.demo || !cfg.relayUrl) { clearTimeout(wsTimeout); startSimulation(); return; }
 
       ws = new WebSocket(`${cfg.relayUrl}?token=${cfg.token}`);
@@ -248,12 +300,8 @@
           const newBpm = d.type === 'bpm' && typeof d.value === 'number' ? d.value
             : typeof d.bpm === 'number' ? d.bpm : null;
           if (newBpm !== null) { partnerBpm = newBpm; checkSync(); }
-          // Chat
-          if (d.type === 'chat' && typeof d.text === 'string') {
-            messages = [...messages, { id: ++msgId, from: 'them', text: d.text }];
-            if (!chatOpen) chatUnread++;
-            setTimeout(() => { chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }); }, 30);
-          }
+          // Chat (full persisted message from the partner, or legacy/demo text)
+          if (d.type === 'chat') receiveChat(d);
         } catch {}
       };
       ws.onerror = () => { clearTimeout(wsTimeout); startSimulation(); };
@@ -457,7 +505,7 @@
     <!-- ── CHAT TOGGLE ───────────────────── -->
     <button
       class="chat-toggle"
-      onclick={() => { chatOpen = !chatOpen; if (chatOpen) chatUnread = 0; }}
+      onclick={() => { chatOpen = !chatOpen; if (chatOpen) { chatUnread = 0; markRead(); } }}
     >
       <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
         <path d="M1.5 1.5H13.5V9.5H8L5 13V9.5H1.5V1.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/>
@@ -481,14 +529,16 @@
         </svg>
       </button>
     </div>
-    <div class="chat-messages" bind:this={chatScrollEl}>
+    <div class="chat-messages" bind:this={chatScrollEl} role="log" aria-live="polite" aria-relevant="additions">
       {#if messages.length === 0}
         <p class="chat-empty">{m.bond_no_messages()}</p>
       {/if}
       {#each messages as msg (msg.id)}
-        <div class="chat-msg" class:me={msg.from === 'me'} class:them={msg.from === 'them'}>
-          <span class="chat-bubble">{msg.text}</span>
-        </div>
+        {#if !msg.deleted}
+          <div class="chat-msg" class:me={msg.mine} class:them={!msg.mine}>
+            <span class="chat-bubble">{msg.body}</span>
+          </div>
+        {/if}
       {/each}
     </div>
     <div class="chat-input-row">
