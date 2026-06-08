@@ -17,6 +17,7 @@ import { bondsRoute } from './routes/bonds'
 import { billingRoute } from './routes/billing'
 import { waitlistRoute } from './routes/waitlist'
 import { safetyRoute } from './routes/safety'
+import { messagesRoute } from './routes/messages'
 import { ensureBucket } from './minio'
 
 // Validate required env vars at startup (fail fast)
@@ -138,6 +139,7 @@ const app = new Elysia()
   .use(matchesRoute)
   .use(bondsRoute)
   .use(safetyRoute)
+  .use(messagesRoute)
   .use(billingRoute)
 
   // ── Start ─────────────────────────────────────────────────────────────────
