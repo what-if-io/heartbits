@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "로그인 보안 — 로그인 과정을 보호하는 짧은 수명의 쿠키입니다.",
   "privacy_cookies_li3": "미리보기 접근 — 비공개 미리보기에 입장했음을 기억합니다.",
   "privacy_cookies_li4": "심장 박동 동의 — 실시간 심박수를 공유하겠다는 선택을 기억합니다.",
-  "privacy_cookies_li5": "언어 — 선호하는 언어를 기억합니다."
+  "privacy_cookies_li5": "언어 — 선호하는 언어를 기억합니다.",
+  "bond_react": "반응",
+  "bond_reply": "답장",
+  "bond_edit": "편집",
+  "bond_delete": "삭제",
+  "bond_edited": "수정됨",
+  "bond_save": "저장",
+  "bond_cancel": "취소",
+  "bond_replying": "답장 중",
+  "bond_emoji": "이모지",
+  "bond_message_actions": "메시지 작업",
+  "bond_deleted_msg": "삭제된 메시지"
 }

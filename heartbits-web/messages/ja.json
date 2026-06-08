@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "ログインのセキュリティ — ログイン処理を保護する短期間のCookieです。",
   "privacy_cookies_li3": "プレビューへのアクセス — 限定プレビューに入ったことを記憶します。",
   "privacy_cookies_li4": "鼓動の同意 — リアルタイムの心拍を共有するという選択を記憶します。",
-  "privacy_cookies_li5": "言語 — お好みの言語を記憶します。"
+  "privacy_cookies_li5": "言語 — お好みの言語を記憶します。",
+  "bond_react": "リアクション",
+  "bond_reply": "返信",
+  "bond_edit": "編集",
+  "bond_delete": "削除",
+  "bond_edited": "編集済み",
+  "bond_save": "保存",
+  "bond_cancel": "キャンセル",
+  "bond_replying": "返信中",
+  "bond_emoji": "絵文字",
+  "bond_message_actions": "メッセージの操作",
+  "bond_deleted_msg": "メッセージは削除されました"
 }

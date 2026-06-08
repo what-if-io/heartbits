@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "Securitatea autentificării — cookie-uri de scurtă durată care protejează procesul de autentificare.",
   "privacy_cookies_li3": "Acces la previzualizare — reține că ai intrat în previzualizarea privată.",
   "privacy_cookies_li4": "Consimțământ pentru bătăile inimii — reține alegerea ta de a-ți partaja ritmul cardiac în timp real.",
-  "privacy_cookies_li5": "Limbă — reține limba ta preferată."
+  "privacy_cookies_li5": "Limbă — reține limba ta preferată.",
+  "bond_react": "Reacționează",
+  "bond_reply": "Răspunde",
+  "bond_edit": "Editează",
+  "bond_delete": "Șterge",
+  "bond_edited": "editat",
+  "bond_save": "Salvează",
+  "bond_cancel": "Anulează",
+  "bond_replying": "Se răspunde",
+  "bond_emoji": "Emoji",
+  "bond_message_actions": "Acțiuni mesaj",
+  "bond_deleted_msg": "Mesaj șters"
 }

@@ -185,15 +185,31 @@
   let ws: WebSocket | null = null;
 
   // ── CHAT ──────────────────────────────────────────────
-  interface ChatMsg { id: string; mine: boolean; body: string | null; sent_at: string; deleted: boolean; edited: boolean; }
+  interface Reaction { emoji: string; count: number; mine: boolean; }
+  interface ChatMsg {
+    id: string; mine: boolean; body: string | null; sent_at: string;
+    deleted: boolean; edited: boolean; reply_to_id: string | null; reactions: Reaction[];
+  }
   let messages = $state<ChatMsg[]>([]);
   let chatOpen = $state(false);
   let chatUnread = $state(0);
   let chatInput = $state('');
   let chatScrollEl: HTMLDivElement;
+  let chatInputEl: HTMLInputElement;
   let matchId: string | null = null;
   let isDemo = false;
   let localId = 0;
+
+  // Affordance state
+  let replyingTo = $state<ChatMsg | null>(null);
+  let editing = $state<ChatMsg | null>(null);
+  let emojiOpen = $state(false);
+  let reactionFor = $state<string | null>(null); // message id whose reaction bar is open
+  const QUICK_REACTIONS = ['❤️', '😂', '😮', '😢', '👍', '🔥'];
+  const EMOJIS = ['😀','😂','😍','🥰','😘','😎','🤔','😢','😮','😡','👍','👎','🙏','🔥','💯','🎉','❤️','💕','💖','✨','🌹','🥂','☕','🎵'];
+
+  const isPersisted = (id: string) => !id.startsWith('local-') && !id.startsWith('r-');
+  const msgById = (id: string | null) => (id ? messages.find((mm) => mm.id === id) ?? null : null);
 
   function scrollChat() {
     setTimeout(() => chatScrollEl?.scrollTo({ top: chatScrollEl.scrollHeight, behavior: 'smooth' }), 30);
@@ -216,37 +232,84 @@
   }
 
   async function sendChat() {
+    if (editing) return saveEdit();
     const text = chatInput.trim();
     if (!text) return;
+    const reply_to_id = replyingTo?.id ?? null;
     chatInput = '';
+    replyingTo = null;
+    emojiOpen = false;
 
     if (isDemo || !matchId) {
-      // Demo / no backend — ephemeral, relay-only
-      messages = [...messages, { id: `local-${++localId}`, mine: true, body: text, sent_at: new Date().toISOString(), deleted: false, edited: false }];
+      messages = [...messages, { id: `local-${++localId}`, mine: true, body: text, sent_at: new Date().toISOString(), deleted: false, edited: false, reply_to_id, reactions: [] }];
       if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'chat', text }));
       scrollChat();
+      if (isDemo) simDemoReply();
       return;
     }
-
     try {
       const res = await fetch(`/chat-api/matches/${matchId}/messages`, {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ body: text })
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ body: text, ...(reply_to_id && isPersisted(reply_to_id) ? { reply_to_id } : {}) })
       });
       if (res.ok) {
         const msg = await res.json() as ChatMsg;
         messages = [...messages, msg];
-        // Push to the partner in real time (they persist via their own load/dedup by id)
         if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'chat', message: msg }));
         scrollChat();
       }
-    } catch { /* surfaced via no-append; user can retry */ }
+    } catch { /* user can retry */ }
   }
+
+  function startReply(msg: ChatMsg) { editing = null; replyingTo = msg; chatInputEl?.focus(); }
+  function startEdit(msg: ChatMsg) {
+    replyingTo = null; editing = msg; chatInput = msg.body ?? ''; chatInputEl?.focus();
+  }
+  function cancelCompose() { editing = null; replyingTo = null; chatInput = ''; }
+
+  async function saveEdit() {
+    if (!editing) return;
+    const text = chatInput.trim();
+    const target = editing;
+    if (!text) return;
+    chatInput = ''; editing = null;
+    messages = messages.map((mm) => (mm.id === target.id ? { ...mm, body: text, edited: true } : mm));
+    if (!isPersisted(target.id)) return;
+    try {
+      await fetch(`/chat-api/messages/${target.id}`, {
+        method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ body: text })
+      });
+    } catch { loadHistory(); }
+  }
+
+  async function deleteMessage(msg: ChatMsg) {
+    messages = messages.map((mm) => (mm.id === msg.id ? { ...mm, deleted: true, body: null } : mm));
+    if (!isPersisted(msg.id)) return;
+    try { await fetch(`/chat-api/messages/${msg.id}`, { method: 'DELETE' }); } catch { loadHistory(); }
+  }
+
+  async function react(msg: ChatMsg, emoji: string) {
+    reactionFor = null;
+    const ex = msg.reactions.find((r) => r.emoji === emoji);
+    const adding = !ex?.mine;
+    const others = msg.reactions.filter((r) => r.emoji !== emoji);
+    const count = (ex?.count ?? 0) + (adding ? 1 : -1);
+    const next = count > 0 ? [...others, { emoji, count, mine: adding }] : others;
+    messages = messages.map((mm) => (mm.id === msg.id ? { ...mm, reactions: next } : mm));
+    if (!isPersisted(msg.id)) return;
+    try {
+      if (adding) await fetch(`/chat-api/messages/${msg.id}/reactions`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ emoji }) });
+      else await fetch(`/chat-api/messages/${msg.id}/reactions/${encodeURIComponent(emoji)}`, { method: 'DELETE' });
+    } catch { loadHistory(); }
+  }
+
+  function insertEmoji(e: string) { chatInput += e; chatInputEl?.focus(); }
 
   function receiveChat(d: { message?: ChatMsg; text?: string }) {
     const incoming: ChatMsg | null = d.message?.id
       ? { ...d.message, mine: false }
       : typeof d.text === 'string'
-        ? { id: `r-${++localId}`, mine: false, body: d.text, sent_at: new Date().toISOString(), deleted: false, edited: false }
+        ? { id: `r-${++localId}`, mine: false, body: d.text, sent_at: new Date().toISOString(), deleted: false, edited: false, reply_to_id: null, reactions: [] }
         : null;
     if (!incoming || messages.some((mm) => mm.id === incoming.id)) return;
     messages = [...messages, incoming];
@@ -254,7 +317,15 @@
     scrollChat();
   }
 
+  // Demo only: the simulated partner replies with an emoji so the chat (and its
+  // reactions / reply / edit affordances) can be explored without a real match.
+  function simDemoReply() {
+    const replies = ['😊', '🥰', '💓', '✨', '😍', '🔥', '👀', '💕'];
+    setTimeout(() => receiveChat({ text: replies[Math.floor(Math.random() * replies.length)] }), 1400);
+  }
+
   function handleChatKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') { cancelCompose(); return; }
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
   }
 
@@ -270,6 +341,10 @@
     connected = true;
     animateBpmCountUp(Math.round(partnerBpm));
     scheduleNextPulse();
+    // Seed the demo chat so the feature is explorable without a real match.
+    if (isDemo && messages.length === 0) {
+      messages = [{ id: `r-${++localId}`, mine: false, body: '👋 💓', sent_at: new Date().toISOString(), deleted: false, edited: false, reply_to_id: null, reactions: [] }];
+    }
     partnerSimInterval = setInterval(() => {
       partnerBpm = simulateBpm(partnerBpm);
       checkSync();
@@ -534,26 +609,75 @@
         <p class="chat-empty">{m.bond_no_messages()}</p>
       {/if}
       {#each messages as msg (msg.id)}
-        {#if !msg.deleted}
-          <div class="chat-msg" class:me={msg.mine} class:them={!msg.mine}>
-            <span class="chat-bubble">{msg.body}</span>
-          </div>
-        {/if}
+        <div class="chat-msg" class:me={msg.mine} class:them={!msg.mine}>
+          {#if msg.deleted}
+            <span class="chat-bubble chat-deleted">{m.bond_deleted_msg()}</span>
+          {:else}
+            <div class="chat-msg-wrap">
+              {#if msg.reply_to_id && msgById(msg.reply_to_id)}
+                <span class="chat-reply-quote">{msgById(msg.reply_to_id)?.body}</span>
+              {/if}
+              <span class="chat-bubble">{msg.body}{#if msg.edited}<span class="chat-edited"> · {m.bond_edited()}</span>{/if}</span>
+              {#if msg.reactions.length}
+                <div class="chat-reactions">
+                  {#each msg.reactions as r (r.emoji)}
+                    <button class="chat-reaction" class:mine={r.mine} aria-pressed={r.mine} onclick={() => react(msg, r.emoji)}>{r.emoji} {r.count}</button>
+                  {/each}
+                </div>
+              {/if}
+              {#if reactionFor === msg.id}
+                <div class="chat-react-bar" role="group" aria-label={m.bond_react()}>
+                  {#each QUICK_REACTIONS as e}
+                    <button class="chat-react-pick" aria-label={e} onclick={() => react(msg, e)}>{e}</button>
+                  {/each}
+                </div>
+              {/if}
+              <div class="chat-actions" role="group" aria-label={m.bond_message_actions()}>
+                <button class="chat-act" aria-label={m.bond_react()} onclick={() => (reactionFor = reactionFor === msg.id ? null : msg.id)}>🙂</button>
+                <button class="chat-act" aria-label={m.bond_reply()} onclick={() => startReply(msg)}>↩</button>
+                {#if msg.mine}
+                  <button class="chat-act" aria-label={m.bond_edit()} onclick={() => startEdit(msg)}>✎</button>
+                  <button class="chat-act" aria-label={m.bond_delete()} onclick={() => deleteMessage(msg)}>🗑</button>
+                {/if}
+              </div>
+            </div>
+          {/if}
+        </div>
       {/each}
     </div>
+
+    {#if replyingTo || editing}
+      <div class="chat-compose-banner">
+        <span class="chat-banner-text">{editing ? m.bond_edit() : m.bond_replying()}{#if replyingTo}: {replyingTo.body}{/if}</span>
+        <button class="chat-banner-x" onclick={cancelCompose} aria-label={m.bond_cancel()}>×</button>
+      </div>
+    {/if}
+
+    {#if emojiOpen}
+      <div class="chat-emoji-grid" role="group" aria-label={m.bond_emoji()}>
+        {#each EMOJIS as e}
+          <button class="chat-emoji-btn" aria-label={e} onclick={() => insertEmoji(e)}>{e}</button>
+        {/each}
+      </div>
+    {/if}
+
     <div class="chat-input-row">
+      <button class="chat-emoji-toggle" aria-label={m.bond_emoji()} aria-expanded={emojiOpen} onclick={() => (emojiOpen = !emojiOpen)}>😊</button>
       <input
         type="text"
+        bind:this={chatInputEl}
         bind:value={chatInput}
         onkeydown={handleChatKey}
         placeholder={m.bond_chat_placeholder()}
         class="chat-input"
         maxlength={500}
       />
-      <button class="chat-send" onclick={sendChat} disabled={!chatInput.trim()}>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M13 7L1 1.5L3.5 7L1 12.5L13 7Z" fill="currentColor"/>
-        </svg>
+      <button class="chat-send" onclick={sendChat} disabled={!chatInput.trim()} aria-label={editing ? m.bond_save() : m.bond_message_partner()}>
+        {#if editing}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7.5L5.5 11L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        {:else}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7L1 1.5L3.5 7L1 12.5L13 7Z" fill="currentColor"/></svg>
+        {/if}
       </button>
     </div>
   </div>
@@ -1060,6 +1184,50 @@
     border: 1px solid rgba(255,255,255,0.07);
     border-bottom-left-radius: 5px;
   }
+
+  /* ── Chat affordances ─────────────────────────────── */
+  .chat-msg-wrap { display: flex; flex-direction: column; gap: 3px; max-width: 80%; }
+  .chat-msg.me   .chat-msg-wrap { align-items: flex-end; }
+  .chat-msg.them .chat-msg-wrap { align-items: flex-start; }
+  .chat-deleted { font-style: italic; opacity: 0.5; }
+  .chat-edited { font-size: 11px; opacity: 0.65; }
+  .chat-reply-quote {
+    font-size: 12px; color: rgba(255,255,255,0.45);
+    border-left: 2px solid rgba(255,107,107,0.6); padding: 1px 8px;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .chat-reactions { display: flex; gap: 4px; flex-wrap: wrap; }
+  .chat-reaction {
+    font-size: 12px; padding: 1px 7px; border-radius: 100px; cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 1px solid transparent; color: rgba(255,255,255,0.7);
+  }
+  .chat-reaction.mine { border-color: rgba(255,107,107,0.6); background: rgba(255,107,107,0.12); }
+  .chat-actions { display: flex; gap: 2px; opacity: 0.5; transition: opacity 0.15s ease; }
+  .chat-msg:hover .chat-actions, .chat-msg:focus-within .chat-actions { opacity: 1; }
+  .chat-act, .chat-react-pick, .chat-emoji-btn, .chat-emoji-toggle {
+    background: none; border: none; cursor: pointer; line-height: 1;
+    padding: 4px; border-radius: 8px; color: inherit; font-size: 15px;
+  }
+  .chat-act:hover, .chat-react-pick:hover, .chat-emoji-btn:hover { background: rgba(255,255,255,0.1); }
+  .chat-react-bar {
+    display: flex; gap: 2px; padding: 2px 4px; border-radius: 100px;
+    background: rgba(14,14,26,0.96); border: 1px solid rgba(255,255,255,0.12);
+  }
+  .chat-react-pick { font-size: 18px; }
+  .chat-compose-banner {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 6px 12px; font-size: 12px; color: rgba(255,255,255,0.55);
+    background: rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .chat-banner-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-banner-x { background: none; border: none; color: rgba(255,255,255,0.5); font-size: 18px; cursor: pointer; flex-shrink: 0; }
+  .chat-emoji-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px 12px;
+    border-top: 1px solid rgba(255,255,255,0.06); max-height: 150px; overflow-y: auto;
+  }
+  .chat-emoji-btn { font-size: 20px; }
+  .chat-emoji-toggle { font-size: 20px; flex-shrink: 0; }
+  @media (prefers-reduced-motion: reduce) { .chat-actions { transition: none; } }
 
   .chat-input-row {
     display: flex;

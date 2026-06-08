@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "登录安全——保护登录流程的短期 Cookie。",
   "privacy_cookies_li3": "预览访问——记住你已进入私密预览。",
   "privacy_cookies_li4": "心跳授权——记住你分享实时心率的选择。",
-  "privacy_cookies_li5": "语言——记住你偏好的语言。"
+  "privacy_cookies_li5": "语言——记住你偏好的语言。",
+  "bond_react": "回应",
+  "bond_reply": "回复",
+  "bond_edit": "编辑",
+  "bond_delete": "删除",
+  "bond_edited": "已编辑",
+  "bond_save": "保存",
+  "bond_cancel": "取消",
+  "bond_replying": "正在回复",
+  "bond_emoji": "表情",
+  "bond_message_actions": "消息操作",
+  "bond_deleted_msg": "消息已删除"
 }
