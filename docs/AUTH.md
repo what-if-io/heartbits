@@ -51,6 +51,19 @@ const PROTECTED_PREFIXES = ['/discover', '/matches', '/bond', '/profile'];
 
 Unauthenticated requests redirect to `/auth/login?next=<original-path>`.
 
+Routing runs on the **locale-stripped** pathname: the Paraglide middleware resolves the
+active locale (URL prefix `/es`, `/fr`, … → cookie → `Accept-Language`) and `hooks.server.ts`
+de-localizes the path before the protected-prefix check, while redirect targets keep the
+locale prefix so the user stays in their language.
+
+### Chat bridge (`/chat-api`)
+
+The persisted-chat client calls the API through a server-side authed bridge:
+`heartbits-web`'s `/chat-api/<path>` route (`src/routes/chat-api`) reads the session
+cookie and forwards the request to `API_BASE_INTERNAL` (`http://heartbits-api:3100`)
+as `/api/v1/<path>` with `Authorization: Bearer <accessToken>`. Because every API
+endpoint is auth- and RLS-gated, this bridge can only ever let a user act as themselves.
+
 ### Session cookie
 
 - Name: `hb_session`
@@ -187,6 +200,36 @@ registered redirect URIs (already added by default).
 
 The `accessToken` is forwarded as `Authorization: Bearer` to the HeartBits API.
 The API validates it independently using Zitadel's JWKS endpoint.
+
+---
+
+## API-side identity & RLS bootstrap
+
+The API connects to PostgreSQL as the **non-owner** `heartbits_api` role, so Row-Level
+Security applies to every query (the owner/superuser would bypass it — see
+`migrations/004_force_rls.sql`). RLS policies key off `app.current_user_id`, which is set
+per request via `withUser()` (`SET LOCAL`). But two flows run *before* a user context
+exists:
+
+1. **Login** — the auth plugin (`src/auth.ts`, `findUserBySub`) resolves the JWT `sub`
+   to an internal user id by calling the `SECURITY DEFINER` function `app.user_lookup(sub)`,
+   which bypasses RLS for just that lookup. A missing/soft-deleted user → 401 with a hint
+   to call `POST /api/v1/me/init`.
+2. **Registration / first login** — `POST /api/v1/me/init` (`src/routes/me.ts`) verifies
+   the JWT (it can't use the auth plugin, since the user may not exist yet), then calls
+   `app.init_user(sub)` (also `SECURITY DEFINER`) to upsert the user + profile row and
+   reactivate a paused account. Deleted accounts cannot be re-initialised (403).
+
+These two functions are the *only* sanctioned RLS bypass, defined in
+`migrations/005_auth_bootstrap_funcs.sql` and granted `EXECUTE` solely to `heartbits_api`.
+
+### Registration gate (invite-only)
+
+`POST /api/v1/me/init` enforces an app-boundary registration gate independent of the IdP:
+a **new** account is rejected (403 `registration_closed`) unless `REGISTRATION_OPEN=true`
+or the JWT's email is in `REGISTRATION_ALLOWLIST`. Existing users always pass. The public
+waitlist (`POST /api/v1/waitlist`, 18+ attestation server-enforced) is the funnel while
+registration is closed.
 
 ---
 
