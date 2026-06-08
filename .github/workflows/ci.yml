@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
           cache: npm
           cache-dependency-path: relay-server/package-lock.json
       - run: npm ci
@@ -97,7 +97,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t hb-api ./heartbits-api
-      - run: docker build -t hb-relay ./relay-server
-      - run: docker build -t hb-monitor ./heartbits-monitor
-      - run: docker build -t hb-web ./heartbits-web
+      # Retry each build — Docker Hub base-image pulls can transiently time out.
+      - name: Build images
+        run: |
+          retry() { for i in 1 2 3; do "$@" && return 0; echo "attempt $i failed, retrying in 15s…"; sleep 15; done; return 1; }
+          retry docker build -t hb-api ./heartbits-api
+          retry docker build -t hb-relay ./relay-server
+          retry docker build -t hb-monitor ./heartbits-monitor
+          retry docker build -t hb-web ./heartbits-web
