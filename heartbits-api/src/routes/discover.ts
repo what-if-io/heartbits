@@ -152,6 +152,9 @@ export const discoverRoute = new Elysia({ prefix: '/api/v1' })
               FROM app.swipes
               WHERE swiper_id = ${auth.userId}
             )
+            -- Exclude users blocked in either direction
+            AND p.id NOT IN (SELECT blocked_id FROM app.blocks WHERE blocker_id = ${auth.userId})
+            AND p.id NOT IN (SELECT blocker_id FROM app.blocks WHERE blocked_id = ${auth.userId})
             -- Gender filter: only show profiles whose gender is in our seeking list
             -- (empty/unset seeking → seekingFilter is null → no filter applied)
             AND (

@@ -59,6 +59,18 @@ export const swipesRoute = new Elysia({ prefix: '/api/v1' })
           return { error: 'User not found.' }
         }
 
+        // Trust & Safety: no swiping a user blocked in either direction.
+        const [blocked] = await tx<{ x: number }[]>`
+          SELECT 1 AS x FROM app.blocks
+          WHERE (blocker_id = ${auth.userId} AND blocked_id = ${body.swiped_id})
+             OR (blocker_id = ${body.swiped_id} AND blocked_id = ${auth.userId})
+          LIMIT 1
+        `
+        if (blocked) {
+          set.status = 403
+          return { error: 'This user is unavailable.' }
+        }
+
         // ── Record swipe (upsert so duplicate requests are idempotent) ────
         await tx`
           INSERT INTO app.swipes (swiper_id, swiped_id, direction, created_at)
