@@ -1,5 +1,5 @@
-# heartbits-relay — Node.js WebSocket relay.
-FROM node:22-alpine
+# heartbits-relay — Node.js WebSocket relay. Node 24 = current LTS (matches dev).
+FROM node:24-alpine
 
 WORKDIR /app
 
