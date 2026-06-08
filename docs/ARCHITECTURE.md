@@ -16,7 +16,7 @@ The moment two people match, their hearts sync live for the first time.
 
 ```
                         ┌─────────────────────────────────────────────┐
-                        │           Caddy 2 (TLS + routing)            │
+                        │           Caddy 2 (TLS + routing)           │
                         │  relay.heartbits.what-if.io → relay:8765    │
                         │  heartbits.what-if.io → heartbits-web:3000  │
                         │  auth.heartbits.what-if.io → zitadel:8180   │
@@ -26,7 +26,7 @@ The moment two people match, their hearts sync live for the first time.
                                         │
          ┌──────────────────────────────┼──────────────────────────┐
          │                              │                          │
-┌────────▼────────┐        ┌────────────▼────────┐      ┌─────────▼───────┐
+┌────────▼────────┐        ┌────────────▼─────────┐      ┌─────────▼───────┐
 │ heartbits-relay │        │  heartbits-api       │      │      minio      │
 │ (Node.js)       │◄───────│  (Bun + Elysia)      │      │  (S3-compat     │
 │ room fanout +   │        │  profiles, matches,  │      │   photo store)  │
@@ -40,14 +40,14 @@ The moment two people match, their hearts sync live for the first time.
                                         │
          ┌──────────────────────────────┼──────────────────────────┐
          │                              │                          │
-┌────────▼────────┐        ┌────────────▼────────┐      ┌─────────▼───────┐
+┌────────▼────────┐        ┌────────────▼─────────┐      ┌─────────▼───────┐
 │  PostgreSQL 16  │        │     Redis 7          │      │ heartbits-worker│
 │  app + billing  │        │  rate limits, relay  │      │ (Bun)           │
 │  schemas        │        │  room keys, JWKS     │      │ media deletion, │
 │  FORCE RLS      │        │  cache, worker queues│      │ GDPR hard-delete│
-└─────────────────┘        └─────────────────────┘      │ relay cleanup,  │
-                                                          │ email dispatch  │
-                                                          └─────────────────┘
+└─────────────────┘        └──────────────────────┘      │ relay cleanup,  │
+                                                         │ email dispatch  │
+                                                         └─────────────────┘
          │
 ┌────────▼────────┐
 │    Zitadel      │
