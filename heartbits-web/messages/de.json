@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "Anmeldesicherheit — kurzlebige Cookies, die den Login-Vorgang schützen.",
   "privacy_cookies_li3": "Vorschau-Zugang — merkt sich, dass du die private Vorschau betreten hast.",
   "privacy_cookies_li4": "Herzschlag-Einwilligung — merkt sich deine Entscheidung, deine Live-Herzfrequenz zu teilen.",
-  "privacy_cookies_li5": "Sprache — merkt sich deine bevorzugte Sprache."
+  "privacy_cookies_li5": "Sprache — merkt sich deine bevorzugte Sprache.",
+  "bond_react": "Reagieren",
+  "bond_reply": "Antworten",
+  "bond_edit": "Bearbeiten",
+  "bond_delete": "Löschen",
+  "bond_edited": "bearbeitet",
+  "bond_save": "Speichern",
+  "bond_cancel": "Abbrechen",
+  "bond_replying": "Antwortet",
+  "bond_emoji": "Emoji",
+  "bond_message_actions": "Nachrichtenaktionen",
+  "bond_deleted_msg": "Nachricht gelöscht"
 }

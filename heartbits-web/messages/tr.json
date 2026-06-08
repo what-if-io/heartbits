@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "Giriş güvenliği — giriş akışını koruyan kısa ömürlü çerezler.",
   "privacy_cookies_li3": "Önizleme erişimi — özel önizlemeye girdiğini hatırlar.",
   "privacy_cookies_li4": "Kalp atışı onayı — canlı nabzını paylaşma tercihini hatırlar.",
-  "privacy_cookies_li5": "Dil — tercih ettiğin dili hatırlar."
+  "privacy_cookies_li5": "Dil — tercih ettiğin dili hatırlar.",
+  "bond_react": "Tepki ver",
+  "bond_reply": "Yanıtla",
+  "bond_edit": "Düzenle",
+  "bond_delete": "Sil",
+  "bond_edited": "düzenlendi",
+  "bond_save": "Kaydet",
+  "bond_cancel": "İptal",
+  "bond_replying": "Yanıtlanıyor",
+  "bond_emoji": "Emoji",
+  "bond_message_actions": "Mesaj işlemleri",
+  "bond_deleted_msg": "Mesaj silindi"
 }

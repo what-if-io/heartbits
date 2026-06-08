@@ -443,5 +443,16 @@
   "privacy_cookies_li2": "Sicurezza dell'accesso — cookie di breve durata che proteggono la procedura di login.",
   "privacy_cookies_li3": "Accesso all'anteprima — ricorda che sei entrato nell'anteprima privata.",
   "privacy_cookies_li4": "Consenso al battito — ricorda la tua scelta di condividere la frequenza cardiaca in tempo reale.",
-  "privacy_cookies_li5": "Lingua — ricorda la tua lingua preferita."
+  "privacy_cookies_li5": "Lingua — ricorda la tua lingua preferita.",
+  "bond_react": "Reagisci",
+  "bond_reply": "Rispondi",
+  "bond_edit": "Modifica",
+  "bond_delete": "Elimina",
+  "bond_edited": "modificato",
+  "bond_save": "Salva",
+  "bond_cancel": "Annulla",
+  "bond_replying": "In risposta",
+  "bond_emoji": "Emoji",
+  "bond_message_actions": "Azioni messaggio",
+  "bond_deleted_msg": "Messaggio eliminato"
 }
