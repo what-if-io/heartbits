@@ -1,6 +1,6 @@
 # HeartBits — Security Reference
 
-> Last updated: 2026-05-26. Keep this document current as the threat model evolves.
+> Last updated: 2026-06-08. Keep this document current as the threat model evolves.
 
 ---
 
@@ -34,7 +34,7 @@
 | Data | Encryption | Where | Why |
 |---|---|---|---|
 | `display_name`, `date_of_birth`, `bio` | AES-256-GCM, app layer | `app.profiles` (BYTEA) | These are PII that would identify a person directly from a DB dump. Encrypted before INSERT, decrypted after SELECT — the database never sees plaintext. |
-| Message bodies | AES-256-GCM, per-match key via HKDF(master_key, match_id) | `app.messages` (BYTEA) | Conversation content is the most sensitive user data. Per-match keys mean a single key compromise does not expose all messages. |
+| Message bodies | AES-256-GCM, app layer | `app.messages` (BYTEA) | Chat is persisted (history, edits, reactions, replies, read receipts). Conversation content is among the most sensitive user data, so bodies are encrypted at rest. Currently the shared field-encryption key is used; per-match HKDF(master_key, match_id) keys are a planned hardening so a single key compromise would not expose all conversations. Access is further restricted by RLS + an active-match check to the two participants. |
 | TLS everywhere | TLS 1.2+ (Caddy handles termination) | All HTTP/WS traffic | Standard transport security; Caddy auto-renews Let's Encrypt certificates. HSTS enforced with 1-year max-age. |
 
 ### Crypto implementation details
@@ -47,6 +47,51 @@
 - **Key rotation:** Not yet implemented. SECURITY TODO: add a re-encryption worker that decrypts with the old key and re-encrypts with the new key, with a `key_version` column to track which key was used.
 
 ---
+
+## Access Control — Row-Level Security (the backbone)
+
+RLS is the primary in-database authorization control, and it is **enforced**, not
+decorative:
+
+- The API process connects as the **non-owner** `heartbits_api` role. A table owner (and
+  any superuser) silently bypasses `ENABLE ROW LEVEL SECURITY`, so
+  `migrations/004_force_rls.sql` adds `FORCE ROW LEVEL SECURITY` to every `app.*` table —
+  the owner is now subject to its own policies too. Only superusers bypass, and only
+  migrations run as the superuser.
+- Each request runs inside `withUser(userId, …)` (`src/db.ts`), which opens a transaction
+  and issues `SET LOCAL app.current_user_id = <id>`. Every policy keys off this setting.
+- Policy model:
+  - `users` / `profiles` — any authenticated user may SELECT (no PII in `users`; profile
+    PII is field-encrypted), but UPDATE/DELETE are self-only (`users_self`, `profiles_write`).
+  - `swipes` — own swipes are readable/writable (`swipes_self`); `swipes_inbound` lets a
+    user read swipes *targeting* them, for server-side mutual-like detection only.
+  - `matches` / `bonds` / `messages` / `message_reactions` — restricted to the two match
+    participants.
+  - `blocks` — readable when you are on either side (to enforce mutual invisibility),
+    writable only as the blocker.
+  - `reports` — a user sees/files only their own; moderation reads/updates run via the
+    BYPASSRLS `heartbits_worker` role.
+- **Bootstrap exception:** login and registration run before `app.current_user_id` is set,
+  so they use the `SECURITY DEFINER` functions `app.user_lookup` / `app.init_user`
+  (`migrations/005`) — the only sanctioned RLS bypass, scoped to exactly those two ops and
+  granted `EXECUTE` only to `heartbits_api`.
+
+This directly mitigates the **curious user** and **stalker/abuser** adversaries: even a
+crafted request cannot read another user's rows, because the database — not just the app
+layer — refuses to return them.
+
+## Trust & Safety
+
+For a dating product, blocking and reporting are launch-critical controls
+(`migrations/008`, `src/routes/safety.ts`):
+
+- **Blocks** (`app.blocks`) are bidirectional for visibility: discover excludes blocked
+  users in both directions and swiping a blocked user (either direction) returns 403.
+  Blocking also severs any active match (`unmatched_at`) and immediately deletes the relay
+  room key, cutting off any live biometric stream — the same eviction used for consent
+  withdrawal.
+- **Reports** (`app.reports`) land in a moderation queue (status `open`). Only the BYPASSRLS
+  worker role has SELECT/UPDATE on reports — no end-user can read another user's reports.
 
 ## What Is NOT Encrypted and Why
 
@@ -91,8 +136,9 @@
      Ensure Caddy access logs do not log the `token` query parameter in production.
 
 5. **MinIO object URLs are not truly pre-signed yet.**
-   `buildAvatarUrl()` returns a direct path URL. SECURITY TODO: replace with MinIO
-   `presignedGetObject()` calls with 15-minute TTL before enabling public access.
+   `avatarUrl()` (`src/minio.ts`) returns a direct `https://${MEDIA_DOMAIN}/...` path URL.
+   SECURITY TODO: replace with MinIO `presignedGetObject()` calls with 15-minute TTL
+   before enabling public access.
 
 6. **No SSRF protection on OIDC discovery fetch.**
    `verifyTokenForInit` and `getJwks()` fetch the JWKS URL from environment, which is
@@ -132,15 +178,15 @@ The following MUST be completed before any public user can create an account.
 - [ ] **Rotate ROOM_TOKEN.** Ensure it is not in any commit history. Inject from CI secret.
 - [ ] **Deploy Phase 1 relay auth** (JWT + Redis room membership). ROOM_TOKEN alone is insufficient for public launch.
 - [ ] **Implement Zitadel session revocation** on `DELETE /api/v1/me` (call Zitadel Management API to invalidate tokens).
-- [ ] **Implement MinIO pre-signed URLs** in `buildAvatarUrl()`. Direct MinIO paths must never be public.
+- [ ] **Implement MinIO pre-signed URLs** in `avatarUrl()` (`src/minio.ts`). Direct MinIO paths must never be public.
 - [ ] **Set `ZITADEL_ISSUER` and `ZITADEL_CLIENT_ID`** in all deployment environments. JWT validation fails open if these are missing (the env check at startup prevents starting without them, but verify this is enforced in staging).
 - [ ] **Replace `'changeme'` DB passwords** with strong random secrets before running the migration anywhere non-local.
 - [ ] **Ship consent UI** — users must be shown the versioned biometric_relay consent text and explicitly accept before the app calls `POST /api/v1/me/consent`. The backend gate is live; the frontend gate must match.
 
 ### High (should be done before public launch)
 
-- [ ] **Hard-delete worker** — implement `bun run worker` job that hard-deletes users where `deleted_at < NOW() - INTERVAL '30 days'` (satisfies GDPR Art. 17 30-day deadline).
-- [ ] **Media deletion worker** — consume `hb:worker:media_delete` Redis queue; call MinIO `removeObject` for all media rows where `user_id` matches, then delete the media rows.
+- [x] **Hard-delete worker** — done; `src/worker.ts` hard-deletes users where `deleted_at < NOW() - INTERVAL '30 days'` via the BYPASSRLS `heartbits_worker` pool (`WORKER_DATABASE_URL`), satisfying the GDPR Art. 17 30-day deadline.
+- [x] **Media deletion worker** — done; `src/worker.ts` consumes the `hb:worker:media_delete` Redis queue, calls MinIO `removeObject` for the user's media, then deletes the media rows.
 - [ ] **audit_log partitioning** — implement pg_partman monthly partitions with 7-year retention per the migration comment.
 - [ ] **Caddy security headers** — apply the config from `docs/Caddyfile.heartbits` to the production Caddyfile.
 - [x] **Add `api.heartbits.what-if.io` Caddy block** — done; proxies to heartbits-api:3100 with CORS headers.

@@ -29,19 +29,25 @@ The moment two people match, their hearts sync live for the first time.
 ┌────────▼────────┐        ┌────────────▼────────┐      ┌─────────▼───────┐
 │ heartbits-relay │        │  heartbits-api       │      │      minio      │
 │ (Node.js)       │◄───────│  (Bun + Elysia)      │      │  (S3-compat     │
-│ room fanout     │        │  profiles, matches,  │      │   photo store)  │
-│ Phase 0: token  │        │  bonds, notifs       │      └─────────────────┘
-│ Phase 1: JWT+RLS│        └────────────┬─────────┘
-└─────────────────┘                     │
+│ room fanout +   │        │  profiles, matches,  │      │   photo store)  │
+│ live BPM +      │        │  bonds, chat,        │      └─────────────────┘
+│ realtime chat   │        │  safety, notifs      │
+│ Phase 0: token  │        │  connects as the     │
+│ Phase 1: JWT    │        │  non-owner           │
+└─────────────────┘        │  heartbits_api role  │
+                           │  → RLS enforced      │
+                           └────────────┬─────────┘
                                         │
          ┌──────────────────────────────┼──────────────────────────┐
          │                              │                          │
 ┌────────▼────────┐        ┌────────────▼────────┐      ┌─────────▼───────┐
 │  PostgreSQL 16  │        │     Redis 7          │      │ heartbits-worker│
-│  app + billing  │        │  sessions, rate      │      │ (Bun)           │
-│  schemas        │        │  limits, relay room  │      │ matching queue, │
-└─────────────────┘        │  tokens, JWKS cache  │      │ notifs, media   │
-                           └─────────────────────┘      └─────────────────┘
+│  app + billing  │        │  rate limits, relay  │      │ (Bun)           │
+│  schemas        │        │  room keys, JWKS     │      │ media deletion, │
+│  FORCE RLS      │        │  cache, worker queues│      │ GDPR hard-delete│
+└─────────────────┘        └─────────────────────┘      │ relay cleanup,  │
+                                                          │ email dispatch  │
+                                                          └─────────────────┘
          │
 ┌────────▼────────┐
 │    Zitadel      │
@@ -71,8 +77,8 @@ The moment two people match, their hearts sync live for the first time.
 | API | Bun + Elysia | Native Bun, first-class TS, built-in OpenAPI, Eden Treaty for client type-safety |
 | Web frontend | SvelteKit | Lighter and more expressive for animation-heavy UI than Next.js |
 | Auth | Zitadel (existing) | OIDC, PKCE-native, already deployed |
-| Database | PostgreSQL 16 (existing) | Two schemas: `app` + `billing` |
-| Cache / rate limiting | Redis 7 (existing) | Sliding window counters, relay room tokens |
+| Database | PostgreSQL 16 (existing) | Two schemas: `app` + `billing`. The API connects as a non-owner role so RLS is enforced (FORCE ROW LEVEL SECURITY) |
+| Cache / rate limiting | Redis 7 (existing) | Sliding window counters, relay room keys, JWKS cache, worker queues |
 | Photo storage | MinIO | S3-compatible, runs in Docker, zero egress cost; migrate to R2 later trivially |
 | Background jobs | Bun worker process | Same codebase as API, different entrypoint |
 
@@ -103,6 +109,23 @@ for the full web auth flow and Zitadel setup details.
 
 On first API call after login: `POST /api/v1/me/init` creates a profile row keyed to
 the Zitadel `sub` claim (stable UUID, never changes).
+
+### RLS bootstrap (login + registration)
+
+The API connects as the non-owner `heartbits_api` role, so every query is subject to
+RLS — but login (resolve `sub` → internal user id) and registration (create the user
+row) happen *before* any user context (`app.current_user_id`) exists. These two narrow
+operations run through `SECURITY DEFINER` functions that bypass RLS for exactly those
+bootstrap ops and nothing else (see `migrations/005_auth_bootstrap_funcs.sql`):
+
+- `app.user_lookup(sub)` → `{ id, deleted }` — used by the auth plugin's `findUserBySub`
+  (`src/auth.ts`) and by `/me/init`'s "is this account deleted?" check.
+- `app.init_user(sub)` → `{ id, created }` — idempotent upsert that reactivates a paused
+  account and ensures a profile row (`src/routes/me.ts`).
+
+Once `findUserBySub` resolves the internal user id, every subsequent query runs inside
+`withUser(userId, …)` (`src/db.ts`), which opens a transaction and issues
+`SET LOCAL app.current_user_id = <id>` so RLS policies apply.
 
 ---
 
@@ -156,6 +179,48 @@ All authenticated routes require `Authorization: Bearer <access_token>`.
 | GET | `/api/v1/bonds/:id` | JWT + DB user + **biometric consent** | — | Returns room_id + relay_url. Requires active `biometric_relay` consent. |
 | POST | `/api/v1/bonds` | JWT + DB user + **biometric consent** | — | Create bond for match. Requires active `biometric_relay` consent. |
 
+### Chat (persisted messages)
+
+Chat is now persisted (it was previously relay-only / ephemeral). The relay still
+carries realtime delivery and live BPM; the API persists message history, reactions,
+replies, edits, soft-deletes, and read receipts. Bodies are AES-256-GCM encrypted at
+rest. The web client reaches these endpoints through a server-side authed bridge —
+`heartbits-web`'s `/chat-api/<path>` route forwards to `/api/v1/<path>` with the
+session's access token (`heartbits-web/src/routes/chat-api`).
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| POST | `/api/v1/matches/:matchId/messages` | JWT + DB user | Send message (`body`, optional `reply_to_id`) |
+| GET | `/api/v1/matches/:matchId/messages` | JWT + DB user | Paginated history (`?before=&limit=`, max 100) |
+| POST | `/api/v1/matches/:matchId/read` | JWT + DB user | Mark partner's messages read |
+| PATCH | `/api/v1/messages/:id` | JWT + DB user | Edit own message (sets `edited_at`) |
+| DELETE | `/api/v1/messages/:id` | JWT + DB user | Soft-delete own message |
+| POST | `/api/v1/messages/:id/reactions` | JWT + DB user | Add reaction `{ emoji }` |
+| DELETE | `/api/v1/messages/:id/reactions/:emoji` | JWT + DB user | Remove own reaction |
+
+All routes verify (via RLS + an active-match check) that the caller is one of the two
+match participants and the match is not unmatched.
+
+### Trust & Safety (blocks + reports)
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| POST | `/api/v1/blocks` | JWT + DB user | Block a user — severs any active match (`unmatched_at`) + deletes the relay room key |
+| DELETE | `/api/v1/blocks/:userId` | JWT + DB user | Unblock |
+| GET | `/api/v1/blocks` | JWT + DB user | List users I've blocked |
+| POST | `/api/v1/reports` | JWT + DB user | Report a user → moderation queue (`reason`, optional `details`) |
+
+Blocking is bidirectional for visibility: discover excludes blocked users in both
+directions and swiping a blocked user (either direction) returns 403. Reports land in
+`app.reports` (status `open`); the BYPASSRLS worker role has SELECT/UPDATE grants for
+moderation — no end-user can read another user's reports.
+
+### Waitlist (public, pre-auth)
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| POST | `/api/v1/waitlist` | None | 18+ attestation is server-enforced (`age_confirmed`); signups without it are rejected |
+
 ### Billing (stubs — return 501 until activated)
 
 | Method | Path | Auth |
@@ -171,7 +236,8 @@ All authenticated routes require `Authorization: Bearer <access_token>`.
 
 ### Two PostgreSQL schemas
 
-- `app` — all application data; row-level security enabled
+- `app` — all application data; row-level security **enforced** (FORCE RLS — the API
+  connects as the non-owner `heartbits_api` role, so policies apply to it)
 - `billing` — Stripe IDs only; separate role, isolated from app queries
 
 ### Core tables (`app` schema)
@@ -236,14 +302,60 @@ room_id         TEXT    UNIQUE NOT NULL  -- UUID4 generated by API (not client)
 created_at      TIMESTAMPTZ
 ```
 
-**`messages`** — encrypted per-match
+**`messages`** — persisted chat, bodies encrypted at rest
 ```
-id              TEXT    PK
-match_id        TEXT    FK→matches.id
-sender_id       TEXT    FK→users.id
-body_encrypted  BYTEA   AES-256-GCM, key = HKDF(master_key, match_id)
-sent_at         TIMESTAMPTZ
-read_at         TIMESTAMPTZ
+id                  TEXT    PK
+match_id            TEXT    FK→matches.id
+sender_id           TEXT    FK→users.id
+body_encrypted      BYTEA   AES-256-GCM (field-encryption key; per-match HKDF is future hardening)
+reply_to_id         TEXT    FK→messages.id (nullable) — threaded reply
+attachment_media_id TEXT    nullable
+sent_at             TIMESTAMPTZ
+edited_at           TIMESTAMPTZ   -- set on edit
+deleted_at          TIMESTAMPTZ   -- soft-delete; body cleared
+read_at             TIMESTAMPTZ   -- read receipt
+```
+
+**`message_reactions`** — emoji reactions
+```
+id          TEXT    PK
+message_id  TEXT    FK→messages.id
+user_id     TEXT    FK→users.id
+emoji       TEXT
+created_at  TIMESTAMPTZ
+UNIQUE (message_id, user_id, emoji)
+```
+
+**`blocks`** — Trust & Safety
+```
+id          TEXT    PK
+blocker_id  TEXT    FK→users.id
+blocked_id  TEXT    FK→users.id
+created_at  TIMESTAMPTZ
+UNIQUE (blocker_id, blocked_id)  -- CHECK blocker <> blocked
+```
+
+**`reports`** — moderation queue
+```
+id           TEXT    PK
+reporter_id  TEXT    FK→users.id
+reported_id  TEXT    FK→users.id
+reason       TEXT    spam | harassment | inappropriate | fake_profile | underage | other
+details      TEXT    nullable
+status       TEXT    'open' | 'reviewed' | 'actioned' | 'dismissed' (default 'open')
+created_at   TIMESTAMPTZ
+```
+
+**`waitlist`** — public pre-launch signups (no user context → no RLS; accessed by the API owner role)
+```
+id            TEXT    PK
+email         TEXT
+email_norm    TEXT    UNIQUE (lowercased/trimmed, dedup)
+locale        TEXT
+source        TEXT
+age_confirmed BOOLEAN NOT NULL DEFAULT false  -- 18+ attestation, server-enforced
+created_at    TIMESTAMPTZ
+confirmed_at  TIMESTAMPTZ
 ```
 
 **`consents`** — GDPR Article 9 (biometric data = special category, explicit consent required)
@@ -262,8 +374,9 @@ UNIQUE (user_id, consent_type, version)
 ```
 id          TEXT    PK
 actor_id    TEXT    NULLABLE — NULL after GDPR erasure
-action      TEXT    'profile.update' | 'bond.create' | 'match.unmatch' | 'account.delete'
-            'account.export' | 'consent.grant.biometric_relay' | 'consent.withdraw.biometric_relay' …
+action      TEXT    'profile.update' | 'bond.create' | 'match.unmatch' | 'account.pause'
+            'account.delete' | 'account.export' | 'user.block'
+            'consent.grant.biometric_relay' | 'consent.withdraw.biometric_relay' …
 target_type TEXT
 target_id   TEXT
 ip_address  INET
@@ -290,10 +403,12 @@ billing.customers:
 | Area | Decision |
 |---|---|
 | PII encryption | AES-256-GCM at application layer (not pgcrypto CBC) before INSERT. IV is 96-bit random per encrypt call. GCM auth tag verified on decrypt. Key: 256-bit from env, hex-encoded. |
-| Message encryption | Per-match key via HKDF(master_key, match_id) — not yet implemented in routes; architecture ready |
+| Message encryption | Chat is persisted (`app.messages`). Bodies are AES-256-GCM encrypted at rest using the field-encryption key; per-match HKDF(master_key, match_id) is a future hardening. RLS + an active-match check restrict every read/write to the two participants. |
 | Location | Geohash-6 only (≈1.2km). GPS coords rejected at API boundary. Discovery returns distance bands, never geohash |
 | Photos | Private MinIO bucket. Pre-signed GET URLs, 15-min TTL. Object keys non-guessable |
-| Row-level security | Enabled on all `app.*` tables. `SET LOCAL app.current_user_id` per request via `withUser()`. WITH CHECK added to profiles_write to prevent cross-user INSERT. |
+| Row-level security | **Enforced**, not decorative. The API connects as the non-owner `heartbits_api` role and `migrations/004_force_rls.sql` adds `FORCE ROW LEVEL SECURITY` to every app table (so even the table owner is subject to its own policies; only superusers bypass, and migrations run as superuser). `SET LOCAL app.current_user_id` per request via `withUser()`. `users_read`/`profiles_read` let any authenticated user SELECT user + profile rows (no PII in `users`; profile PII is field-encrypted); writes stay self-only. `swipes_inbound` lets a user read swipes targeting them (server-side mutual-like detection). WITH CHECK on write policies prevents cross-user INSERT/UPDATE. |
+| RLS bootstrap (login/registration) | Login and registration run before any user context exists, so they use `SECURITY DEFINER` functions `app.user_lookup` / `app.init_user` (`migrations/005`) that bypass RLS for exactly those two bootstrap ops and nothing else. |
+| Trust & Safety | `app.blocks` + `app.reports` (FORCE RLS). Blocking severs the match (`unmatched_at`) and deletes the relay room key; discover excludes blocked users in both directions; swiping a blocked user → 403. Reports go to a moderation queue; the BYPASSRLS worker role has SELECT/UPDATE on `app.reports` (no end-user can read others' reports). |
 | Rate limiting | Redis sliding-window Lua script (atomic): 200 swipes/user/day, 60 discovery/user/hour, 1 export/user/24h. IP-level limit at Caddy layer. |
 | Audit log | INSERT-only role. GDPR erasure anonymises actor_id → NULL. SELECT denied to heartbits_api (admin/DBA only). |
 | Biometric consent | `consents` table required before relay room_id is returned. `GET /api/v1/bonds/:id` and `POST /api/v1/bonds` both enforce active `biometric_relay` consent. Consent withdrawal immediately evicts Redis relay room keys. |
@@ -319,6 +434,7 @@ billing.customers:
 | Profile photos | PII | Contract performance | Duration of account; MinIO objects deleted on erasure |
 | Swipe history | Behavioural | Contract performance | Duration of account + 30 days |
 | Match history | Behavioural | Contract performance | Duration of account + 30 days |
+| Chat messages | PII / content | Contract performance | Persisted (`app.messages`), bodies encrypted at rest; purged with the user on hard-delete |
 | Heart rate (biometric) | **GDPR Art. 9 special category** | **Explicit consent (Art. 9(2)(a))** | Never stored — relay fanout only, no persistence |
 | Audit log entries | Compliance | Legal obligation (Art. 6(1)(c)) | 7 years (anonymised — actor_id → NULL on erasure) |
 | Consent records | Compliance | Legal obligation | Duration of account + 7 years |
@@ -334,8 +450,8 @@ billing.customers:
 | Consent withdrawal | IMPLEMENTED | `DELETE /api/v1/me/consent/:type` |
 | Biometric consent gate on relay room access | IMPLEMENTED | `GET /api/v1/bonds/:id`, `POST /api/v1/bonds` |
 | Consent UI (version-pinned text shown to user) | TODO — client-side |  |
-| Hard-delete worker (30 days post soft-delete) | TODO — worker job |  |
-| Media deletion worker (MinIO) | TODO — worker job reads `hb:worker:media_delete` queue |  |
+| Hard-delete worker (30 days post soft-delete) | IMPLEMENTED — `src/worker.ts` sweeps `deleted_at < NOW() - 30 days` via the BYPASSRLS worker role |  |
+| Media deletion worker (MinIO) | IMPLEMENTED — `src/worker.ts` consumes the `hb:worker:media_delete` queue and removes MinIO objects + media rows |  |
 | audit_log partitioning (pg_partman) | TODO — see migration comment |  |
 | Consent version re-prompt on text update | TODO — client-side |  |
 | DPA / Privacy policy page | TODO — legal |  |
@@ -393,63 +509,70 @@ Redis cache. Flip features live without deploy by changing Redis values.
 
 ---
 
-## Compose Additions
+## Build & Compose
 
-New services to add to `deploy/compose.yml`:
+Each HeartBits service ships its own `Dockerfile` and `deploy/compose.yml` **builds**
+them (`build: { context: ../<service> }`) — there is no install-at-boot / volume-mount
+pattern any more. The relevant services:
 
 ```yaml
 heartbits-api:
-  image: oven/bun:1.2-alpine
-  working_dir: /app
-  volumes: [./heartbits-api:/app:ro]
-  command: bun run start
+  build: { context: ../heartbits-api }   # Dockerfile: oven/bun:1.3-alpine
   environment:
-    DATABASE_URL: postgres://heartbits_api:${HB_API_DB_PASSWORD}@postgres:5432/heartbits
+    # Connect as the non-owner role so RLS is enforced (see migrations/004).
+    DATABASE_URL: postgres://heartbits_api:${POSTGRES_PASSWORD}@postgres:5432/heartbits
     REDIS_URL: redis://redis:6379
-    ZITADEL_JWKS_URL: https://auth.heartbits.example.com/.well-known/openid-configuration
-    ZITADEL_ISSUER: https://auth.heartbits.example.com     # required for JWT iss validation
-    ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}      # required for JWT aud validation
+    ZITADEL_ISSUER: https://${AUTH_DOMAIN}
+    ZITADEL_JWKS_URL: https://${AUTH_DOMAIN}/.well-known/openid-configuration
+    ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}
     HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
+    REGISTRATION_OPEN: ${REGISTRATION_OPEN:-false}   # invite-only by default
+    REGISTRATION_ALLOWLIST: ${REGISTRATION_ALLOWLIST:-}
     MINIO_ENDPOINT: minio:9000
     MINIO_BUCKET: heartbits-media
-    PORT: 3100
-  networks: [internal]
-
-heartbits-relay:
-  # Phase 1: set REDIS_URL to activate JWT + room membership validation
-  environment:
-    ROOM_TOKEN: ${RELAY_ROOM_TOKEN}               # Phase 0 fallback
-    REDIS_URL: redis://redis:6379                 # enables Phase 1
-    ZITADEL_JWKS_URL: https://auth.heartbits.example.com/.well-known/openid-configuration
-    PORT: 8765
-  networks: [internal]
+    PORT: "3100"
 
 heartbits-worker:
-  # Same image/source as API, different entrypoint
-  command: bun run worker
-  # ... same env, networks: [internal]
+  build: { context: ../heartbits-api }   # same image, different entrypoint
+  command: ["bun", "run", "src/worker.ts"]
+  environment:
+    DATABASE_URL: postgres://heartbits_api:${POSTGRES_PASSWORD}@postgres:5432/heartbits
+    # BYPASSRLS pool for cross-user sweeps (GDPR hard-delete, relay cleanup):
+    WORKER_DATABASE_URL: postgres://heartbits_worker:${WORKER_POSTGRES_PASSWORD}@postgres:5432/heartbits
+    REDIS_URL: redis://redis:6379
+    HB_FIELD_ENCRYPTION_KEY: ${HB_FIELD_ENCRYPTION_KEY}
+    # SMTP for transactional emails (notifications, waitlist)
+    SMTP_HOST: ${SMTP_HOST:-}  # …
+
+heartbits-relay:
+  build: { context: ../relay-server }
+  environment:
+    ROOM_TOKEN: ${ROOM_TOKEN}                       # Phase 0 fallback
+    REDIS_URL: redis://redis:6379                   # enables Phase 1
+    ZITADEL_JWKS_URL: https://${AUTH_DOMAIN}/.well-known/openid-configuration
+    ZITADEL_ISSUER: https://${AUTH_DOMAIN}          # JWT iss/aud (token-confusion defense)
+    ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}
 
 heartbits-web:
-  image: oven/bun:1.2-alpine
-  working_dir: /app
-  volumes: [./heartbits-web:/app:ro]
-  command: bun run preview  # or node build for SvelteKit
+  build: { context: ../heartbits-web }   # SvelteKit adapter-node
   environment:
-    PORT: 3000
-    PUBLIC_API_URL: https://api.heartbits.what-if.io
-    PUBLIC_RELAY_URL: wss://relay.heartbits.what-if.io
-  networks: [internal]
-
-minio:
-  image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-  command: server /data --console-address ":9001"
-  volumes: [minio-data:/data]
-  networks: [internal]
+    PORT: "3000"
+    ORIGIN: https://${APP_DOMAIN}
+    PUBLIC_ZITADEL_ISSUER: https://${AUTH_DOMAIN}
+    PUBLIC_ZITADEL_CLIENT_ID: ${HEARTBITS_CLIENT_ID}
+    SESSION_SECRET: ${SESSION_SECRET}
+    PUBLIC_API_BASE: https://${APP_DOMAIN}/api      # browser → /api (Caddy strips prefix)
+    API_BASE_INTERNAL: http://heartbits-api:3100    # server-side /chat-api bridge target
 ```
 
-New Caddyfile blocks: see `docs/Caddyfile.heartbits` for the full security-hardened
-Caddy config for `api.heartbits.what-if.io`, `heartbits.what-if.io`, `relay.heartbits.what-if.io`,
-and `media.heartbits.what-if.io` (GET-only proxy to MinIO with security headers).
+The worker connects with two pools: the RLS-bound `heartbits_api` pool (per-user media
+deletion) and the BYPASSRLS `heartbits_worker` pool (`WORKER_DATABASE_URL`) for
+cross-user sweeps (GDPR hard-delete, stale relay room cleanup).
+
+Caddy (`deploy/Caddyfile`) routes `${APP_DOMAIN}/api/*` → `heartbits-api:3100`
+(prefix stripped) and also exposes a dedicated `${API_DOMAIN}` block, plus
+`${AUTH_DOMAIN}`, `${RELAY_DOMAIN}`, and `${MEDIA_DOMAIN}` (GET-only proxy to MinIO
+with security headers). See `docs/deploy.md`.
 
 ---
 
@@ -482,8 +605,10 @@ Use Xcode build settings (`RELAY_TOKEN = $(RELAY_TOKEN)` from CI) and Android `b
 4. **No media CDN yet** — MinIO on the same VPS as the API means photo serving competes
    with API CPU; acceptable for launch, add Cloudflare in front of `media.heartbits.what-if.io`
    when traffic warrants.
-5. **Hard-delete worker not implemented** — soft-deleted users must be hard-deleted within
-   30 days per GDPR Art. 17. Implement before launch.
+5. **Soft-delete vs. live sessions** — the hard-delete worker (30-day GDPR sweep) and the
+   media-deletion worker are implemented (`src/worker.ts`), but soft-delete does not
+   revoke existing Zitadel sessions — a valid JWT stays usable until it expires. Revoke
+   the session via the Zitadel Management API on `DELETE /me` before launch.
 6. **Consent text versioning** — the API records consent versions but does not store the
    text. The client must re-prompt users when the consent text version changes. This logic
    must ship in the client before any consent version bump.

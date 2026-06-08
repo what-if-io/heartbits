@@ -12,6 +12,8 @@ HeartBits is an open-source, self-hostable intimacy app built around real-time b
 2. **Like** — tap the heart; your phone sends your live BPM over the relay for a few seconds
 3. **Match** — if they like back, a persistent bond is created
 4. **Bond** — open the bond screen at any time to feel each other's live heartbeat in real time
+5. **Chat** — persisted messaging on a match: reactions, replies, edits, soft-delete, and read receipts, with realtime delivery over the relay (message bodies are encrypted at rest)
+6. **Stay safe** — block or report any user; blocking severs the match and cuts the live stream instantly
 
 ---
 
@@ -21,14 +23,16 @@ HeartBits is an open-source, self-hostable intimacy app built around real-time b
 Mobile (iOS / Android)
   └── Apple Watch / Wear OS → BPM → relay WebSocket
 
-Web (SvelteKit)
-  └── bond page → relay WebSocket → live BPM visualization + chat
+Web (SvelteKit, 13-locale i18n)
+  └── bond page → relay WebSocket → live BPM visualization + realtime chat
+  └── /chat-api bridge → heartbits-api → persisted message history
 
-relay-server (Node.js)   — WebSocket room fanout, JWT-authenticated
-heartbits-api (Bun)      — profiles, matches, bonds, notifications
+relay-server (Node.js)   — WebSocket room fanout (live BPM + realtime chat), JWT-authenticated
+heartbits-api (Bun)      — profiles, matches, bonds, persisted chat, trust & safety, notifications
+heartbits-worker (Bun)   — GDPR hard-delete, media deletion, relay cleanup, email dispatch
 Zitadel                  — OIDC auth (PKCE, no client secret)
-PostgreSQL               — app + billing schemas, field-encrypted PII
-Redis                    — rate limiting, relay room membership, JWKS cache
+PostgreSQL               — app + billing schemas, field-encrypted PII, enforced row-level security
+Redis                    — rate limiting, relay room keys, JWKS cache, worker queues
 MinIO                    — S3-compatible photo storage
 Caddy                    — TLS termination, reverse proxy
 ```
@@ -59,9 +63,9 @@ See [`docs/deploy.md`](docs/deploy.md) for the full deployment guide.
 
 | Directory | What it is |
 |---|---|
-| `heartbits-web/` | SvelteKit web app + PWA (Svelte 5, adapter-node, Bun) |
-| `heartbits-api/` | REST API — profiles, matches, bonds, notifications (Bun + Elysia) |
-| `relay-server/` | WebSocket relay for live BPM streams (Node.js) |
+| `heartbits-web/` | SvelteKit web app + PWA (Svelte 5, adapter-node, Bun); 13-locale i18n with URL-based locales + SEO (robots, sitemap, hreflang) |
+| `heartbits-api/` | REST API — profiles, matches, bonds, persisted chat, trust & safety, notifications (Bun + Elysia); plus the background worker |
+| `relay-server/` | WebSocket relay for live BPM streams + realtime chat (Node.js) |
 | `heartbits-monitor/` | Uptime monitor with SQLite history, feeds the `/status` page (Bun) |
 | `deploy/` | Docker Compose stack, Caddyfile, bootstrap scripts |
 | `docs/` | Architecture, auth flow, security model, deployment guide |
@@ -119,6 +123,7 @@ Demo mode is built into the web app — load it without credentials and you get 
 | Layer | Choice |
 |---|---|
 | Web frontend | SvelteKit 2 + Svelte 5 runes |
+| i18n | Paraglide (inlang) — 13 locales, URL-based (`/es`, `/fr`, …) + hreflang |
 | API | Bun + Elysia |
 | Auth | Zitadel v4 (OIDC/PKCE) |
 | Database | PostgreSQL 16 |
@@ -140,9 +145,11 @@ See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Security
 
-Biometric data (heart rate) flows directly between devices via the relay and is never stored by the API. Profile PII (name, bio, date of birth) is field-encrypted at the application layer before reaching the database.
+Biometric data (heart rate) flows directly between devices via the relay and is never stored by the API. Profile PII (name, bio, date of birth) and chat message bodies are field-encrypted at the application layer before reaching the database.
 
-See [`docs/SECURITY.md`](docs/SECURITY.md) for the full threat model, encryption details, and vulnerability reporting.
+Authorization is enforced in the database, not just the app: the API connects as a non-owner Postgres role and `FORCE ROW LEVEL SECURITY` is set on every app table, so a user can only ever read or write their own rows (and their matches' shared rows). Trust & safety controls — blocking and reporting — ship in the API: blocking severs the match, hides both users from each other, and cuts the live biometric stream immediately.
+
+See [`docs/SECURITY.md`](docs/SECURITY.md) for the full threat model, encryption details, the RLS access-control model, and vulnerability reporting.
 
 ---
 
