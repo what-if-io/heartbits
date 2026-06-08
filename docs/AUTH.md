@@ -9,24 +9,24 @@ Session: HMAC-signed cookie (`hb_session`), 7-day TTL
 ## Flow overview
 
 ```
-Browser                    heartbits-web              Zitadel
-   │                            │                        │
-   ├── GET /auth/initiate ──────►│                        │
-   │                            ├── generate PKCE ──────►│
-   │                            │   store verifier+state │
-   │◄── 302 → Zitadel ─────────┤   in httpOnly cookies  │
-   │                            │                        │
-   ├─────────────────────────────────────── GET /oauth/v2/authorize ──►│
-   │◄────────────────────────────────────────────────────── 302 + code ┤
-   │                            │                        │
-   ├── GET /auth/callback ──────►│                        │
-   │    ?code=...&state=... ────►│                        │
-   │                            ├── exchange code ───────►│
-   │                            │   + PKCE verifier       │
-   │                            │◄── tokens ─────────────┤
-   │                            │   (access + id token)  │
-   │                            ├── sign session cookie  │
-   │◄── 302 /discover ─────────┤   clear PKCE cookies   │
+Browser                       heartbits-web                Zitadel
+   │                               │                          │
+   ├── GET /auth/initiate ────────►│                          │
+   │                               ├── generate PKCE ────────►│
+   │                               │   store verifier+state   │
+   │◄── 302 → Zitadel ─────────────┤   in httpOnly cookies    │
+   │                               │                          │
+   ├──────────────────────────── GET /oauth/v2/authorize ────►│
+   │◄──────────────────────────────────── 302 + code ─────────┤
+   │                               │                          │
+   ├── GET /auth/callback ────────►│                          │
+   │    ?code=...&state=... ──────►│                          │
+   │                               ├─── exchange code ───────►│
+   │                               │   + PKCE verifier        │
+   │                               │◄── tokens ───────────────┤
+   │                               │   (access + id token)    │
+   │                               ├── sign session cookie    │
+   │◄── 302 /discover   ───────────┤   clear PKCE cookies     │
 ```
 
 ### Key files
